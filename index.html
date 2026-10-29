@@ -295,9 +295,37 @@ const DEF_TR=[{id:"tr1",img:"https://images.unsplash.com/photo-1555939594-58d7cb
 const DEF_CM=[{id:"cm1",type:"ticket",th_b:"ส่งต่อ",en_b:"Transfer",th_t:"Love on Hire First EP · 22 ต.ค.",en_t:"Love on Hire First EP · 22 Oct",th_d:"1 ใบ · โซน A · 2,000 บาท · ติดต่อ X @AlKey_fan",en_d:"1 Ticket · Zone A · 2000 THB · DM X @AlKey_fan"}];
 const DEF_AB=[{id:"ab1",th_t:"🦙 จินนี่ ณัฐณิชา",en_t:"🦙 Ginny Natnicha",th_d:"เกิด 17 ธันวาคม 2000 สังกัด North Star",en_d:"Born Dec 17, 2000. Label: North Star"},{id:"ab2",th_t:"🐒 เจน่า แองเจลิน่า",en_t:"🐒 Jayna Angelina",th_d:"เกิด 17 กุมภาพันธ์ 2006 สังกัด North Star",en_d:"Born Feb 17, 2006. Label: North Star"}];
 
-function ld(k,fb){try{var r=localStorage.getItem(k);return r?JSON.parse(r):fb}catch(e){return fb}}
-let EVENTS=ld(K_EV,DEF_EV), TICKETS=ld(K_TK,DEF_TK), SERIES=ld(K_SR,DEF_SR), MERCH=ld(K_MC,DEF_MC), SEATMAPS=ld(K_SM,DEF_SM), TRAVEL=ld(K_TR,DEF_TR), COMMU=ld(K_CM,DEF_CM), ABOUT=ld(K_AB,DEF_AB);
-let MY_PLAN=ld(K_PL,{}), CUSTOM_ADMINS=ld(K_AD,[]);
+let EVENTS=DEF_EV, TICKETS=DEF_TK, SERIES=DEF_SR, MERCH=DEF_MC, SEATMAPS=DEF_SM, TRAVEL=DEF_TR, COMMU=DEF_CM, ABOUT=DEF_AB;
+let MY_PLAN={}, CUSTOM_ADMINS=[];
+
+async function loadDataFromDB() {
+  try {
+    const res = await fetch('/api/data');
+    const db = await res.json();
+    if(db.EVENTS) EVENTS = db.EVENTS;
+    if(db.TICKETS) TICKETS = db.TICKETS;
+    if(db.SERIES) SERIES = db.SERIES;
+    if(db.MERCH) MERCH = db.MERCH;
+    if(db.SEATMAPS) SEATMAPS = db.SEATMAPS;
+    if(db.TRAVEL) TRAVEL = db.TRAVEL;
+    if(db.COMMU) COMMU = db.COMMU;
+    if(db.ABOUT) ABOUT = db.ABOUT;
+    if(db.MY_PLAN) MY_PLAN = db.MY_PLAN;
+    if(db.CUSTOM_ADMINS) CUSTOM_ADMINS = db.CUSTOM_ADMINS;
+    updateUIRole();
+  } catch(e) {
+    console.error("Load failed", e);
+    updateUIRole();
+  }
+}
+
+async function saveToDB(payload) {
+  await fetch('/api/data', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+  });
+}
 
 function el(h){const d=document.createElement("div");d.innerHTML=h.trim();return d.firstElementChild}
 function closeModal(id){document.getElementById(id).classList.remove("on")}
@@ -667,7 +695,7 @@ function bwSave(gid,to){
 }
 
 // INIT
-updateUIRole();
+loadDataFromDB();
 </script>
 </body>
 </html>
