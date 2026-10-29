@@ -10,75 +10,67 @@
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0" rel="stylesheet" />
 <style>
 :root{
-  --bg-grad: linear-gradient(135deg, #f3e8ff 0%, #fef9c3 100%);
-  --surface: rgba(255, 255, 255, 0.75);
-  --surface-alt: rgba(255, 255, 255, 0.5);
-  --line: rgba(228, 215, 245, 0.8);
-  --glass-border: 1px solid rgba(255, 255, 255, 0.8);
-  --ink: #2b1b38; --muted: #726282; --primary: #7e22ce;
-  --primary-grad: linear-gradient(135deg, #7e22ce, #a855f7);
-  --accent: #f59e0b; --accent-soft: rgba(245, 158, 11, 0.15);
-  --shadow: 0 8px 32px rgba(126,34,206,.12);
-  --w-bg2: #fff1b8; --w-surface: rgba(255, 253, 246, 0.85); --w-purple: #8b5cf6;
-  --w-pt: #6d3fd6; --w-sel: #ffe9a0; --w-yellow: #ffd23f; --w-danger: #d6336c;
-  padding-top: env(safe-area-inset-top, 0px);
+  --bg-grad:linear-gradient(135deg,#f3e8ff 0%,#fef9c3 100%);
+  --surface:rgba(255,255,255,0.75);--surface-alt:rgba(255,255,255,0.5);
+  --line:rgba(228,215,245,0.8);--glass-border:1px solid rgba(255,255,255,0.8);
+  --ink:#2b1b38;--muted:#726282;--primary:#7e22ce;
+  --primary-grad:linear-gradient(135deg,#7e22ce,#a855f7);
+  --accent:#f59e0b;--accent-soft:rgba(245,158,11,0.15);
+  --shadow:0 8px 32px rgba(126,34,206,.12);
+  --w-bg2:#fff1b8;--w-surface:rgba(255,253,246,0.85);--w-purple:#8b5cf6;
+  --w-pt:#6d3fd6;--w-sel:#ffe9a0;--w-yellow:#ffd23f;--w-danger:#d6336c;
+  padding-top:env(safe-area-inset-top,0px);
 }
 [data-theme="dark"]{
-  --bg-grad: linear-gradient(135deg, #2e1065 0%, #422006 100%);
-  --surface: rgba(20, 10, 30, 0.75);
-  --surface-alt: rgba(43, 24, 59, 0.6);
-  --line: rgba(76, 29, 149, 0.4);
-  --glass-border: 1px solid rgba(255, 255, 255, 0.1);
-  --ink: #f4ebfa; --muted: #b5a4c7; --primary: #c084fc;
-  --primary-grad: linear-gradient(135deg, #9333ea, #c084fc);
-  --accent: #fbbf24; --accent-soft: rgba(251, 191, 36, 0.18);
-  --shadow: 0 12px 48px rgba(0,0,0,.45);
-  --w-bg2: #33205f; --w-surface: rgba(40, 23, 73, 0.85); --w-purple: #a855f7;
-  --w-pt: #d8c5ff; --w-sel: #5b3da6; --w-yellow: #ffd23f; --w-danger: #f06595;
+  --bg-grad:linear-gradient(135deg,#2e1065 0%,#422006 100%);
+  --surface:rgba(20,10,30,0.75);--surface-alt:rgba(43,24,59,0.6);
+  --line:rgba(76,29,149,0.4);--glass-border:1px solid rgba(255,255,255,0.1);
+  --ink:#f4ebfa;--muted:#b5a4c7;--primary:#c084fc;
+  --primary-grad:linear-gradient(135deg,#9333ea,#c084fc);
+  --accent:#fbbf24;--accent-soft:rgba(251,191,36,0.18);
+  --shadow:0 12px 48px rgba(0,0,0,.45);
+  --w-bg2:#33205f;--w-surface:rgba(40,23,73,0.85);--w-purple:#a855f7;
+  --w-pt:#d8c5ff;--w-sel:#5b3da6;--w-yellow:#ffd23f;--w-danger:#f06595;
 }
 *{box-sizing:border-box;font-family:'Mali',sans-serif}
-body{margin:0; background:var(--bg-grad); background-attachment:fixed; color:var(--ink); font-size:15px; line-height:1.65; transition:background .4s ease, color .25s;}
+body{margin:0;background:var(--bg-grad);background-attachment:fixed;color:var(--ink);font-size:15px;line-height:1.65;transition:background .4s ease,color .25s;}
 h1,h2,h3,h4{margin:0;line-height:1.3} a{color:var(--primary);text-decoration:none}
 button,input,textarea,select{font:inherit;color:inherit} button{cursor:pointer;border:none;background:none}
 .wrap{max-width:1200px;margin:0 auto;padding:0 18px} .content-narrow{max-width:960px;margin:0 auto}
-.material-symbols-rounded { font-size: 1.3em; vertical-align: text-bottom; margin-right: 4px; }
-
-/* Glassmorphism */
-.glass-panel, .calendar-card, .ev-card, .ticket-card, .series-card, .travel-card, .modal-box, .modal-detail-box, .bday-box, .wish, .works-sidebar, nav, .now-banner, header.top, .about-card {
-  background: var(--surface); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: var(--glass-border) !important; box-shadow: var(--shadow);
+.material-symbols-rounded{font-size:1.3em;vertical-align:text-bottom;margin-right:4px;}
+.glass-panel,.calendar-card,.ev-card,.ticket-card,.series-card,.travel-card,.modal-box,.modal-detail-box,.bday-box,.wish,.works-sidebar,nav,.now-banner,header.top,.about-card{
+  background:var(--surface);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:var(--glass-border)!important;box-shadow:var(--shadow);
 }
 header.top{position:sticky;top:0;z-index:50;border-bottom:var(--glass-border);}
 .header-top-row{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;padding:12px 0 8px;gap:10px}
 .brand{font-weight:700;font-size:21px;background:var(--primary-grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;display:flex;align-items:center;gap:6px;cursor:pointer}
 .header-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 .icon-btn{background:var(--surface-alt);border:var(--glass-border);border-radius:999px;height:36px;padding:0 12px;display:inline-flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;transition:.3s ease;}
-.icon-btn:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
+.icon-btn:hover{transform:translateY(-2px);box-shadow:var(--shadow);}
 .login-btn{background:var(--primary-grad);color:#fff;padding:6px 14px;border-radius:999px;font-weight:700;font-size:13px;display:inline-flex;align-items:center;gap:6px;box-shadow:var(--shadow);transition:.3s ease;}
-.login-btn:hover, .btn-submit:hover { transform: translateY(-2px) scale(1.02); box-shadow: 0 10px 24px rgba(126,34,206,.25); }
+.login-btn:hover,.btn-submit:hover{transform:translateY(-2px) scale(1.02);box-shadow:0 10px 24px rgba(126,34,206,.25);}
 .nav-wrap{padding-bottom:10px;display:flex;justify-content:center}
 nav{display:flex;gap:5px;padding:6px;border-radius:999px;overflow-x:auto;max-width:100%;scrollbar-width:none;align-items:center}
 nav::-webkit-scrollbar{display:none}
-nav button{padding:8px 16px;border-radius:999px;color:var(--muted);font-weight:600;font-size:14px;white-space:nowrap;transition:all .3s cubic-bezier(0.4, 0, 0.2, 1);display:inline-flex;align-items:center;gap:4px}
-nav button:hover{color:var(--primary); background:rgba(255,255,255,0.2);}
+nav button{padding:8px 16px;border-radius:999px;color:var(--muted);font-weight:600;font-size:14px;white-space:nowrap;transition:all .3s;display:inline-flex;align-items:center;gap:4px}
+nav button:hover{color:var(--primary);background:rgba(255,255,255,0.2);}
 nav button[aria-selected="true"]{background:var(--primary);color:#fff;font-weight:700;box-shadow:0 4px 12px rgba(126,34,206,.3);}
-nav button[aria-selected="true"] .material-symbols-rounded { color: #fff; }
-
+nav button[aria-selected="true"] .material-symbols-rounded{color:#fff;}
 .hero{padding:24px 0 14px} .duo{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;font-size:clamp(34px,8vw,58px);font-weight:700}
 .duo .g{color:var(--primary)} .duo .j{color:var(--accent)}
 .now-banner{margin-top:12px;border-left:5px solid var(--accent);padding:14px 18px;border-radius:16px;font-size:14px}
 section.panel{display:none;padding:10px 0 80px} section.panel.on{display:block;animation:fadeIn .3s ease}
-@keyframes fadeIn{from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)}}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 .toolbar-row{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;margin:14px 0}
-.view-switch{display:inline-flex;background:var(--surface-alt);padding:4px;border-radius:14px;border:var(--glass-border); backdrop-filter: blur(8px);}
-.view-btn{padding:8px 18px;border-radius:11px;font-size:14px;font-weight:700;color:var(--muted); transition:.2s;} .view-btn.active{background:var(--primary);color:#fff;box-shadow:var(--shadow)}
+.view-switch{display:inline-flex;background:var(--surface-alt);padding:4px;border-radius:14px;border:var(--glass-border);backdrop-filter:blur(8px);}
+.view-btn{padding:8px 18px;border-radius:11px;font-size:14px;font-weight:700;color:var(--muted);transition:.2s;} .view-btn.active{background:var(--primary);color:#fff;box-shadow:var(--shadow)}
 .bar{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0 16px;align-items:center}
-.chip{border:var(--glass-border);background:var(--surface-alt);padding:8px 16px;border-radius:999px;font-size:13px;color:var(--ink);font-weight:600;transition:all .3s ease;display:inline-flex;align-items:center;gap:4px; backdrop-filter:blur(8px);}
-.chip:hover{background:var(--surface); transform:translateY(-1px); box-shadow:var(--shadow);}
+.chip{border:var(--glass-border);background:var(--surface-alt);padding:8px 16px;border-radius:999px;font-size:13px;color:var(--ink);font-weight:600;transition:all .3s ease;display:inline-flex;align-items:center;gap:4px;backdrop-filter:blur(8px);}
+.chip:hover{background:var(--surface);transform:translateY(-1px);box-shadow:var(--shadow);}
 .chip[aria-pressed="true"]{background:var(--primary);color:#fff;border-color:var(--primary);box-shadow:0 4px 12px rgba(126,34,206,.25);}
 .add-banner{margin:28px auto 16px;background:var(--surface-alt);backdrop-filter:blur(8px);border:2px dashed var(--primary);border-radius:20px;padding:24px;text-align:center}
-.btn-submit{background:var(--primary-grad);color:#fff;padding:10px 24px;border-radius:999px;font-weight:700;font-size:14px;display:inline-block;box-shadow:var(--shadow);transition:all .3s ease; cursor:pointer;}
-.empty{padding:40px 20px;text-align:center;color:var(--muted);border:2px dashed rgba(114, 98, 130, 0.4);border-radius:20px;font-weight:600;grid-column:1/-1;background:var(--surface-alt);backdrop-filter:blur(8px);}
-
+.btn-submit{background:var(--primary-grad);color:#fff;padding:10px 24px;border-radius:999px;font-weight:700;font-size:14px;display:inline-block;box-shadow:var(--shadow);transition:all .3s ease;cursor:pointer;}
+.empty{padding:40px 20px;text-align:center;color:var(--muted);border:2px dashed rgba(114,98,130,0.4);border-radius:20px;font-weight:600;grid-column:1/-1;background:var(--surface-alt);backdrop-filter:blur(8px);}
 .cal-container{display:none} .cal-container.active{display:block}
 .month-header{display:flex;align-items:center;justify-content:space-between;margin:14px 0;flex-wrap:wrap;gap:10px}
 .month-title{font-size:26px;font-weight:700;color:var(--primary)}
@@ -99,48 +91,33 @@ section.panel{display:none;padding:10px 0 80px} section.panel.on{display:block;a
 .ev-card:hover{transform:translateY(-4px);box-shadow:0 12px 32px rgba(126,34,206,.2);}
 .ev-card-img{width:100%;height:175px;object-fit:cover;background:var(--surface-alt);display:block}
 .ev-card-content{padding:18px 20px;flex-grow:1} .tag{font-size:12px;font-weight:700;padding:4px 12px;border-radius:999px;display:inline-block;margin-right:6px;margin-bottom:8px}
-
 .list-container{display:none} .list-container.active{display:block}
-.list-item-card{display:flex;gap:16px;align-items:center;background:var(--surface);border:var(--glass-border);backdrop-filter:blur(16px);border-radius:18px;padding:18px;margin-bottom:12px;box-shadow:var(--shadow);cursor:pointer;transition:.3s ease;}
-.list-item-card:hover{transform:translateY(-2px);box-shadow:0 12px 32px rgba(126,34,206,.2);}
-.list-item-card.past{opacity:.65}
-.list-item-date{text-align:center;border-right:1px solid var(--line);padding-right:16px;min-width:75px} .list-item-date b{display:block;font-size:28px;color:var(--primary);line-height:1.1}
-
-.ticket-card{display:flex;align-items:center;gap:20px;border-radius:20px;padding:20px 24px;margin-bottom:16px;border-left:6px solid var(--primary) !important;}
-.ticket-card.ended{border-left-color:var(--muted) !important;opacity:.65}
-.tk-date{background:var(--surface-alt);padding:12px 16px;border-radius:16px;text-align:center;min-width:90px} .btn-buy{background:var(--primary-grad);color:#fff;padding:10px 20px;border-radius:999px;font-weight:700;font-size:14px;white-space:nowrap;display:inline-block;transition:.3s;} .btn-buy.disabled{background:rgba(255,255,255,0.4);color:var(--muted);border:1px solid var(--line);pointer-events:none;box-shadow:none;}
-
+.ticket-card{display:flex;align-items:center;gap:20px;border-radius:20px;padding:20px 24px;margin-bottom:16px;border-left:6px solid var(--primary)!important;}
+.ticket-card.ended{border-left-color:var(--muted)!important;opacity:.65}
+.tk-date{background:var(--surface-alt);padding:12px 16px;border-radius:16px;text-align:center;min-width:90px}
 .works-layout{display:grid;grid-template-columns:260px 1fr;gap:28px;align-items:start;margin-top:20px}
 .works-sidebar{border-radius:24px;padding:20px;}
 .works-cat-btn{width:100%;display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-radius:14px;font-weight:700;font-size:14.5px;color:var(--ink);margin-bottom:8px;transition:.3s ease;border:1px solid transparent;}
 .works-cat-btn:hover{background:var(--surface-alt);}
 .works-cat-btn.active{background:var(--primary);color:#fff;border-color:var(--primary);box-shadow:0 4px 16px rgba(126,34,206,.3);}
-
 .series-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:22px}
 .series-card{border-radius:20px;overflow:hidden;display:flex;flex-direction:column;transition:all .3s ease;}
 .series-card:hover{transform:translateY(-4px);box-shadow:0 12px 32px rgba(126,34,206,.2);}
 .series-badge{position:absolute;top:-16px;right:16px;font-size:12px;font-weight:700;padding:4px 14px;border-radius:999px;border:2px solid rgba(255,255,255,0.8);background:var(--primary-grad);color:#fff;box-shadow:0 4px 12px rgba(126,34,206,.4);}
-
 .merch-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:22px;margin-top:20px}
 .travel-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(380px,1fr));gap:24px;margin-top:20px}
 .travel-card{border-radius:22px;overflow:hidden;display:flex;flex-direction:column;transition:.3s;}
 .travel-card:hover{transform:translateY(-4px);box-shadow:0 12px 32px rgba(126,34,206,.2);}
-.commu-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:20px;margin:24px 0 36px}
-.about-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:22px;margin-top:20px}
 .about-card{border-radius:20px;padding:24px;}
-
-/* MODALS */
-.modal{display:none;position:fixed;inset:0;background:rgba(15, 5, 20, 0.6);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);z-index:100;align-items:center;justify-content:center;padding:20px; opacity:0; transition:opacity .3s ease;} 
-.modal.on{display:flex; animation:modalFadeIn .3s forwards;}
-@keyframes modalFadeIn { to { opacity:1; } }
-.modal-box{border-radius:28px;width:100%;max-width:540px;padding:32px;max-height:90vh;overflow-y:auto;position:relative; transform:scale(0.95); animation:modalScaleUp .3s forwards;}
-.modal-detail-box{border-radius:28px;width:100%;max-width:720px;max-height:92vh;overflow-y:auto;padding:28px;position:relative; transform:scale(0.95); animation:modalScaleUp .3s forwards;}
-@keyframes modalScaleUp { to { transform:scale(1); } }
+.modal{display:none;position:fixed;inset:0;background:rgba(15,5,20,0.6);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);z-index:100;align-items:center;justify-content:center;padding:20px;opacity:0;transition:opacity .3s ease;}
+.modal.on{display:flex;animation:modalFadeIn .3s forwards;}
+@keyframes modalFadeIn{to{opacity:1;}}
+.modal-box{border-radius:28px;width:100%;max-width:540px;padding:32px;max-height:90vh;overflow-y:auto;position:relative;transform:scale(0.95);animation:modalScaleUp .3s forwards;}
+.modal-detail-box{border-radius:28px;width:100%;max-width:720px;max-height:92vh;overflow-y:auto;padding:28px;position:relative;transform:scale(0.95);animation:modalScaleUp .3s forwards;}
+@keyframes modalScaleUp{to{transform:scale(1);}}
 .form-group{margin-bottom:16px;text-align:left} .form-group label{display:block;font-size:14px;font-weight:700;margin-bottom:6px;color:var(--primary)}
-.form-group input, .form-group select, .form-group textarea{width:100%;padding:12px 16px;border-radius:14px;border:1px solid rgba(126,34,206,0.3);font:inherit;background:rgba(255,255,255,0.4);color:var(--ink);transition:.3s;backdrop-filter:blur(4px);}
-.form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline:none; border-color:var(--primary); background:var(--surface); box-shadow:0 0 0 4px rgba(126,34,206,0.1);}
-
-/* BLESSING WALL EMBED */
+.form-group input,.form-group select,.form-group textarea{width:100%;padding:12px 16px;border-radius:14px;border:1px solid rgba(126,34,206,0.3);font:inherit;background:rgba(255,255,255,0.4);color:var(--ink);transition:.3s;backdrop-filter:blur(4px);}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{outline:none;border-color:var(--primary);background:var(--surface);box-shadow:0 0 0 4px rgba(126,34,206,0.1);}
 .bday-box{border-radius:32px;padding:32px 24px 100px;position:relative}
 .bday-chips{display:flex;gap:12px;overflow-x:auto;padding:16px 4px;margin:12px 0 8px;scrollbar-width:thin}
 .bday-chip{flex:none;display:flex;align-items:center;gap:8px;background:var(--w-surface);border:var(--glass-border);border-radius:99px;padding:8px 20px 8px 12px;font-weight:600;box-shadow:0 4px 12px rgba(0,0,0,0.05);}
@@ -151,14 +128,11 @@ section.panel{display:none;padding:10px 0 80px} section.panel.on{display:block;a
 .wish.ghost{position:fixed;left:0;top:0;z-index:300;pointer-events:none;opacity:.92;margin:0;transform:rotate(3deg);box-shadow:0 24px 48px rgba(60,20,140,.35);backdrop-filter:blur(16px);}
 body.dragging{user-select:none;cursor:grabbing;}
 .w-fab{position:fixed;left:50%;translate:-50% 0;bottom:30px;z-index:40;padding:16px 36px;font-size:1.1rem;box-shadow:0 12px 32px rgba(109,63,214,.4);background:var(--w-purple);color:#fff;border:3px solid var(--w-yellow);border-radius:99px;font-weight:700;transition:.3s;cursor:pointer;}
-.w-fab:hover{transform:translate(-50%, -4px);box-shadow:0 16px 40px rgba(109,63,214,.5);}
-.gift{font-size:1.5rem;border-radius:50%;width:3.2rem;height:3.2rem;display:grid;place-items:center;flex:none;border:3px solid transparent;background:linear-gradient(var(--w-bg2),var(--w-bg2)) padding-box,var(--ring,linear-gradient(var(--line),var(--line))) border-box}
-.r-ginny{--ring:linear-gradient(#8b5cf6,#8b5cf6)} .r-jayna{--ring:linear-gradient(#ffb800,#ffb800)} .r-ginjay{--ring:linear-gradient(135deg,#8b5cf6 50%,#ffb800 50%)}
-
-body[data-role="guest"] .auth-only, body[data-role="guest"] .admin-only, body[data-role="guest"] .head-only{display:none!important}
-body[data-role="user"] .admin-only, body[data-role="user"] .head-only{display:none!important}
+.w-fab:hover{transform:translate(-50%,-4px);box-shadow:0 16px 40px rgba(109,63,214,.5);}
+body[data-role="guest"] .auth-only,body[data-role="guest"] .admin-only,body[data-role="guest"] .head-only{display:none!important}
+body[data-role="user"] .admin-only,body[data-role="user"] .head-only{display:none!important}
 body[data-role="admin"] .head-only{display:none!important}
-@media(max-width:820px){.works-layout,.about-grid,.merch-grid{grid-template-columns:1fr} .ticket-card{flex-direction:column;text-align:center} .travel-grid{grid-template-columns:1fr}}
+@media(max-width:820px){.works-layout,.merch-grid{grid-template-columns:1fr}.ticket-card{flex-direction:column;text-align:center}.travel-grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body data-role="guest">
@@ -170,7 +144,7 @@ body[data-role="admin"] .head-only{display:none!important}
         <button id="langToggle" class="icon-btn">🇹🇭 TH</button>
         <button id="themeToggle" class="icon-btn"><span class="material-symbols-rounded">dark_mode</span></button>
         <button id="mainLoginBtn" class="login-btn" onclick="openLoginModal()"></button>
-        <button class="login-btn head-only" style="background:#ef4444;" onclick="openManageAdminsModal()"><span class="material-symbols-rounded" style="font-size: 1.1em">admin_panel_settings</span> <span data-th="จัดการแอดมิน" data-en="Manage Admins">จัดการแอดมิน</span></button>
+        <button class="login-btn head-only" style="background:#ef4444;" onclick="openManageAdminsModal()"><span class="material-symbols-rounded" style="font-size:1.1em">admin_panel_settings</span> <span data-th="จัดการแอดมิน" data-en="Manage Admins">จัดการแอดมิน</span></button>
       </div>
     </div>
     <div class="nav-wrap">
@@ -182,7 +156,7 @@ body[data-role="admin"] .head-only{display:none!important}
         <button role="tab" data-t="travel"><span class="material-symbols-rounded">train</span> <span data-th="การเดินทาง" data-en="Travel">การเดินทาง</span></button>
         <button role="tab" data-t="seatmap"><span class="material-symbols-rounded">chair</span> <span data-th="ผังที่นั่งหรรษา" data-en="Seatmap">ผังที่นั่งหรรษา</span></button>
         <button role="tab" data-t="commu" class="auth-only"><span class="material-symbols-rounded">handshake</span> <span data-th="ช่วยเหลือกัน" data-en="Community">ช่วยเหลือกัน</span></button>
-        <button role="tab" data-t="blessing" onclick="handleBlessingMenuClick(event)"><span class="material-symbols-rounded">favorite</span> <span data-th="จากอัลกี้ถึงจินเจ" data-en="Blessing Wall">จากอัลกี้ถึงจินเจ</span></button>
+        <button role="tab" data-t="blessing"><span class="material-symbols-rounded">favorite</span> <span data-th="จากอัลกี้ถึงจินเจ" data-en="Blessing Wall">จากอัลกี้ถึงจินเจ</span></button>
         <button role="tab" data-t="about"><span class="material-symbols-rounded">info</span> <span data-th="เกี่ยวกับ" data-en="About">เกี่ยวกับ</span></button>
       </nav>
     </div>
@@ -194,11 +168,11 @@ body[data-role="admin"] .head-only{display:none!important}
     <p style="color:var(--muted);margin:4px 0 0" data-th="ไกด์แฟนเมดสำหรับชาวอัลกี้ (AlKey) รวมตารางงาน กดบัตร ผลงาน เพลง สินค้า ผังที่นั่ง คอมมู และการเดินทาง" data-en="Fanmade guide for AlKey featuring schedules, tickets, series, merch, seatmaps, community, and travel guides.">ไกด์แฟนเมดสำหรับชาวอัลกี้ (AlKey) รวมตารางงาน กดบัตร ผลงาน เพลง สินค้า ผังที่นั่ง คอมมู และการเดินทาง</p>
     <div class="now-banner glass-panel"><b data-th="📺 กำลังออนแอร์:" data-en="📺 On Air:">📺 กำลังออนแอร์:</b> <span data-th="รับจ้างเลิกรัก (Love on Hire) ทุกพฤหัส 20:00 น. ทาง WeTV — ตอนต่อไป:" data-en="Love on Hire, every Thu 8:00 PM on WeTV — Next EP:">รับจ้างเลิกรัก (Love on Hire) ทุกพฤหัส 20:00 น. ทาง WeTV — ตอนต่อไป:</span> <b style="color:var(--primary);" data-th="29 ต.ค. 2569 (EP.2)" data-en="Oct 29, 2026 (EP.2)">29 ต.ค. 2569 (EP.2)</b></div>
   </div>
-  
+
   <!-- 1. SCHEDULE -->
   <section class="panel on" id="schedule">
     <div class="toolbar-row"><div class="view-switch"><button class="view-btn active" id="btnCalView"><span class="material-symbols-rounded">calendar_view_month</span> <span data-th="ปฏิทิน" data-en="Calendar">ปฏิทิน</span></button><button class="view-btn" id="btnListView"><span class="material-symbols-rounded">view_list</span> <span data-th="รายการ" data-en="List">รายการ</span></button></div>
-    <div class="bar" id="fSched" style="margin:0;"><button class="chip" aria-pressed="true" data-f="all" data-th="ทั้งหมด" data-en="All">ทั้งหมด</button><button class="chip" data-f="up" data-th="กำลังจะถึง" data-en="Upcoming">กำลังจะถึง</button><button class="chip" data-f="past" data-th="ผ่านไปแล้ว" data-en="Past">ผ่านไปแล้ว</button><button class="chip" data-f="mine"><span class="material-symbols-rounded" style="font-size: 1.1em; color:var(--accent)">star</span> <span data-th="แพลนของฉัน" data-en="My Plan">แพลนของฉัน</span></button></div></div>
+    <div class="bar" id="fSched" style="margin:0;"><button class="chip" aria-pressed="true" data-f="all" data-th="ทั้งหมด" data-en="All">ทั้งหมด</button><button class="chip" data-f="up" data-th="กำลังจะถึง" data-en="Upcoming">กำลังจะถึง</button><button class="chip" data-f="past" data-th="ผ่านไปแล้ว" data-en="Past">ผ่านไปแล้ว</button><button class="chip" data-f="mine"><span class="material-symbols-rounded" style="font-size:1.1em;color:var(--accent)">star</span> <span data-th="แพลนของฉัน" data-en="My Plan">แพลนของฉัน</span></button></div></div>
     <div id="calContainer" class="cal-container active"><div class="month-header"><div class="month-title" id="monthDisplay"></div><div style="display:flex;gap:8px;"><button class="chip" onclick="jumpToMonth(2026,9)" data-th="เดือนปัจจุบัน" data-en="Current Month">เดือนปัจจุบัน</button><button class="nav-round" id="prevMonthBtn">‹</button><button class="nav-round" id="nextMonthBtn">›</button></div></div><div class="calendar-card glass-panel"><div class="cal-weekdays"><div data-th="อา." data-en="Sun">อา.</div><div data-th="จ." data-en="Mon">จ.</div><div data-th="อ." data-en="Tue">อ.</div><div data-th="พ." data-en="Wed">พ.</div><div data-th="พฤ." data-en="Thu">พฤ.</div><div data-th="ศ." data-en="Fri">ศ.</div><div data-th="ส." data-en="Sat">ส.</div></div><div class="cal-grid" id="calendarGrid"></div></div><div class="day-detail"><div class="day-detail-header"><h3 id="selectedDateText">การ์ดงาน</h3><button class="chip" onclick="showAllMonthEvents()" data-th="ดูทั้งเดือน" data-en="View Entire Month">ดูทั้งเดือน</button></div><div class="event-detail-grid" id="dayEventsContainer"></div></div></div>
     <div id="listContainer" class="list-container content-narrow"><div id="schedList"></div></div>
     <div class="add-banner content-narrow auth-only"><div style="font-weight:700;color:var(--primary);font-size:18px;margin-bottom:12px;" data-th="ต้องการเพิ่มงานใหม่ลงตาราง?" data-en="Want to add a new event?">ต้องการเพิ่มงานใหม่ลงตาราง?</div><button class="btn-submit" onclick="openEventModal()"><span class="material-symbols-rounded">add_circle</span> <span data-th="เพิ่มงานใหม่ลงตาราง" data-en="Add Event">เพิ่มงานใหม่ลงตาราง</span></button></div>
@@ -206,29 +180,29 @@ body[data-role="admin"] .head-only{display:none!important}
 
   <!-- 2. TICKETS -->
   <section class="panel content-narrow" id="tickets">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin:16px 0 24px;"><h2 style="color:var(--primary);"><span class="material-symbols-rounded" style="color:var(--accent); font-size:1.2em">local_activity</span> <span data-th="ตารางกดบัตร & ลิงก์จำหน่ายบัตร" data-en="Tickets & Booking Links">ตารางกดบัตร & ลิงก์จำหน่ายบัตร</span></h2><button class="btn-submit admin-only" onclick="openTicketModal()"><span class="material-symbols-rounded">add</span> <span data-th="เพิ่มรายการกดบัตร" data-en="Add Ticket Event">เพิ่มรายการกดบัตร</span></button></div><div id="ticketsContainer"></div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin:16px 0 24px;"><h2 style="color:var(--primary);"><span class="material-symbols-rounded" style="color:var(--accent);font-size:1.2em">local_activity</span> <span data-th="ตารางกดบัตร & ลิงก์จำหน่ายบัตร" data-en="Tickets & Booking Links">ตารางกดบัตร & ลิงก์จำหน่ายบัตร</span></h2><button class="btn-submit admin-only" onclick="openTicketModal()"><span class="material-symbols-rounded">add</span> <span data-th="เพิ่มรายการกดบัตร" data-en="Add Ticket Event">เพิ่มรายการกดบัตร</span></button></div><div id="ticketsContainer"></div>
   </section>
 
   <!-- 3. SERIES -->
   <section class="panel" id="series">
-    <div style="margin-bottom:24px;"><h2 style="font-size:28px;color:var(--primary);"><span class="material-symbols-rounded" style="color:var(--accent); font-size:1.2em">movie</span> <span data-th="การแสดง เพลง แฟชั่น และงานอื่นๆ" data-en="Series, Music, Fashion & More">การแสดง เพลง แฟชั่น และงานอื่นๆ</span></h2></div>
+    <div style="margin-bottom:24px;"><h2 style="font-size:28px;color:var(--primary);"><span class="material-symbols-rounded" style="color:var(--accent);font-size:1.2em">movie</span> <span data-th="การแสดง เพลง แฟชั่น และงานอื่นๆ" data-en="Series, Music, Fashion & More">การแสดง เพลง แฟชั่น และงานอื่นๆ</span></h2></div>
     <div class="works-layout"><aside class="works-sidebar glass-panel"><div id="worksCatMenu"><button class="works-cat-btn active" data-wcat="acting"><span style="display:flex;align-items:center;"><span class="material-symbols-rounded">theaters</span> <span data-th="การแสดง" data-en="Acting">การแสดง</span></span><span class="works-cat-count" id="cnt-acting">0</span></button><button class="works-cat-btn" data-wcat="music"><span style="display:flex;align-items:center;"><span class="material-symbols-rounded">music_note</span> <span data-th="เพลง" data-en="Music">เพลง</span></span><span class="works-cat-count" id="cnt-music">0</span></button><button class="works-cat-btn" data-wcat="fashion"><span style="display:flex;align-items:center;"><span class="material-symbols-rounded">checkroom</span> <span data-th="แฟชั่น" data-en="Fashion">แฟชั่น</span></span><span class="works-cat-count" id="cnt-fashion">0</span></button><button class="works-cat-btn" data-wcat="other"><span style="display:flex;align-items:center;"><span class="material-symbols-rounded">mic</span> <span data-th="อื่นๆ" data-en="Others">อื่นๆ</span></span><span class="works-cat-count" id="cnt-other">0</span></button></div><div class="admin-only" style="margin-top:20px;border-top:1px dashed var(--line);padding-top:16px;"><button class="btn-submit" style="width:100%;" onclick="openSeriesAdminModal()"><span class="material-symbols-rounded">add</span> <span data-th="เพิ่มผลงานใหม่" data-en="Add Works">เพิ่มผลงานใหม่</span></button></div></aside>
     <div><div style="display:flex;justify-content:space-between;margin-bottom:16px;align-items:center;"><h3 id="worksCurrentHeading" data-th="การแสดง" data-en="Acting">การแสดง</h3><div class="bar" id="fSeries" style="margin:0;"><button class="chip" aria-pressed="true" data-f="all" data-th="ทั้งหมด" data-en="All">ทั้งหมด</button><button class="chip" data-f="air" data-th="On Air/ล่าสุด" data-en="On Air/Latest">On Air/ล่าสุด</button><button class="chip" data-f="soon" data-th="กำลังจะมา" data-en="Coming Soon">กำลังจะมา</button><button class="chip" data-f="done" data-th="จบแล้ว" data-en="Ended">จบแล้ว</button></div></div><div class="series-grid" id="seriesList"></div></div></div>
   </section>
 
   <!-- 8. MERCH -->
   <section class="panel content-narrow" id="merch">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;"><div><h2 style="color:var(--primary);"><span class="material-symbols-rounded" style="color:var(--accent); font-size:1.2em">shopping_bag</span> <span data-th="สินค้าออฟฟิเชียล & ของสะสม" data-en="Official Merch & Collectibles">สินค้าออฟฟิเชียล & ของสะสม</span></h2></div><button class="btn-submit admin-only" onclick="openMerchModal()"><span class="material-symbols-rounded">add</span> <span data-th="เพิ่มสินค้าใหม่" data-en="Add Merch">เพิ่มสินค้าใหม่</span></button></div><div class="merch-grid" id="merchContainer"></div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;"><div><h2 style="color:var(--primary);"><span class="material-symbols-rounded" style="color:var(--accent);font-size:1.2em">shopping_bag</span> <span data-th="สินค้าออฟฟิเชียล & ของสะสม" data-en="Official Merch & Collectibles">สินค้าออฟฟิเชียล & ของสะสม</span></h2></div><button class="btn-submit admin-only" onclick="openMerchModal()"><span class="material-symbols-rounded">add</span> <span data-th="เพิ่มสินค้าใหม่" data-en="Add Merch">เพิ่มสินค้าใหม่</span></button></div><div class="merch-grid" id="merchContainer"></div>
   </section>
 
   <!-- 4. TRAVEL -->
   <section class="panel" id="travel">
-    <div class="content-narrow" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;"><div><h2 style="color:var(--primary);"><span class="material-symbols-rounded" style="color:var(--accent); font-size:1.2em">train</span> <span data-th="คู่มือการเดินทางไปสถานที่จัดงาน" data-en="Venue Travel Guide">คู่มือการเดินทางไปสถานที่จัดงาน</span></h2></div><button class="btn-submit admin-only" onclick="openTravelModal()"><span class="material-symbols-rounded">add</span> <span data-th="เพิ่มสถานที่" data-en="Add Venue">เพิ่มสถานที่</span></button></div><div class="travel-grid" id="venuesContainer"></div>
+    <div class="content-narrow" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;"><div><h2 style="color:var(--primary);"><span class="material-symbols-rounded" style="color:var(--accent);font-size:1.2em">train</span> <span data-th="คู่มือการเดินทางไปสถานที่จัดงาน" data-en="Venue Travel Guide">คู่มือการเดินทางไปสถานที่จัดงาน</span></h2></div><button class="btn-submit admin-only" onclick="openTravelModal()"><span class="material-symbols-rounded">add</span> <span data-th="เพิ่มสถานที่" data-en="Add Venue">เพิ่มสถานที่</span></button></div><div class="travel-grid" id="venuesContainer"></div>
   </section>
 
   <!-- 9. SEAT MAP -->
   <section class="panel content-narrow" id="seatmap">
-    <div style="text-align:center;margin-bottom:32px;"><h2 style="font-size:32px;color:var(--primary);"><span class="material-symbols-rounded" style="color:var(--accent); font-size:1.1em">chair</span> <span data-th="ผังที่นั่งหรรษา" data-en="Interactive Seat Map">ผังที่นั่งหรรษา</span></h2><p style="color:var(--muted);font-size:16px;" data-th="ฟีเจอร์จำลองการจองที่นั่งฮอลล์สนุกๆ หาเพื่อนร่วมโซน" data-en="Simulate booking seats and find friends in your zone!">ฟีเจอร์จำลองการจองที่นั่งฮอลล์สนุกๆ หาเพื่อนร่วมโซน</p></div>
+    <div style="text-align:center;margin-bottom:32px;"><h2 style="font-size:32px;color:var(--primary);"><span class="material-symbols-rounded" style="color:var(--accent);font-size:1.1em">chair</span> <span data-th="ผังที่นั่งหรรษา" data-en="Interactive Seat Map">ผังที่นั่งหรรษา</span></h2><p style="color:var(--muted);font-size:16px;" data-th="ฟีเจอร์จำลองการจองที่นั่งฮอลล์สนุกๆ หาเพื่อนร่วมโซน" data-en="Simulate booking seats and find friends in your zone!">ฟีเจอร์จำลองการจองที่นั่งฮอลล์สนุกๆ หาเพื่อนร่วมโซน</p></div>
     <div class="glass-panel" style="padding:20px;border-radius:20px;margin-bottom:24px;display:flex;gap:16px;align-items:center;">
       <div style="flex-grow:1;"><select id="smEventSelect" style="width:100%;padding:12px 16px;border-radius:12px;border:1px solid rgba(126,34,206,.2);background:rgba(255,255,255,0.5);font-weight:600;" onchange="renderActiveSeatmap()"></select></div><button class="btn-submit admin-only" style="margin:0;" onclick="openSeatAdminModal()"><span class="material-symbols-rounded">add</span> <span data-th="สร้างผังให้งานใหม่" data-en="Create Map">สร้างผังให้งานใหม่</span></button>
     </div>
@@ -238,7 +212,7 @@ body[data-role="admin"] .head-only{display:none!important}
 
   <!-- 5. COMMU -->
   <section class="panel content-narrow" id="commu">
-    <h2 style="font-size:28px;color:var(--primary);margin-bottom:8px;"><span class="material-symbols-rounded" style="color:var(--accent); font-size:1.2em">handshake</span> <span data-th="ฟีเจอร์ช่วยเหลือกัน" data-en="Community Help">ฟีเจอร์ช่วยเหลือกัน</span></h2>
+    <h2 style="font-size:28px;color:var(--primary);margin-bottom:8px;"><span class="material-symbols-rounded" style="color:var(--accent);font-size:1.2em">handshake</span> <span data-th="ฟีเจอร์ช่วยเหลือกัน" data-en="Community Help">ฟีเจอร์ช่วยเหลือกัน</span></h2>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:20px;margin:24px 0 32px;"><div class="glass-panel travel-card" style="padding:24px;cursor:pointer;text-align:center;" onclick="openCommuPostModal('ticket')"><span class="material-symbols-rounded" style="font-size:48px;color:var(--primary);margin-bottom:12px;">local_activity</span><h3 style="margin-bottom:12px;font-size:20px;" data-th="ส่งต่อบัตร" data-en="Ticket Transfer">ส่งต่อบัตร</h3><span class="tag" style="background:var(--surface-alt);color:var(--primary);margin:0;" id="commuTicketCount">0 ประกาศ</span></div><div class="glass-panel travel-card" style="padding:24px;cursor:pointer;text-align:center;" onclick="openCommuPostModal('ride')"><span class="material-symbols-rounded" style="font-size:48px;color:var(--primary);margin-bottom:12px;">directions_car</span><h3 style="margin-bottom:12px;font-size:20px;" data-th="แชร์รถ" data-en="Carpool">แชร์รถ</h3><span class="tag" style="background:var(--surface-alt);color:var(--primary);margin:0;" id="commuRideCount">0 ประกาศ</span></div></div>
     <div style="display:flex;justify-content:space-between;margin-bottom:16px;align-items:center;"><h3 data-th="โพสต์ล่าสุดในคอมมู AlKey" data-en="Latest Posts in AlKey Community">โพสต์ล่าสุดในคอมมู AlKey</h3><button class="btn-submit" onclick="openCommuPostModal('ticket')"><span class="material-symbols-rounded">edit_square</span> <span data-th="ลงประกาศ" data-en="Create Post">ลงประกาศ</span></button></div>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:24px;"><div class="glass-panel about-card"><h4 style="color:var(--primary);margin-bottom:16px;font-size:18px;display:flex;align-items:center;gap:6px;"><span class="material-symbols-rounded">local_activity</span> <span data-th="บัตรล่าสุด" data-en="Recent Tickets">บัตรล่าสุด</span></h4><div id="commuTicketList"></div></div><div class="glass-panel about-card"><h4 style="color:var(--primary);margin-bottom:16px;font-size:18px;display:flex;align-items:center;gap:6px;"><span class="material-symbols-rounded">directions_car</span> <span data-th="แชร์รถล่าสุด" data-en="Recent Carpools">แชร์รถล่าสุด</span></h4><div id="commuRideList"></div></div></div>
@@ -246,45 +220,52 @@ body[data-role="admin"] .head-only{display:none!important}
 
   <!-- 6. BLESSING WALL -->
   <section class="panel" id="blessing">
-    <div class="bday-box glass-panel"><header style="text-align:center;"><h1 id="celeb" style="color:var(--w-purple);font-size:3rem;text-shadow:3px 3px 0 var(--w-yellow);" data-th="จากอัลกี้ถึง GinJay" data-en="From AlKey to GinJay">จากอัลกี้ถึง GinJay</h1></header><div id="bdayFilters" style="display:flex;gap:10px;justify-content:center;margin:16px 0;"></div><div id="bdayChips" class="bday-chips"></div><div style="display:flex;justify-content:space-between;margin:8px 0 20px;"><span id="bdayInfo" style="color:var(--muted);font-size:14px;font-weight:600;"></span><span id="bdayTools" style="display:flex;gap:8px;"></span></div><div class="w-grid" id="bdayGrid"></div><button class="w-fab" id="bdayFab"><span class="material-symbols-rounded">edit</span> <span data-th="เขียนคำอวยพร" data-en="Write Blessing">เขียนคำอวยพร</span></button></div>
+    <div class="bday-box glass-panel"><header style="text-align:center;"><h1 id="celeb" style="color:var(--w-purple);font-size:3rem;text-shadow:3px 3px 0 var(--w-yellow);" data-th="จากอัลกี้ถึง GinJay" data-en="From AlKey to GinJay">จากอัลกี้ถึง GinJay</h1></header><div id="bdayFilters" style="display:flex;gap:10px;justify-content:center;margin:16px 0;flex-wrap:wrap;"></div><div id="bdayChips" class="bday-chips"></div><div style="display:flex;justify-content:space-between;margin:8px 0 20px;flex-wrap:wrap;gap:10px;"><span id="bdayInfo" style="color:var(--muted);font-size:14px;font-weight:600;"></span><span id="bdayTools" style="display:flex;gap:8px;align-items:center;"></span></div><div class="w-grid" id="bdayGrid"></div><button class="w-fab" id="bdayFab"><span class="material-symbols-rounded">edit</span> <span data-th="เขียนคำอวยพร" data-en="Write Blessing">เขียนคำอวยพร</span></button></div>
     <dialog id="dlg" class="glass-panel" style="border:0;border-radius:32px;padding:32px;width:min(92vw,560px);color:var(--ink);box-shadow:0 24px 64px rgba(40,10,90,.45);"></dialog>
   </section>
 
   <!-- 7. ABOUT -->
   <section class="panel content-narrow" id="about">
-    <div style="display:flex;justify-content:space-between;align-items:center;"><div><h2 style="color:var(--primary);"><span class="material-symbols-rounded" style="color:var(--accent); font-size:1.2em">info</span> <span data-th="เกี่ยวกับ GinJay & แฟนคลับอัลกี้" data-en="About GinJay & AlKey">เกี่ยวกับ GinJay & แฟนคลับอัลกี้</span></h2></div><button class="btn-submit head-only" onclick="openAboutModal()"><span class="material-symbols-rounded">add</span> <span data-th="เพิ่มการ์ด" data-en="Add Card">เพิ่มการ์ด</span></button></div><div style="display:grid;grid-template-columns:repeat(2,1fr);gap:24px;margin-top:24px;" id="aboutContainer"></div>
+    <div style="display:flex;justify-content:space-between;align-items:center;"><div><h2 style="color:var(--primary);"><span class="material-symbols-rounded" style="color:var(--accent);font-size:1.2em">info</span> <span data-th="เกี่ยวกับ GinJay & แฟนคลับอัลกี้" data-en="About GinJay & AlKey">เกี่ยวกับ GinJay & แฟนคลับอัลกี้</span></h2></div><button class="btn-submit head-only" onclick="openAboutModal()"><span class="material-symbols-rounded">add</span> <span data-th="เพิ่มการ์ด" data-en="Add Card">เพิ่มการ์ด</span></button></div><div style="display:grid;grid-template-columns:repeat(2,1fr);gap:24px;margin-top:24px;" id="aboutContainer"></div>
   </section>
 </main>
 
 <!-- MODALS -->
-<div class="modal" id="loginModal"><div class="modal-box" style="text-align:center;"><div id="socialLoginState"><div style="font-size:48px;margin-bottom:12px;">🦙✨🐒</div><h2 style="color:var(--primary);font-size:28px;">GinJay Guide</h2><br><button class="btn-submit" style="width:100%;margin-bottom:12px;padding:12px;font-size:16px;" onclick="doSocialLogin('Google')" data-th="ล็อกอินด้วย Google" data-en="Login with Google">ล็อกอินด้วย Google</button><button class="btn-submit" style="width:100%;background:rgba(255,255,255,0.3);border:2px solid rgba(126,34,206,0.3);color:var(--ink);box-shadow:none;padding:12px;font-size:16px;" onclick="doSocialLogin('X')" data-th="ล็อกอินด้วย X (Twitter)" data-en="Login with X (Twitter)">ล็อกอินด้วย X (Twitter)</button><div style="margin-top:24px;"><a href="#" onclick="toggleAdminLoginView(true);return false;" style="color:var(--primary);font-weight:700;" data-th="สำหรับผู้ดูแลระบบ (Admin Login)" data-en="For Administrators (Admin Login)">สำหรับผู้ดูแลระบบ (Admin Login)</a></div></div><div id="adminLoginState" style="display:none;text-align:left;"><h2 style="color:var(--primary);">👑 Admin Login</h2><br><div class="form-group"><input type="text" id="loginUser" placeholder="Username"></div><div class="form-group"><input type="password" id="loginPass" placeholder="Password"></div><button class="btn-submit" style="width:100%;padding:12px;font-size:16px;" onclick="doAdminLogin()" data-th="เข้าสู่ระบบแอดมิน" data-en="Login Admin">เข้าสู่ระบบแอดมิน</button><div style="text-align:center;margin-top:16px;"><a href="#" onclick="toggleAdminLoginView(false);return false;" style="color:var(--muted);" data-th="กลับไปหน้าปกติ" data-en="Back to Normal Login">กลับไปหน้าปกติ</a></div></div><button onclick="closeModal('loginModal')" style="position:absolute;top:20px;right:20px;font-size:24px;color:var(--muted);transition:.2s;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--muted)'">✕</button></div></div>
+<div class="modal" id="loginModal"><div class="modal-box" style="text-align:center;"><div id="socialLoginState"><div style="font-size:48px;margin-bottom:12px;">🦙✨🐒</div><h2 style="color:var(--primary);font-size:28px;">GinJay Guide</h2><br><button class="btn-submit" style="width:100%;margin-bottom:12px;padding:12px;font-size:16px;" onclick="doSocialLogin('Google')" data-th="ล็อกอินด้วย Google" data-en="Login with Google">ล็อกอินด้วย Google</button><button class="btn-submit" style="width:100%;background:rgba(255,255,255,0.3);border:2px solid rgba(126,34,206,0.3);color:var(--ink);box-shadow:none;padding:12px;font-size:16px;" onclick="doSocialLogin('X')" data-th="ล็อกอินด้วย X (Twitter)" data-en="Login with X (Twitter)">ล็อกอินด้วย X (Twitter)</button><div style="margin-top:24px;"><a href="#" onclick="toggleAdminLoginView(true);return false;" style="color:var(--primary);font-weight:700;" data-th="สำหรับผู้ดูแลระบบ (Admin Login)" data-en="For Administrators (Admin Login)">สำหรับผู้ดูแลระบบ (Admin Login)</a></div></div><div id="adminLoginState" style="display:none;text-align:left;"><h2 style="color:var(--primary);">👑 Admin Login</h2><br><div class="form-group"><input type="text" id="loginUser" placeholder="Username"></div><div class="form-group"><input type="password" id="loginPass" placeholder="Password"></div><button class="btn-submit" style="width:100%;padding:12px;font-size:16px;" onclick="doAdminLogin()" data-th="เข้าสู่ระบบแอดมิน" data-en="Login Admin">เข้าสู่ระบบแอดมิน</button><div style="text-align:center;margin-top:16px;"><a href="#" onclick="toggleAdminLoginView(false);return false;" style="color:var(--muted);" data-th="กลับไปหน้าปกติ" data-en="Back to Normal Login">กลับไปหน้าปกติ</a></div></div><button onclick="closeModal('loginModal')" style="position:absolute;top:20px;right:20px;font-size:24px;color:var(--muted);">✕</button></div></div>
+
 <div class="modal" id="eventDetailModal"><div class="modal-detail-box"><button onclick="closeModal('eventDetailModal')" style="color:var(--primary);font-weight:700;margin-bottom:16px;font-size:16px;display:inline-flex;align-items:center;gap:4px;"><span class="material-symbols-rounded">arrow_back</span> <span data-th="กลับ" data-en="Back">กลับ</span></button><h2 id="evDetTitle" style="font-size:28px;color:var(--primary);margin-bottom:16px;"></h2><img id="evDetPoster" src="" style="width:100%;max-height:480px;object-fit:cover;border-radius:20px;margin-bottom:20px;box-shadow:var(--shadow);"><div style="background:rgba(255,255,255,0.4);backdrop-filter:blur(8px);padding:18px;border-radius:16px;margin-bottom:18px;border:1px solid rgba(126,34,206,.2);"><div style="margin-bottom:8px;display:flex;align-items:center;gap:6px;"><b><span class="material-symbols-rounded" style="color:var(--primary);">calendar_month</span> <span data-th="วันเวลา:" data-en="Date/Time:">วันเวลา:</span></b> <span id="evDetDate"></span></div><div style="display:flex;align-items:center;gap:6px;"><b><span class="material-symbols-rounded" style="color:var(--primary);">location_on</span> <span data-th="สถานที่:" data-en="Venue:">สถานที่:</span></b> <span id="evDetVenue"></span></div></div><div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px;"><button class="chip" id="evDetPlanBtn"><span class="material-symbols-rounded">star</span> <span data-th="เพิ่มเข้าแพลน" data-en="Add to Plan">เพิ่มเข้าแพลน</span></button><button class="chip" onclick="closeModal('eventDetailModal');switchTab('commu');openCommuPostModal('ride');"><span class="material-symbols-rounded">directions_car</span> <span data-th="แชร์รถ" data-en="Carpool">แชร์รถ</span></button><button class="chip" onclick="closeModal('eventDetailModal');switchTab('commu');openCommuPostModal('ticket');"><span class="material-symbols-rounded">local_activity</span> <span data-th="ส่งต่อบัตร" data-en="Find Tickets">ส่งต่อบัตร</span></button><button class="chip" id="evDetSeatBtn" onclick="goToSeatMapFromEvent()" style="display:none;background:var(--accent);color:#000;border-color:var(--accent);"><span class="material-symbols-rounded">chair</span> <span data-th="ดูผังที่นั่งจำลอง" data-en="View Seatmap">ดูผังที่นั่งจำลอง</span></button></div><div style="height:220px;border-radius:16px;overflow:hidden;border:var(--glass-border);box-shadow:var(--shadow);"><iframe id="evDetMap" src="" style="width:100%;height:100%;border:none;" loading="lazy"></iframe></div></div></div>
+
 <div class="modal" id="manageAdminsModal"><div class="modal-box"><h3 style="color:var(--primary);margin-bottom:18px;display:flex;align-items:center;gap:6px;"><span class="material-symbols-rounded">admin_panel_settings</span> <span data-th="จัดการแอดมิน" data-en="Manage Admins">จัดการแอดมิน</span></h3><div style="display:flex;gap:10px;"><input type="text" id="newAdminUser" placeholder="User" style="flex:1;"><input type="text" id="newAdminPass" placeholder="Pass" style="flex:1;"><button class="btn-submit" style="margin:0;padding:0 20px;" onclick="addCustomAdmin()" data-th="เพิ่ม" data-en="Add">เพิ่ม</button></div><div id="adminListContainer" style="max-height:200px;overflow-y:auto;margin-top:20px;"></div><div style="text-align:right;margin-top:20px;"><button class="chip" onclick="closeModal('manageAdminsModal')" data-th="ปิด" data-en="Close">ปิด</button></div></div></div>
-<div class="modal" id="eventModal"><div class="modal-box"><h3 id="evModalTitle" style="color:var(--primary);margin-bottom:18px;display:flex;align-items:center;gap:6px;"><span class="material-symbols-rounded">edit_calendar</span> <span data-th="เพิ่ม/แก้ไขงาน" data-en="Add/Edit Event">เพิ่ม/แก้ไขงาน</span></h3><div class="form-group"><label data-th="ชื่องาน" data-en="Title">ชื่องาน</label><input type="text" id="evTitleTh"></div><div class="form-group"><label data-th="วันที่" data-en="Date">วันที่</label><input type="date" id="evDate"></div><div class="form-group"><label data-th="เวลา" data-en="Time">เวลา</label><input type="text" id="evTime"></div><div class="form-group"><label data-th="ศิลปิน" data-en="Artist">ศิลปิน</label><select id="evArtist"><option value="duo" data-th="งานคู่" data-en="Duo">งานคู่</option><option value="ginny">Ginny</option><option value="jayna">Jayna</option></select></div><div class="form-group"><label data-th="ประเภท" data-en="Category">ประเภท</label><input type="text" id="evCat"></div><div class="form-group"><label data-th="สถานที่" data-en="Venue">สถานที่</label><input type="text" id="evVenueTh"></div><div class="form-group"><label data-th="รูป (URL)" data-en="Image URL">รูป (URL)</label><input type="text" id="evImgUrl"></div><div style="text-align:right;margin-top:20px;"><button class="chip" onclick="closeModal('eventModal')" data-th="ยกเลิก" data-en="Cancel">ยกเลิก</button><button class="btn-submit" onclick="saveEvent()" data-th="บันทึก" data-en="Save">บันทึก</button></div></div></div>
-<div class="modal" id="ticketModal"><div class="modal-box"><h3 style="color:var(--primary);margin-bottom:18px;display:flex;align-items:center;gap:6px;"><span class="material-symbols-rounded">local_activity</span> <span data-th="จัดการกดบัตร" data-en="Manage Ticket">จัดการกดบัตร</span></h3><div class="form-group"><select id="tkEventSelect" onchange="fillTicketFromEvent()"><option value="" data-th="-- ดึงจากตารางงาน --" data-en="-- Select Event --">-- ดึงจากตารางงาน --</option></select></div><div class="form-group"><input type="text" id="tkTitle" data-pth="ชื่องาน" data-pen="Event Title" placeholder="ชื่องาน"></div><div class="form-group"><input type="text" id="tkDay" data-pth="วัน (10)" data-pen="Day (10)" placeholder="วัน (10)"></div><div class="form-group"><input type="text" id="tkMonth" data-pth="เดือน (ธ.ค. 69)" data-pen="Month (Dec 26)" placeholder="เดือน (ธ.ค. 69)"></div><div class="form-group"><input type="text" id="tkMeta" data-pth="รายละเอียด" data-pen="Details" placeholder="รายละเอียด"></div><div class="form-group"><input type="text" id="tkUrl" data-pth="ลิงก์ URL" data-pen="URL Link" placeholder="ลิงก์ URL"></div><div class="form-group"><select id="tkStatus"><option value="upcoming" data-th="เปิดขาย" data-en="Available">เปิดขาย</option><option value="ended" data-th="จบแล้ว" data-en="Ended">จบแล้ว</option></select></div><div style="text-align:right;margin-top:20px;"><button class="chip" onclick="closeModal('ticketModal')" data-th="ยกเลิก" data-en="Cancel">ยกเลิก</button><button class="btn-submit" onclick="saveTicket()" data-th="บันทึก" data-en="Save">บันทึก</button></div></div></div>
-<div class="modal" id="merchModal"><div class="modal-box"><h3 id="merchModalTitle" style="color:var(--primary);margin-bottom:18px;display:flex;align-items:center;gap:6px;"><span class="material-symbols-rounded">shopping_bag</span> <span data-th="สินค้า" data-en="Merchandise">สินค้า</span></h3><div class="form-group"><input type="text" id="mcTitle" data-pth="ชื่อสินค้า" data-pen="Merch Name" placeholder="ชื่อสินค้า"></div><div class="form-group"><input type="text" id="mcPrice" data-pth="ราคา" data-pen="Price" placeholder="ราคา"></div><div class="form-group"><input type="text" id="mcDesc" data-pth="รายละเอียด" data-pen="Description" placeholder="รายละเอียด"></div><div class="form-group"><select id="mcStatus"><option value="instock" data-th="มีสินค้า" data-en="In Stock">มีสินค้า</option><option value="preorder" data-th="พรีออเดอร์" data-en="Pre-Order">พรีออเดอร์</option><option value="out" data-th="หมด" data-en="Sold Out">หมด</option></select></div><div class="form-group"><input type="text" id="mcLink" data-pth="ลิงก์สั่งซื้อ" data-pen="Order Link" placeholder="ลิงก์สั่งซื้อ"></div><div class="form-group"><input type="text" id="mcImgUrl" data-pth="ลิงก์รูป" data-pen="Image URL" placeholder="ลิงก์รูป"></div><div style="text-align:right;margin-top:20px;"><button class="chip" onclick="closeModal('merchModal')" data-th="ยกเลิก" data-en="Cancel">ยกเลิก</button><button class="btn-submit" onclick="saveMerch()" data-th="บันทึก" data-en="Save">บันทึก</button></div></div></div>
-<div class="modal" id="seatAdminModal"><div class="modal-box"><h3 style="color:var(--primary);margin-bottom:18px;display:flex;align-items:center;gap:6px;"><span class="material-symbols-rounded">chair</span> <span data-th="สร้างผังจำลอง" data-en="Create Mock Seatmap">สร้างผังจำลอง</span></h3><div class="form-group"><select id="smCreateEventSelect"><option value="">-- เลือกงาน / Select Event --</option></select></div><div class="form-group"><label data-th="รูปแบบผังฮอลล์" data-en="Layout Template">รูปแบบผังฮอลล์</label><select id="smCreateTemplateSelect" onchange="document.getElementById('smCustomConfig').style.display=this.value==='custom'?'block':'none'"><option value="pavalai">Siam Pavalai (3 โซน)</option><option value="bravo">BRAVO BKK (2 โซน)</option><option value="custom" data-th="✨ พิมพ์สร้างผังเอง (Smart Generator)" data-en="✨ Smart Generator">✨ พิมพ์สร้างผังเอง (Smart Generator)</option></select></div><div class="form-group" id="smCustomConfig" style="display:none;"><label data-th="สูตรสร้างโซน (ชื่อโซน, แถว, ที่นั่งต่อแถว)" data-en="Zone Formula (Name, Rows, Seats)">สูตรสร้างโซน (ชื่อโซน, แถว, ที่นั่งต่อแถว)</label><textarea id="smCustomInput" rows="3" placeholder="ตัวอย่าง/Example:\nVIP, 3, 10\nZone A, 5, 12"></textarea><small style="color:var(--muted);font-size:13px;display:block;margin-top:6px;" data-th="ขึ้นบรรทัดใหม่เพื่อเพิ่มโซน (โซนแรกจะเป็น VIP อัตโนมัติ)" data-en="New line per zone (First zone is auto VIP)">ขึ้นบรรทัดใหม่เพื่อเพิ่มโซน (โซนแรกจะเป็น VIP อัตโนมัติ)</small></div><div style="text-align:right;margin-top:20px;"><button class="chip" onclick="closeModal('seatAdminModal')" data-th="ยกเลิก" data-en="Cancel">ยกเลิก</button><button class="btn-submit" onclick="createSeatmap()" data-th="สร้างผัง" data-en="Create Map">สร้างผัง</button></div></div></div>
-<div class="modal" id="seatBookModal"><div class="modal-box"><h3 style="color:var(--primary);margin-bottom:18px;display:flex;align-items:center;gap:6px;"><span class="material-symbols-rounded">event_seat</span> <span data-th="จองที่นั่ง" data-en="Book Seat">จองที่นั่ง</span> <span id="sbSeatIdLabel" style="color:var(--accent);margin-left:6px;"></span></h3><div class="form-group"><input type="text" id="sbUser" disabled style="background:rgba(255,255,255,0.2);font-weight:700;color:var(--muted);"></div><div class="form-group"><label data-th="สัญชาติ (อีโมจิธงชาติ)" data-en="Nationality (Flag Emoji)">สัญชาติ (อีโมจิธงชาติ)</label><input type="text" id="sbFlag" placeholder="🇹🇭" maxlength="4"></div><div class="form-group"><label data-th="ข้อความทักทาย" data-en="Greeting Message">ข้อความทักทาย</label><input type="text" id="sbMsg" data-pth="ตื่นเต้นจัง!" data-pen="So excited!" placeholder="ตื่นเต้นจัง!" maxlength="40"></div><input type="hidden" id="sbSeatIdCode"><div style="text-align:right;margin-top:24px;"><button class="chip" onclick="closeModal('seatBookModal')" data-th="ยกเลิก" data-en="Cancel">ยกเลิก</button><button class="btn-submit" onclick="confirmSeatBooking()" data-th="ยืนยันจองที่นั่ง" data-en="Confirm Booking">ยืนยันจองที่นั่ง</button></div></div></div>
-<div class="modal" id="seriesAdminModal"><div class="modal-box"><h3 id="serModalTitle" style="color:var(--primary);margin-bottom:18px;display:flex;align-items:center;gap:6px;"><span class="material-symbols-rounded">movie</span> <span data-th="จัดการผลงาน" data-en="Manage Work">จัดการผลงาน</span></h3><div class="form-group"><select id="serWCat"><option value="acting" data-th="การแสดง" data-en="Acting">การแสดง</option><option value="music" data-th="เพลง" data-en="Music">เพลง</option><option value="fashion" data-th="แฟชั่น" data-en="Fashion">แฟชั่น</option><option value="other" data-th="อื่นๆ" data-en="Other">อื่นๆ</option></select></div><div class="form-group"><input type="text" id="serTitleTh" data-pth="ชื่อผลงาน" data-pen="Title" placeholder="ชื่อผลงาน"></div><div class="form-group"><select id="serStatusKey"><option value="air" data-th="ออนแอร์/ล่าสุด" data-en="On Air/Latest">ออนแอร์/ล่าสุด</option><option value="done" data-th="จบแล้ว" data-en="Ended">จบแล้ว</option><option value="soon" data-th="รอประกาศ" data-en="Coming Soon">รอประกาศ</option></select></div><div class="form-group"><input type="text" id="serNet" data-pth="ช่องทาง (เช่น WeTV)" data-pen="Platform (e.g. WeTV)" placeholder="ช่องทาง"></div><div class="form-group"><input type="text" id="serImgUrl" data-pth="ลิงก์รูปปก" data-pen="Cover Image URL" placeholder="ลิงก์รูปปก"></div><div class="form-group"><input type="text" id="serTrailer" data-pth="ลิงก์ YouTube" data-pen="YouTube Link" placeholder="ลิงก์ YouTube"></div><div style="text-align:right;margin-top:20px;"><button class="chip" onclick="closeModal('seriesAdminModal')" data-th="ยกเลิก" data-en="Cancel">ยกเลิก</button><button class="btn-submit" onclick="saveSeries()" data-th="บันทึก" data-en="Save">บันทึก</button></div></div></div>
+
+<div class="modal" id="eventModal"><div class="modal-box"><h3 id="evModalTitle" style="color:var(--primary);margin-bottom:18px;display:flex;align-items:center;gap:6px;"><span class="material-symbols-rounded">edit_calendar</span> <span data-th="เพิ่ม/แก้ไขงาน" data-en="Add/Edit Event">เพิ่ม/แก้ไขงาน</span></h3><div class="form-group"><label data-th="ชื่องาน" data-en="Title">ชื่องาน</label><input type="text" id="evTitleTh"></div><div class="form-group"><label data-th="วันที่" data-en="Date">วันที่</label><input type="date" id="evDate"></div><div class="form-group"><label data-th="เวลา" data-en="Time">เวลา</label><input type="text" id="evTime"></div><div class="form-group"><label data-th="ศิลปิน" data-en="Artist">ศิลปิน</label><select id="evArtist"><option value="duo" data-th="งานคู่" data-en="Duo">งานคู่</option><option value="ginny">Ginny</option><option value="jayna">Jayna</option></select></div><div class="form-group"><label data-th="ประเภท" data-en="Category">ประเภท</label><input type="text" id="evCat"></div><div class="form-group"><label data-th="สถานที่" data-en="Venue">สถานที่</label><input type="text" id="evVenueTh"></div><div class="form-group"><label data-th="รูปโปสเตอร์ (อัปโหลดหรือวางลิงก์)" data-en="Poster (Upload or URL)">รูปโปสเตอร์ (อัปโหลดหรือวางลิงก์)</label><input type="file" id="evImgUpload" accept="image/*" onchange="handleImgUpload(this,'evImgUrl','evImgStatus')" style="background:rgba(255,255,255,0.5);padding:8px 12px;border-radius:14px;width:100%;border:2px dashed rgba(126,34,206,0.4);cursor:pointer;margin-bottom:6px;"><span id="evImgStatus" style="font-size:13px;font-weight:700;display:block;margin-bottom:6px;"></span><input type="text" id="evImgUrl" placeholder="หรือวางลิงก์รูปภาพ (URL) ที่นี่..."></div><div style="text-align:right;margin-top:20px;"><button class="chip" onclick="closeModal('eventModal')" data-th="ยกเลิก" data-en="Cancel">ยกเลิก</button><button class="btn-submit" onclick="saveEvent()" data-th="บันทึก" data-en="Save">บันทึก</button></div></div></div>
+
+<div class="modal" id="ticketModal"><div class="modal-box"><h3 style="color:var(--primary);margin-bottom:18px;display:flex;align-items:center;gap:6px;"><span class="material-symbols-rounded">local_activity</span> <span data-th="จัดการกดบัตร" data-en="Manage Ticket">จัดการกดบัตร</span></h3><div class="form-group"><select id="tkEventSelect" onchange="fillTicketFromEvent()"><option value="" data-th="-- ดึงจากตารางงาน --" data-en="-- Select Event --">-- ดึงจากตารางงาน --</option></select></div><div class="form-group"><input type="text" id="tkTitle" placeholder="ชื่องาน"></div><div class="form-group"><input type="text" id="tkDay" placeholder="วัน (10)"></div><div class="form-group"><input type="text" id="tkMonth" placeholder="เดือน (ธ.ค. 69)"></div><div class="form-group"><input type="text" id="tkMeta" placeholder="รายละเอียด"></div><div class="form-group"><input type="text" id="tkUrl" placeholder="ลิงก์ URL"></div><div class="form-group"><select id="tkStatus"><option value="upcoming" data-th="เปิดขาย" data-en="Available">เปิดขาย</option><option value="ended" data-th="จบแล้ว" data-en="Ended">จบแล้ว</option></select></div><div style="text-align:right;margin-top:20px;"><button class="chip" onclick="closeModal('ticketModal')" data-th="ยกเลิก" data-en="Cancel">ยกเลิก</button><button class="btn-submit" onclick="saveTicket()" data-th="บันทึก" data-en="Save">บันทึก</button></div></div></div>
+
+<div class="modal" id="merchModal"><div class="modal-box"><h3 id="merchModalTitle" style="color:var(--primary);margin-bottom:18px;display:flex;align-items:center;gap:6px;"><span class="material-symbols-rounded">shopping_bag</span> <span data-th="สินค้า" data-en="Merchandise">สินค้า</span></h3><div class="form-group"><input type="text" id="mcTitle" placeholder="ชื่อสินค้า"></div><div class="form-group"><input type="text" id="mcPrice" placeholder="ราคา"></div><div class="form-group"><input type="text" id="mcDesc" placeholder="รายละเอียด"></div><div class="form-group"><select id="mcStatus"><option value="instock" data-th="มีสินค้า" data-en="In Stock">มีสินค้า</option><option value="preorder" data-th="พรีออเดอร์" data-en="Pre-Order">พรีออเดอร์</option><option value="out" data-th="หมด" data-en="Sold Out">หมด</option></select></div><div class="form-group"><input type="text" id="mcLink" placeholder="ลิงก์สั่งซื้อ"></div><div class="form-group"><label data-th="รูปสินค้า (อัปโหลดหรือวางลิงก์)" data-en="Image (Upload or URL)">รูปสินค้า (อัปโหลดหรือวางลิงก์)</label><input type="file" id="mcImgUpload" accept="image/*" onchange="handleImgUpload(this,'mcImgUrl','mcImgStatus')" style="background:rgba(255,255,255,0.5);padding:8px 12px;border-radius:14px;width:100%;border:2px dashed rgba(126,34,206,0.4);cursor:pointer;margin-bottom:6px;"><span id="mcImgStatus" style="font-size:13px;font-weight:700;display:block;margin-bottom:6px;"></span><input type="text" id="mcImgUrl" placeholder="หรือวางลิงก์รูปสินค้า (URL) ที่นี่..."></div><div style="text-align:right;margin-top:20px;"><button class="chip" onclick="closeModal('merchModal')" data-th="ยกเลิก" data-en="Cancel">ยกเลิก</button><button class="btn-submit" onclick="saveMerch()" data-th="บันทึก" data-en="Save">บันทึก</button></div></div></div>
+
+<div class="modal" id="seatAdminModal"><div class="modal-box"><h3 style="color:var(--primary);margin-bottom:18px;display:flex;align-items:center;gap:6px;"><span class="material-symbols-rounded">chair</span> <span data-th="สร้างผังจำลอง" data-en="Create Mock Seatmap">สร้างผังจำลอง</span></h3><div class="form-group"><select id="smCreateEventSelect"><option value="">-- เลือกงาน / Select Event --</option></select></div><div class="form-group"><label data-th="รูปแบบผังฮอลล์" data-en="Layout Template">รูปแบบผังฮอลล์</label><select id="smCreateTemplateSelect" onchange="document.getElementById('smCustomConfig').style.display=this.value==='custom'?'block':'none'"><option value="pavalai">Siam Pavalai (3 โซน)</option><option value="bravo">BRAVO BKK (2 โซน)</option><option value="custom" data-th="✨ พิมพ์สร้างผังเอง (Smart Generator)" data-en="✨ Smart Generator">✨ พิมพ์สร้างผังเอง (Smart Generator)</option></select></div><div class="form-group" id="smCustomConfig" style="display:none;"><label data-th="สูตรสร้างโซน (ชื่อโซน, แถว, ที่นั่งต่อแถว)" data-en="Zone Formula (Name, Rows, Seats)">สูตรสร้างโซน (ชื่อโซน, แถว, ที่นั่งต่อแถว)</label><textarea id="smCustomInput" rows="3" placeholder="VIP, 3, 10&#10;Zone A, 5, 12"></textarea></div><div style="text-align:right;margin-top:20px;"><button class="chip" onclick="closeModal('seatAdminModal')" data-th="ยกเลิก" data-en="Cancel">ยกเลิก</button><button class="btn-submit" onclick="createSeatmap()" data-th="สร้างผัง" data-en="Create Map">สร้างผัง</button></div></div></div>
+
+<div class="modal" id="seatBookModal"><div class="modal-box"><h3 style="color:var(--primary);margin-bottom:18px;display:flex;align-items:center;gap:6px;"><span class="material-symbols-rounded">event_seat</span> <span data-th="จองที่นั่ง" data-en="Book Seat">จองที่นั่ง</span> <span id="sbSeatIdLabel" style="color:var(--accent);margin-left:6px;"></span></h3><div class="form-group"><input type="text" id="sbUser" disabled style="background:rgba(255,255,255,0.2);font-weight:700;color:var(--muted);"></div><div class="form-group"><label data-th="สัญชาติ (อีโมจิธงชาติ)" data-en="Nationality (Flag Emoji)">สัญชาติ (อีโมจิธงชาติ)</label><input type="text" id="sbFlag" placeholder="🇹🇭" maxlength="4"></div><div class="form-group"><label data-th="ข้อความทักทาย" data-en="Greeting Message">ข้อความทักทาย</label><input type="text" id="sbMsg" placeholder="ตื่นเต้นจัง!" maxlength="40"></div><input type="hidden" id="sbSeatIdCode"><div style="text-align:right;margin-top:24px;"><button class="chip" onclick="closeModal('seatBookModal')" data-th="ยกเลิก" data-en="Cancel">ยกเลิก</button><button class="btn-submit" onclick="confirmSeatBooking()" data-th="ยืนยันจองที่นั่ง" data-en="Confirm Booking">ยืนยันจองที่นั่ง</button></div></div></div>
+
+<div class="modal" id="seriesAdminModal"><div class="modal-box"><h3 id="serModalTitle" style="color:var(--primary);margin-bottom:18px;display:flex;align-items:center;gap:6px;"><span class="material-symbols-rounded">movie</span> <span data-th="จัดการผลงาน" data-en="Manage Work">จัดการผลงาน</span></h3><div class="form-group"><select id="serWCat"><option value="acting" data-th="การแสดง" data-en="Acting">การแสดง</option><option value="music" data-th="เพลง" data-en="Music">เพลง</option><option value="fashion" data-th="แฟชั่น" data-en="Fashion">แฟชั่น</option><option value="other" data-th="อื่นๆ" data-en="Other">อื่นๆ</option></select></div><div class="form-group"><input type="text" id="serTitleTh" placeholder="ชื่อผลงาน"></div><div class="form-group"><select id="serStatusKey"><option value="air" data-th="ออนแอร์/ล่าสุด" data-en="On Air/Latest">ออนแอร์/ล่าสุด</option><option value="done" data-th="จบแล้ว" data-en="Ended">จบแล้ว</option><option value="soon" data-th="รอประกาศ" data-en="Coming Soon">รอประกาศ</option></select></div><div class="form-group"><input type="text" id="serNet" placeholder="ช่องทาง (เช่น WeTV)"></div><div class="form-group"><label data-th="รูปปก (อัปโหลดหรือวางลิงก์)" data-en="Cover (Upload or URL)">รูปปก (อัปโหลดหรือวางลิงก์)</label><input type="file" id="serImgUpload" accept="image/*" onchange="handleImgUpload(this,'serImgUrl','serImgStatus')" style="background:rgba(255,255,255,0.5);padding:8px 12px;border-radius:14px;width:100%;border:2px dashed rgba(126,34,206,0.4);cursor:pointer;margin-bottom:6px;"><span id="serImgStatus" style="font-size:13px;font-weight:700;display:block;margin-bottom:6px;"></span><input type="text" id="serImgUrl" placeholder="หรือวางลิงก์รูปปก (URL) ที่นี่..."></div><div class="form-group"><input type="text" id="serTrailer" placeholder="ลิงก์ YouTube (รองรับทุกแบบ)"></div><div style="text-align:right;margin-top:20px;"><button class="chip" onclick="closeModal('seriesAdminModal')" data-th="ยกเลิก" data-en="Cancel">ยกเลิก</button><button class="btn-submit" onclick="saveSeries()" data-th="บันทึก" data-en="Save">บันทึก</button></div></div></div>
+
 <div class="modal" id="seriesDetailModal"><div class="modal-detail-box"><img id="detCover" src="" style="width:100%;height:280px;object-fit:cover;border-radius:20px;margin-bottom:20px;box-shadow:var(--shadow);"><h2 id="detTitle" style="font-size:28px;color:var(--primary);"></h2><div id="detNet" style="color:var(--muted);margin-bottom:16px;font-size:16px;font-weight:600;"></div><div id="detTrailerBox" style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;border-radius:16px;background:#000;box-shadow:var(--shadow);"><iframe id="detIframe" src="" style="position:absolute;top:0;left:0;width:100%;height:100%;border:none;" allowfullscreen></iframe></div><div style="text-align:right;margin-top:24px;"><button class="btn-submit" onclick="closeModal('seriesDetailModal')" data-th="ปิดหน้าต่าง" data-en="Close">ปิดหน้าต่าง</button></div></div></div>
-<div class="modal" id="travelModal"><div class="modal-box"><h3 style="color:var(--primary);margin-bottom:18px;display:flex;align-items:center;gap:6px;"><span class="material-symbols-rounded">train</span> <span data-th="เพิ่ม/แก้ไขสถานที่" data-en="Add/Edit Venue">เพิ่ม/แก้ไขสถานที่</span></h3><div class="form-group"><input type="text" id="trvName" data-pth="ชื่อสถานที่" data-pen="Venue Name" placeholder="ชื่อสถานที่"></div><div class="form-group"><input type="text" id="trvArea" data-pth="ย่าน" data-pen="Area/City" placeholder="ย่าน"></div><div class="form-group"><input type="text" id="trvHow" data-pth="วิธีเดินทาง" data-pen="How to get there" placeholder="วิธีเดินทาง"></div><div class="form-group"><input type="text" id="trvMapQ" data-pth="คำค้นพิกัด Maps" data-pen="Google Maps Query" placeholder="คำค้นพิกัด Maps"></div><div class="form-group"><input type="text" id="trvZones" data-pth="ฮอลล์ย่อย (คั่นด้วยลูกน้ำ)" data-pen="Sub-zones (comma separated)" placeholder="ฮอลล์ย่อย (คั่นลูกน้ำ)"></div><div class="form-group"><input type="text" id="trvImgUrl" data-pth="ลิงก์รูปภาพ" data-pen="Image URL" placeholder="ลิงก์รูปภาพ"></div><div style="text-align:right;margin-top:20px;"><button class="chip" onclick="closeModal('travelModal')" data-th="ยกเลิก" data-en="Cancel">ยกเลิก</button><button class="btn-submit" onclick="saveTravel()" data-th="บันทึก" data-en="Save">บันทึก</button></div></div></div>
-<div class="modal" id="commuPostModal"><div class="modal-box"><h3 style="color:var(--primary);margin-bottom:18px;display:flex;align-items:center;gap:6px;"><span class="material-symbols-rounded">handshake</span> <span data-th="ลงประกาศคอมมู" data-en="Community Post">ลงประกาศคอมมู</span></h3><div class="form-group"><select id="cmType"><option value="ticket" data-th="🎟️ ส่งต่อบัตร" data-en="🎟️ Transfer Ticket">🎟️ ส่งต่อบัตร</option><option value="ride" data-th="🚗 แชร์รถ" data-en="🚗 Carpool">🚗 แชร์รถ</option></select></div><div class="form-group"><input type="text" id="cmBadge" data-pth="สถานะ (ส่งต่อ, แชร์รถ)" data-pen="Badge (Available, Seeking)" placeholder="สถานะ (ส่งต่อ, แชร์รถ)"></div><div class="form-group"><input type="text" id="cmTitle" data-pth="หัวข้อประกาศ" data-pen="Post Title" placeholder="ชื่องาน"></div><div class="form-group"><input type="text" id="cmDetail" data-pth="รายละเอียดการติดต่อ" data-pen="Contact Details" placeholder="รายละเอียด"></div><div style="text-align:right;margin-top:20px;"><button class="chip" onclick="closeModal('commuPostModal')" data-th="ยกเลิก" data-en="Cancel">ยกเลิก</button><button class="btn-submit" onclick="saveCommuPost()" data-th="โพสต์ประกาศ" data-en="Publish Post">โพสต์ประกาศ</button></div></div></div>
-<div class="modal" id="aboutModal"><div class="modal-box"><h3 style="color:var(--primary);margin-bottom:18px;display:flex;align-items:center;gap:6px;"><span class="material-symbols-rounded">info</span> <span data-th="จัดการหน้าเกี่ยวกับ" data-en="Manage About">จัดการหน้าเกี่ยวกับ</span></h3><div class="form-group"><input type="text" id="abtTitle" data-pth="หัวข้อ" data-pen="Title" placeholder="หัวข้อ"></div><div class="form-group"><textarea id="abtDesc" rows="4" data-pth="รายละเอียด" data-pen="Description" placeholder="รายละเอียด"></textarea></div><div style="text-align:right;margin-top:20px;"><button class="chip" onclick="closeModal('aboutModal')" data-th="ยกเลิก" data-en="Cancel">ยกเลิก</button><button class="btn-submit" onclick="saveAboutCard()" data-th="บันทึก" data-en="Save">บันทึก</button></div></div></div>
+
+<div class="modal" id="travelModal"><div class="modal-box"><h3 style="color:var(--primary);margin-bottom:18px;display:flex;align-items:center;gap:6px;"><span class="material-symbols-rounded">train</span> <span data-th="เพิ่ม/แก้ไขสถานที่" data-en="Add/Edit Venue">เพิ่ม/แก้ไขสถานที่</span></h3><div class="form-group"><input type="text" id="trvName" placeholder="ชื่อสถานที่"></div><div class="form-group"><input type="text" id="trvArea" placeholder="ย่าน"></div><div class="form-group"><input type="text" id="trvHow" placeholder="วิธีเดินทาง"></div><div class="form-group"><input type="text" id="trvMapQ" placeholder="คำค้นพิกัด Maps"></div><div class="form-group"><input type="text" id="trvZones" placeholder="ฮอลล์ย่อย (คั่นลูกน้ำ)"></div><div class="form-group"><label data-th="รูปสถานที่ (อัปโหลดหรือวางลิงก์)" data-en="Venue Image (Upload or URL)">รูปสถานที่ (อัปโหลดหรือวางลิงก์)</label><input type="file" id="trvImgUpload" accept="image/*" onchange="handleImgUpload(this,'trvImgUrl','trvImgStatus')" style="background:rgba(255,255,255,0.5);padding:8px 12px;border-radius:14px;width:100%;border:2px dashed rgba(126,34,206,0.4);cursor:pointer;margin-bottom:6px;"><span id="trvImgStatus" style="font-size:13px;font-weight:700;display:block;margin-bottom:6px;"></span><input type="text" id="trvImgUrl" placeholder="หรือวางลิงก์รูปสถานที่ (URL) ที่นี่..."></div><div style="text-align:right;margin-top:20px;"><button class="chip" onclick="closeModal('travelModal')" data-th="ยกเลิก" data-en="Cancel">ยกเลิก</button><button class="btn-submit" onclick="saveTravel()" data-th="บันทึก" data-en="Save">บันทึก</button></div></div></div>
+
+<div class="modal" id="commuPostModal"><div class="modal-box"><h3 style="color:var(--primary);margin-bottom:18px;display:flex;align-items:center;gap:6px;"><span class="material-symbols-rounded">handshake</span> <span data-th="ลงประกาศคอมมู" data-en="Community Post">ลงประกาศคอมมู</span></h3><div class="form-group"><select id="cmType"><option value="ticket" data-th="🎟️ ส่งต่อบัตร" data-en="🎟️ Transfer Ticket">🎟️ ส่งต่อบัตร</option><option value="ride" data-th="🚗 แชร์รถ" data-en="🚗 Carpool">🚗 แชร์รถ</option></select></div><div class="form-group"><input type="text" id="cmBadge" placeholder="สถานะ (ส่งต่อ, แชร์รถ)"></div><div class="form-group"><input type="text" id="cmTitle" placeholder="ชื่องาน"></div><div class="form-group"><input type="text" id="cmDetail" placeholder="รายละเอียดการติดต่อ"></div><div style="text-align:right;margin-top:20px;"><button class="chip" onclick="closeModal('commuPostModal')" data-th="ยกเลิก" data-en="Cancel">ยกเลิก</button><button class="btn-submit" onclick="saveCommuPost()" data-th="โพสต์ประกาศ" data-en="Publish Post">โพสต์ประกาศ</button></div></div></div>
+
+<div class="modal" id="aboutModal"><div class="modal-box"><h3 style="color:var(--primary);margin-bottom:18px;display:flex;align-items:center;gap:6px;"><span class="material-symbols-rounded">info</span> <span data-th="จัดการหน้าเกี่ยวกับ" data-en="Manage About">จัดการหน้าเกี่ยวกับ</span></h3><div class="form-group"><input type="text" id="abtTitle" placeholder="หัวข้อ"></div><div class="form-group"><textarea id="abtDesc" rows="4" placeholder="รายละเอียด"></textarea></div><div style="text-align:right;margin-top:20px;"><button class="chip" onclick="closeModal('aboutModal')" data-th="ยกเลิก" data-en="Cancel">ยกเลิก</button><button class="btn-submit" onclick="saveAboutCard()" data-th="บันทึก" data-en="Save">บันทึก</button></div></div></div>
 
 <script>
-// =========================================
-// DATA & LOGIC V23 (Bilingual + Smart Gen Edition + MongoDB Ready)
-// =========================================
 const HEAD_ADMIN_USER="GinJay17",HEAD_ADMIN_PASS="พกginjay",TODAY="2026-10-26";
-const TH_M=["ม.ค.","ก.พ.","มี.ค.","เม.ย.","พ.ค.","มิ.ย.","ก.ค.","ส.ค.","ก.ย.","ต.ค.","พ.ย.","ธ.ค."], TH_FM=["มกราคม","กุมภาพันธ์","มีนาคม","เมษายน","พฤษภาคม","มิถุนายน","กรกฎาคม","สิงหาคม","กันยายน","ตุลาคม","พฤศจิกายน","ธันวาคม"];
-const EN_M=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"], EN_FM=["January","February","March","April","May","June","July","August","September","October","November","December"];
+const TH_M=["ม.ค.","ก.พ.","มี.ค.","เม.ย.","พ.ค.","มิ.ย.","ก.ค.","ส.ค.","ก.ย.","ต.ค.","พ.ย.","ธ.ค."],TH_FM=["มกราคม","กุมภาพันธ์","มีนาคม","เมษายน","พฤษภาคม","มิถุนายน","กรกฎาคม","สิงหาคม","กันยายน","ตุลาคม","พฤศจิกายน","ธันวาคม"];
+const EN_M=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],EN_FM=["January","February","March","April","May","June","July","August","September","October","November","December"];
 
-// Helper function for Language
-let cRole="guest", cUser="Guest", currLang="th";
-const T = (th, en) => currLang === 'th' ? th : en;
-const P = (obj, key) => obj[`${currLang}_${key}`] || obj[`th_${key}`] || obj[key] || ''; 
+let cRole="guest",cUser="Guest",currLang="th";
+const T=(th,en)=>currLang==='th'?th:en;
+const P=(obj,key)=>obj[`${currLang}_${key}`]||obj[`th_${key}`]||obj[key]||'';
 
-// Mock Data
 const DEF_EV=[{id:"ev15",d:"2026-10-22",time:"16:00 น.",artist:"duo",th_c:"รอบพิเศษ",en_c:"Special Event",th_t:"รับจ้างเลิกรัก : Love on Hire First EP",th_v:"Siam Pavalai สยามพารากอน",en_v:"Siam Pavalai Siam Paragon",ticketUrl:"#",img:"https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=600&auto=format&fit=crop"},{id:"ev18",d:"2026-10-29",time:"20:00 น.",artist:"duo",th_c:"ซีรีส์ออนแอร์",en_c:"Series On Air",th_t:"รับจ้างเลิกรัก EP.2",en_t:"Love on Hire EP.2",th_v:"WeTV",img:"https://images.unsplash.com/photo-1485846234645-a62644f84728?w=600&auto=format&fit=crop"}];
 const DEF_TK=[{id:"tk1",evId:"ev15",d:"22",th_mo:"ต.ค. 69",en_mo:"Oct 26",th_t:"Love on Hire First EP",th_m:"บัตร 2,000–2,800 บาท",en_m:"Ticket 2,000–2,800 THB",status:"ended",url:"#"}];
 const DEF_SR=[{id:"s2",wcat:"acting",k:"air",th_t:"รับจ้างเลิกรัก (Love on Hire)",en_t:"Love on Hire",net:"WeTV Original",tr:"https://www.youtube.com/watch?v=dQw4w9WgXcQ",img:"https://images.unsplash.com/photo-1485846234645-a62644f84728?w=800&auto=format&fit=crop"}];
@@ -293,99 +274,81 @@ const DEF_SM=[{evId:"ev15",template:"pavalai",seats:{"VIP-R1-C5":{user:"AlKey_Bo
 const DEF_TR=[{id:"tr1",img:"https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=800&auto=format&fit=crop",th_n:"Siam Paragon",th_a:"กรุงเทพฯ (สยาม)",en_a:"Bangkok (Siam)",th_h:"BTS ลงสถานีสยาม",en_h:"Take BTS to Siam Station",map_q:"Siam Paragon",zones:["Siam Pavalai ชั้น 6 / 6th Floor"]}];
 const DEF_CM=[{id:"cm1",type:"ticket",th_b:"ส่งต่อ",en_b:"Transfer",th_t:"Love on Hire First EP · 22 ต.ค.",en_t:"Love on Hire First EP · 22 Oct",th_d:"1 ใบ · โซน A · 2,000 บาท · ติดต่อ X @AlKey_fan",en_d:"1 Ticket · Zone A · 2000 THB · DM X @AlKey_fan"}];
 const DEF_AB=[{id:"ab1",th_t:"🦙 จินนี่ ณัฐณิชา",en_t:"🦙 Ginny Natnicha",th_d:"เกิด 17 ธันวาคม 2000 สังกัด North Star",en_d:"Born Dec 17, 2000. Label: North Star"},{id:"ab2",th_t:"🐒 เจน่า แองเจลิน่า",en_t:"🐒 Jayna Angelina",th_d:"เกิด 17 กุมภาพันธ์ 2006 สังกัด North Star",en_d:"Born Feb 17, 2006. Label: North Star"}];
-const BW_GIFTS=[{id:"sunflower",e:"🌻",th_n:"ทานตะวัน",en_n:"Sunflower"},{id:"salad",e:"🥬",th_n:"ผักสลัด",en_n:"Lettuce"},{id:"mic",e:"🎤",th_n:"ไมโครโฟน",en_n:"Mic"},{id:"chick",e:"🐥",th_n:"น้องเจี๊ยบ",en_n:"Chick"},{id:"potion",e:"🧪",th_n:"โพชั่น",en_n:"Potion"},{id:"bomb",e:"💣",th_n:"ระเบิด",en_n:"Bomb"}];
+let BW_GIFTS=[{id:"sunflower",e:"🌻",th_n:"ทานตะวัน",en_n:"Sunflower"},{id:"salad",e:"🥬",th_n:"ผักสลัด",en_n:"Lettuce"},{id:"mic",e:"🎤",th_n:"ไมโครโฟน",en_n:"Mic"},{id:"chick",e:"🐥",th_n:"น้องเจี๊ยบ",en_n:"Chick"},{id:"potion",e:"🧪",th_n:"โพชั่น",en_n:"Potion"},{id:"bomb",e:"💣",th_n:"ระเบิด",en_n:"Bomb"}];
 
-let EVENTS=DEF_EV, TICKETS=DEF_TK, SERIES=DEF_SR, MERCH=DEF_MC, SEATMAPS=DEF_SM, TRAVEL=DEF_TR, COMMU=DEF_CM, ABOUT=DEF_AB;
-let MY_PLAN={}, CUSTOM_ADMINS=[], CUSTOM_TPL={};
+let EVENTS=DEF_EV,TICKETS=DEF_TK,SERIES=DEF_SR,MERCH=DEF_MC,SEATMAPS=DEF_SM,TRAVEL=DEF_TR,COMMU=DEF_CM,ABOUT=DEF_AB;
+let MY_PLAN={},CUSTOM_ADMINS=[],CUSTOM_TPL={};
 let BW_WISH=[{id:"w1",name:"AlKey Members",text:"Wish you massive success! 💜💛",gift:"sunflower",to:"ginjay",at:Date.now()}];
-let BW_ORD=[];
-let bwFlt="all", bwRole="guest", bwDrag=false;
-let aSM=null, bSeatId=null;
+let BW_ORD=[],bwFlt="all",bwRole="guest",bwDrag=false,aSM=null,bSeatId=null;
 
-let TEMPLATES = {
-  pavalai: { name:"Siam Pavalai (3 Zones)", zones: [{id:"VIP",name:"VIP Zone",rows:2,cols:10,type:"vip"},{id:"A",name:"Zone A",rows:3,cols:12,type:"normal"},{id:"B",name:"Zone B",rows:4,cols:14,type:"normal"}] },
-  bravo: { name:"BRAVO BKK (2 Zones)", zones: [{id:"VIP",name:"VIP Standing",rows:3,cols:12,type:"vip"},{id:"GA",name:"General Admission",rows:4,cols:16,type:"normal"}] }
+let TEMPLATES={
+  pavalai:{name:"Siam Pavalai (3 Zones)",zones:[{id:"VIP",name:"VIP Zone",rows:2,cols:10,type:"vip"},{id:"A",name:"Zone A",rows:3,cols:12,type:"normal"},{id:"B",name:"Zone B",rows:4,cols:14,type:"normal"}]},
+  bravo:{name:"BRAVO BKK (2 Zones)",zones:[{id:"VIP",name:"VIP Standing",rows:3,cols:12,type:"vip"},{id:"GA",name:"General Admission",rows:4,cols:16,type:"normal"}]}
 };
 
-// Database Connector
-async function loadDataFromDB() {
-  try {
-    const res = await fetch('/api/data');
-    const db = await res.json();
-    if(db.EVENTS) EVENTS = db.EVENTS;
-    if(db.TICKETS) TICKETS = db.TICKETS;
-    if(db.SERIES) SERIES = db.SERIES;
-    if(db.MERCH) MERCH = db.MERCH;
-    if(db.SEATMAPS) SEATMAPS = db.SEATMAPS;
-    if(db.TRAVEL) TRAVEL = db.TRAVEL;
-    if(db.COMMU) COMMU = db.COMMU;
-    if(db.ABOUT) ABOUT = db.ABOUT;
-    if(db.MY_PLAN) MY_PLAN = db.MY_PLAN;
-    if(db.CUSTOM_ADMINS) CUSTOM_ADMINS = db.CUSTOM_ADMINS;
-    if(db.BW_WISH) BW_WISH = db.BW_WISH;
-    if(db.BW_ORD) BW_ORD = db.BW_ORD;
-    if(db.CUSTOM_TPL) {
-       CUSTOM_TPL = db.CUSTOM_TPL;
-       Object.assign(TEMPLATES, CUSTOM_TPL);
-    }
+async function loadDataFromDB(){
+  try{
+    const res=await fetch('/api/data');
+    const db=await res.json();
+    if(db.EVENTS)EVENTS=db.EVENTS;
+    if(db.TICKETS)TICKETS=db.TICKETS;
+    if(db.SERIES)SERIES=db.SERIES;
+    if(db.MERCH)MERCH=db.MERCH;
+    if(db.SEATMAPS)SEATMAPS=db.SEATMAPS;
+    if(db.TRAVEL)TRAVEL=db.TRAVEL;
+    if(db.COMMU)COMMU=db.COMMU;
+    if(db.ABOUT)ABOUT=db.ABOUT;
+    if(db.MY_PLAN)MY_PLAN=db.MY_PLAN;
+    if(db.CUSTOM_ADMINS)CUSTOM_ADMINS=db.CUSTOM_ADMINS;
+    if(db.BW_WISH)BW_WISH=db.BW_WISH;
+    if(db.BW_ORD)BW_ORD=db.BW_ORD;
+    if(db.BW_GIFTS)BW_GIFTS=db.BW_GIFTS;
+    if(db.CUSTOM_TPL){CUSTOM_TPL=db.CUSTOM_TPL;Object.assign(TEMPLATES,CUSTOM_TPL);}
     updateUIRole();
-  } catch(e) {
-    console.error("Load failed", e);
-    updateUIRole();
-  }
+  }catch(e){console.error("Load failed",e);updateUIRole();}
 }
 
-async function saveToDB(payload) {
-  await fetch('/api/data', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload)
-  });
+async function saveToDB(payload){
+  await fetch('/api/data',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
 }
 
 function el(h){const d=document.createElement("div");d.innerHTML=h.trim();return d.firstElementChild}
 function closeModal(id){document.getElementById(id).classList.remove("on")}
-function updateLangUI() {
-  document.querySelectorAll("[data-th]").forEach(el => { el.innerHTML = el.getAttribute(`data-${currLang}`); });
-  document.querySelectorAll("[data-pth]").forEach(el => { el.placeholder = el.getAttribute(`data-p${currLang}`); });
+function updateLangUI(){
+  document.querySelectorAll("[data-th]").forEach(el=>{el.innerHTML=el.getAttribute(`data-${currLang}`);});
 }
 
-// ================= LOGIN & ROLE =================
 function updateUIRole(){
   document.body.setAttribute("data-role",cRole);
   const b=document.getElementById("mainLoginBtn");
-  if(cRole==="guest")b.innerHTML=`<span class="material-symbols-rounded" style="font-size: 1.1em">login</span> ${T('เข้าสู่ระบบ','Login')}`;
-  else if(cRole==="user")b.innerHTML=`<span class="material-symbols-rounded" style="font-size: 1.1em; color: #a3e635">verified_user</span> AlKey Member (${T('ออก','Out')})`;
-  else if(cRole==="admin")b.innerHTML=`<span class="material-symbols-rounded" style="font-size: 1.1em; color: #facc15">admin_panel_settings</span> Admin: ${cUser} (${T('ออก','Out')})`;
-  else if(cRole==="head_admin")b.innerHTML=`<span class="material-symbols-rounded" style="font-size: 1.1em; color: #facc15">stars</span> Head Admin (${T('ออก','Out')})`;
-  
-  if(typeof S!=="undefined") S.role = cRole==="head_admin"?"head":cRole==="admin"?"admin":"guest";
+  if(cRole==="guest")b.innerHTML=`<span class="material-symbols-rounded" style="font-size:1.1em">login</span> ${T('เข้าสู่ระบบ','Login')}`;
+  else if(cRole==="user")b.innerHTML=`<span class="material-symbols-rounded" style="font-size:1.1em;color:#a3e635">verified_user</span> AlKey Member (${T('ออก','Out')})`;
+  else if(cRole==="admin")b.innerHTML=`<span class="material-symbols-rounded" style="font-size:1.1em;color:#facc15">admin_panel_settings</span> Admin: ${cUser} (${T('ออก','Out')})`;
+  else if(cRole==="head_admin")b.innerHTML=`<span class="material-symbols-rounded" style="font-size:1.1em;color:#facc15">stars</span> Head Admin (${T('ออก','Out')})`;
   updateLangUI();
-  renderAllSched();renderTickets();renderSeries();renderMerch();renderTravel();renderSeatmapSelector();renderCommu();renderAbout();
-  if(typeof renderBW==="function")renderBW();
+  renderAllSched();renderTickets();renderSeries();renderMerch();renderTravel();renderSeatmapSelector();renderCommu();renderAbout();renderBW();
 }
 function openLoginModal(){if(cRole!=="guest"){if(confirm(T("ออกจากระบบ?","Logout?"))){cRole="guest";cUser="Guest";updateUIRole();switchTab("schedule")}return;}document.getElementById("loginUser").value="";document.getElementById("loginPass").value="";toggleAdminLoginView(false);document.getElementById("loginModal").classList.add("on")}
 function toggleAdminLoginView(s){document.getElementById("socialLoginState").style.display=s?"none":"block";document.getElementById("adminLoginState").style.display=s?"block":"none"}
-function doSocialLogin(p){cRole="user";cUser=`AlKey_${p}`;updateUIRole();closeModal("loginModal");switchTab("seatmap");alert(T(`ล็อกอินด้วย ${p} สำเร็จ! ไปเล่นผังที่นั่งกันเลย`,`Logged in via ${p}! Let's try the Seatmap.`))}
+function doSocialLogin(p){cRole="user";cUser=`AlKey_${p}`;updateUIRole();closeModal("loginModal");switchTab("seatmap");alert(T(`ล็อกอินด้วย ${p} สำเร็จ!`,`Logged in via ${p}!`))}
 function doAdminLogin(){const u=document.getElementById("loginUser").value.trim(),p=document.getElementById("loginPass").value.trim();if(u===HEAD_ADMIN_USER&&p===HEAD_ADMIN_PASS){cRole="head_admin";cUser=u;updateUIRole();closeModal("loginModal")}else{const f=CUSTOM_ADMINS.find(a=>a.u===u&&a.p===p);if(f){cRole="admin";cUser=u;updateUIRole();closeModal("loginModal")}else alert(T("รหัสผิด!","Wrong Password!"))}}
 function openManageAdminsModal(){const bx=document.getElementById("adminListContainer");bx.innerHTML=CUSTOM_ADMINS.length?CUSTOM_ADMINS.map(a=>`<div style="display:flex;justify-content:space-between;padding:12px;background:rgba(255,255,255,0.4);border:1px solid rgba(126,34,206,0.2);border-radius:12px;margin-bottom:8px;"><span><b>${a.u}</b> (${T('รหัส','Pass')}: ${a.p})</span><button style="color:#ef4444;font-weight:700;font-size:13px;" onclick="deleteCustomAdmin('${a.u}')">${T('ลบ','Del')}</button></div>`).join(""):`<div class="empty">${T('ไม่มีแอดมินเสริม','No custom admins')}</div>`;document.getElementById("manageAdminsModal").classList.add("on")}
 function addCustomAdmin(){const u=document.getElementById("newAdminUser").value.trim(),p=document.getElementById("newAdminPass").value.trim();if(!u||!p)return;CUSTOM_ADMINS.push({u,p});saveToDB({CUSTOM_ADMINS});document.getElementById("newAdminUser").value="";document.getElementById("newAdminPass").value="";openManageAdminsModal()}
 function deleteCustomAdmin(u){CUSTOM_ADMINS=CUSTOM_ADMINS.filter(a=>a.u!==u);saveToDB({CUSTOM_ADMINS});openManageAdminsModal()}
 
-// ================= NAV =================
 function switchTab(id){
   document.querySelectorAll("nav button").forEach(b=>b.setAttribute("aria-selected",b.dataset.t===id));
   document.querySelectorAll("section.panel").forEach(p=>p.classList.toggle("on",p.id===id));
   document.getElementById("mainHeroBanner").style.display=(id==="blessing")?"none":"block";
   if(id==="seatmap")renderSeatmapSelector();
-  if(id==="blessing"&&typeof renderBW==="function")renderBW();
+  if(id==="blessing")renderBW();
 }
 document.querySelector("nav").addEventListener("click",e=>{const b=e.target.closest("button");if(b&&b.dataset.t)switchTab(b.dataset.t)});
 document.getElementById("langToggle").onclick=()=>{currLang=currLang==="th"?"en":"th";document.getElementById("langToggle").textContent=currLang==="th"?"🇹🇭 TH":"🇬🇧 EN";updateUIRole()};
 document.getElementById("themeToggle").onclick=()=>{const n=document.documentElement.getAttribute("data-theme")==="light"?"dark":"light";document.documentElement.setAttribute("data-theme",n);document.getElementById("themeToggle").innerHTML=n==="light"?"<span class='material-symbols-rounded'>dark_mode</span>":"<span class='material-symbols-rounded'>light_mode</span>"};
 
-// ================= 1. SCHEDULE =================
-let sf="all", cYr=2026, cMo=9, sDt=null, vMode="cal";
+// 1. SCHEDULE
+let sf="all",cYr=2026,cMo=9,sDt=null;
 function fltEv(e){const ip=e.d<TODAY;if(sf==="up"&&ip)return false;if(sf==="past"&&!ip)return false;if(sf==="mine"&&!MY_PLAN[e.id])return false;return true}
 function renderAllSched(){renderCalendar();renderDayDetail();renderList()}
 function jumpToMonth(y,m){cYr=y;cMo=m;sDt=null;renderAllSched()}
@@ -393,11 +356,11 @@ function showAllMonthEvents(){sDt=null;renderAllSched()}
 function renderCalendar(){
   const g=document.getElementById("calendarGrid");g.innerHTML="";
   document.getElementById("monthDisplay").textContent=`${currLang==='th'?TH_FM[cMo]:EN_FM[cMo]} ${currLang==='th'?cYr+543:cYr}`;
-  const fd=new Date(cYr,cMo,1).getDay(), ld=new Date(cYr,cMo+1,0).getDate();
+  const fd=new Date(cYr,cMo,1).getDay(),ld=new Date(cYr,cMo+1,0).getDate();
   for(let i=0;i<fd;i++)g.appendChild(el(`<div class="cal-cell other-month"></div>`));
   for(let d=1;d<=ld;d++){
     const dS=`${cYr}-${String(cMo+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-    const evs=EVENTS.filter(e=>e.d===dS&&fltEv(e)); let caps="";
+    const evs=EVENTS.filter(e=>e.d===dS&&fltEv(e));let caps="";
     evs.slice(0,3).forEach(e=>{caps+=`<div class="event-capsule">${P(e,'t')}</div>`});
     if(evs.length>3)caps+=`<div style="font-size:11px;text-align:center;color:var(--primary);font-weight:700;margin-top:2px;">+${evs.length-3} ${T('งาน','Events')}</div>`;
     const c=el(`<div class="cal-cell ${dS===sDt?'selected':''} ${dS===TODAY?'today':''}"><div class="cal-cell-day">${d}</div>${caps}</div>`);
@@ -411,7 +374,7 @@ function renderDayDetail(){
   if(!ls.length){bx.innerHTML=`<div class="empty">${T('ไม่มีงานในวันที่เลือก','No events on this day')}</div>`;return;}
   const isA=(cRole==="admin"||cRole==="head_admin");
   ls.forEach(e=>{
-    const ip=e.d<TODAY; const aB=isA?`<div style="display:flex;gap:8px;" onclick="event.stopPropagation();"><button class="chip" style="font-size:12px;padding:4px 12px;" onclick="openEventModal('${e.id}')">✏️ Edit</button><button class="chip" style="font-size:12px;padding:4px 12px;color:#ef4444;" onclick="deleteEvent('${e.id}')">🗑️ Del</button></div>`:`<span style="font-size:13px;color:var(--primary);font-weight:700;">${T('ดูรายละเอียด','Details')} →</span>`;
+    const ip=e.d<TODAY;const aB=isA?`<div style="display:flex;gap:8px;" onclick="event.stopPropagation();"><button class="chip" style="font-size:12px;padding:4px 12px;" onclick="openEventModal('${e.id}')">✏️ Edit</button><button class="chip" style="font-size:12px;padding:4px 12px;color:#ef4444;" onclick="deleteEvent('${e.id}')">🗑️ Del</button></div>`:`<span style="font-size:13px;color:var(--primary);font-weight:700;">${T('ดูรายละเอียด','Details')} →</span>`;
     bx.appendChild(el(`<div class="ev-card glass-panel" onclick="openEventDetailModal('${e.id}')"><img src="${e.img||'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=600&auto=format&fit=crop'}" class="ev-card-img"><div class="ev-card-content"><div><span class="tag" style="background:var(--surface-alt);color:var(--primary);">${P(e,'c')||T('อีเวนต์','Event')}</span><span class="tag" style="background:${ip?'#e2e8f0':'#dcfce7'};color:${ip?'#475569':'#15803d'};">${ip?T('จบแล้ว','Ended'):T('กำลังจะถึง','Upcoming')}</span></div><div style="font-size:18px;font-weight:700;margin:6px 0 10px;">${P(e,'t')}</div><div style="font-size:14px;color:var(--muted);display:flex;align-items:center;gap:4px;"><span class="material-symbols-rounded" style="font-size:1.1em">calendar_today</span> ${e.d} ${e.time?'· '+e.time:''}</div><div style="font-size:14px;color:var(--muted);margin-top:4px;display:flex;align-items:center;gap:4px;"><span class="material-symbols-rounded" style="font-size:1.1em">location_on</span> ${P(e,'v')}</div></div><div class="ev-card-actions" style="padding:0 20px 20px;display:flex;justify-content:space-between;align-items:center;"><button style="font-size:14px;font-weight:700;background:none;border:none;color:${MY_PLAN[e.id]?'var(--accent)':'var(--muted)'};display:inline-flex;align-items:center;gap:4px;" onclick="event.stopPropagation();togglePlan('${e.id}')"><span class="material-symbols-rounded" style="font-size:1.2em">${MY_PLAN[e.id]?'star':'star_border'}</span> ${MY_PLAN[e.id]?T('เซฟแล้ว','Saved'):T('เซฟเข้าแพลน','Save Plan')}</button>${aB}</div></div>`));
   });
 }
@@ -421,33 +384,40 @@ function openEventDetailModal(id){
   document.getElementById("evDetTitle").textContent=P(e,'t');
   document.getElementById("evDetPoster").src=e.img||"";
   document.getElementById("evDetDate").textContent=e.d;document.getElementById("evDetVenue").textContent=P(e,'v');
-  const sb=document.getElementById("evDetSeatBtn");if(SEATMAPS.some(sm=>sm.evId===e.id)){sb.style.display="inline-flex";}else{sb.style.display="none";}
+  const sb=document.getElementById("evDetSeatBtn");sb.style.display=SEATMAPS.some(sm=>sm.evId===e.id)?"inline-flex":"none";
   document.getElementById("eventDetailModal").classList.add("on");
 }
-function goToSeatMapFromEvent(){closeModal('eventDetailModal');switchTab('seatmap');document.getElementById("smEventSelect").value=EVENTS.find(x=>x.id===document.getElementById("smEventSelect").options[document.getElementById("smEventSelect").selectedIndex]?.value)?.id || ""; renderActiveSeatmap();}
+function goToSeatMapFromEvent(){closeModal('eventDetailModal');switchTab('seatmap');renderActiveSeatmap();}
 function togglePlan(id){if(MY_PLAN[id])delete MY_PLAN[id];else MY_PLAN[id]=1;saveToDB({MY_PLAN});renderAllSched()}
 document.getElementById("prevMonthBtn").onclick=()=>{cMo--;if(cMo<0){cMo=11;cYr--;}sDt=null;renderAllSched()};
 document.getElementById("nextMonthBtn").onclick=()=>{cMo++;if(cMo>11){cMo=0;cYr++;}sDt=null;renderAllSched()};
 document.getElementById("btnCalView").onclick=()=>{document.getElementById("btnCalView").classList.add("active");document.getElementById("btnListView").classList.remove("active");document.getElementById("calContainer").classList.add("active");document.getElementById("listContainer").classList.remove("active");};
 document.getElementById("btnListView").onclick=()=>{document.getElementById("btnListView").classList.add("active");document.getElementById("btnCalView").classList.remove("active");document.getElementById("listContainer").classList.add("active");document.getElementById("calContainer").classList.remove("active");};
 document.getElementById("fSched").addEventListener("click",e=>{const b=e.target.closest(".chip");if(!b)return;document.querySelectorAll("#fSched .chip").forEach(c=>c.setAttribute("aria-pressed",c===b));sf=b.dataset.f;renderAllSched()});
+
 let edEv=null;
-function openEventModal(id=null){if(cRole==="guest")return alert(T("กรุณา Login ก่อนครับ","Please Login first."));edEv=id;if(id){const e=EVENTS.find(x=>x.id===id);if(!e)return;document.getElementById("evTitleTh").value=e.th_t;document.getElementById("evDate").value=e.d;document.getElementById("evTime").value=e.time||"";document.getElementById("evCat").value=e.th_c||"";document.getElementById("evVenueTh").value=e.th_v;document.getElementById("evImgUrl").value=e.img||"";}else{["evTitleTh","evTime","evCat","evVenueTh","evImgUrl"].forEach(k=>document.getElementById(k).value="");document.getElementById("evDate").value=sDt||TODAY;}document.getElementById("eventModal").classList.add("on")}
+function openEventModal(id=null){
+  if(cRole==="guest")return alert(T("กรุณา Login ก่อนครับ","Please Login first."));
+  edEv=id;document.getElementById("evImgUpload").value="";document.getElementById("evImgStatus").innerText="";
+  if(id){const e=EVENTS.find(x=>x.id===id);if(!e)return;document.getElementById("evTitleTh").value=e.th_t;document.getElementById("evDate").value=e.d;document.getElementById("evTime").value=e.time||"";document.getElementById("evCat").value=e.th_c||"";document.getElementById("evVenueTh").value=e.th_v;document.getElementById("evImgUrl").value=e.img||"";}
+  else{["evTitleTh","evTime","evCat","evVenueTh","evImgUrl"].forEach(k=>document.getElementById(k).value="");document.getElementById("evDate").value=sDt||TODAY;}
+  document.getElementById("eventModal").classList.add("on")
+}
 function saveEvent(){const t=document.getElementById("evTitleTh").value.trim(),d=document.getElementById("evDate").value;if(!t||!d)return;const p={th_t:t,d,time:document.getElementById("evTime").value.trim(),artist:document.getElementById("evArtist").value,th_c:document.getElementById("evCat").value.trim(),th_v:document.getElementById("evVenueTh").value.trim(),img:document.getElementById("evImgUrl").value.trim()||"https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=600&auto=format&fit=crop"};if(edEv){const i=EVENTS.findIndex(x=>x.id===edEv);if(i>-1)EVENTS[i]={...EVENTS[i],...p}}else{EVENTS.push({id:"ev_"+Date.now(),...p})}saveToDB({EVENTS});closeModal("eventModal");renderAllSched()}
 function deleteEvent(id){if(!confirm(T("ลบ?","Delete?")))return;EVENTS=EVENTS.filter(x=>x.id!==id);saveToDB({EVENTS});renderAllSched()}
 
-// ================= 2. TICKETS =================
+// 2. TICKETS
 let edTk=null;
 function renderTickets(){
   const bx=document.getElementById("ticketsContainer");bx.innerHTML="";const isA=(cRole==="admin"||cRole==="head_admin");
   if(!TICKETS.length){bx.innerHTML=`<div class="empty">${T('ไม่มีรายการกดบัตร','No ticketing events')}</div>`;return;}
   TICKETS.forEach(t=>{
-    const ie=t.status==="ended"; const aB=isA?`<button class="chip" style="font-size:12px;padding:4px 12px;" onclick="openTicketModal('${t.id}')">✏️ Edit</button><button class="chip" style="font-size:12px;padding:4px 12px;color:#ef4444;" onclick="deleteTicket('${t.id}')">🗑️ Del</button>`:"";
+    const ie=t.status==="ended";const aB=isA?`<button class="chip" style="font-size:12px;padding:4px 12px;" onclick="openTicketModal('${t.id}')">✏️ Edit</button><button class="chip" style="font-size:12px;padding:4px 12px;color:#ef4444;" onclick="deleteTicket('${t.id}')">🗑️ Del</button>`:"";
     bx.appendChild(el(`<div class="ticket-card glass-panel ${ie?'ended':''}"><div class="tk-date"><b style="display:block;font-size:28px;color:var(--primary);line-height:1.1;">${t.d}</b><span style="font-size:13px;color:var(--muted);font-weight:700;">${P(t,'mo')}</span></div><div style="flex-grow:1;"><div style="font-size:18px;font-weight:700;margin-bottom:4px;">${P(t,'t')}</div><div style="font-size:14px;color:var(--muted);">${P(t,'m')}</div><div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;">${aB}</div></div><a href="${t.url||'#'}" target="_blank" class="btn-submit ${ie?'disabled':''}">${ie?T('จบแล้ว','Ended'):T('👉 กดบัตร ↗','👉 Buy Tickets ↗')}</a></div>`));
   });
 }
 function openTicketModal(id=null){
-  edTk=id; const sel=document.getElementById("tkEventSelect");sel.innerHTML=`<option value="">-- Select Event --</option>`+EVENTS.map(e=>`<option value="${e.id}">${e.d} : ${P(e,'t')}</option>`).join("");
+  edTk=id;const sel=document.getElementById("tkEventSelect");sel.innerHTML=`<option value="">-- Select Event --</option>`+EVENTS.map(e=>`<option value="${e.id}">${e.d} : ${P(e,'t')}</option>`).join("");
   if(id){const tk=TICKETS.find(x=>x.id===id);if(!tk)return;sel.value=tk.evId||"";document.getElementById("tkTitle").value=tk.th_t;document.getElementById("tkDay").value=tk.d;document.getElementById("tkMonth").value=tk.th_mo;document.getElementById("tkMeta").value=tk.th_m;document.getElementById("tkUrl").value=tk.url;document.getElementById("tkStatus").value=tk.status;}else{["tkTitle","tkDay","tkMonth","tkMeta","tkUrl"].forEach(k=>document.getElementById(k).value="");document.getElementById("tkStatus").value="upcoming";}
   document.getElementById("ticketModal").classList.add("on");
 }
@@ -455,8 +425,8 @@ function fillTicketFromEvent(){const evId=document.getElementById("tkEventSelect
 function saveTicket(){const t=document.getElementById("tkTitle").value.trim();if(!t)return;const payload={evId:document.getElementById("tkEventSelect").value,th_t:t,d:document.getElementById("tkDay").value.trim(),th_mo:document.getElementById("tkMonth").value.trim(),th_m:document.getElementById("tkMeta").value.trim(),url:document.getElementById("tkUrl").value.trim()||"#",status:document.getElementById("tkStatus").value};if(edTk){const i=TICKETS.findIndex(x=>x.id===edTk);if(i>-1)TICKETS[i]={...TICKETS[i],...payload};}else{TICKETS.unshift({id:"tk_"+Date.now(),...payload});}saveToDB({TICKETS});closeModal("ticketModal");renderTickets();}
 function deleteTicket(id){if(!confirm(T("ลบ?","Delete?")))return;TICKETS=TICKETS.filter(x=>x.id!==id);saveToDB({TICKETS});renderTickets();}
 
-// ================= 3. SERIES =================
-let cWC="acting", ssf="all";
+// 3. SERIES
+let cWC="acting",ssf="all",edSr=null;
 function renderSeries(){
   ["acting","music","fashion","other"].forEach(c=>{const el=document.getElementById(`cnt-${c}`);if(el)el.textContent=SERIES.filter(s=>(s.wcat||"acting")===c).length;});
   const bx=document.getElementById("seriesList");bx.innerHTML="";const ls=SERIES.filter(s=>(s.wcat||"acting")===cWC&&(ssf==="all"||s.k===ssf));
@@ -464,19 +434,33 @@ function renderSeries(){
   const isA=(cRole==="admin"||cRole==="head_admin");
   ls.forEach(s=>{
     const aB=isA?`<div style="display:flex;gap:12px;"><button style="font-size:14px;font-weight:700;color:var(--primary);" onclick="openSeriesAdminModal('${s.id}')">✏️</button><button style="font-size:14px;font-weight:700;color:#ef4444;" onclick="deleteSeries('${s.id}')">🗑️</button></div>`:"";
-    const kTxt = s.k==='air'?T('On Air','On Air'):(s.k==='soon'?T('เร็วๆ นี้','Soon'):T('จบแล้ว','Ended'));
+    const kTxt=s.k==='air'?T('On Air','On Air'):(s.k==='soon'?T('เร็วๆ นี้','Soon'):T('จบแล้ว','Ended'));
     bx.appendChild(el(`<div class="series-card glass-panel"><img src="${s.img}" style="width:100%;height:180px;object-fit:cover;border-bottom:1px solid rgba(126,34,206,0.1);"><div class="series-content" style="padding:20px;flex-grow:1;display:flex;flex-direction:column;position:relative;"><div class="series-badge">${kTxt}</div><div style="font-size:19px;font-weight:700;margin-bottom:4px;">${P(s,'t')}</div><div style="font-size:14px;color:var(--primary);font-weight:700;margin:4px 0 14px;display:flex;align-items:center;gap:4px;"><span class="material-symbols-rounded" style="font-size:1.1em">live_tv</span> ${s.net}</div><div style="margin-top:auto;padding-top:16px;border-top:1px solid rgba(126,34,206,.1);display:flex;justify-content:space-between;align-items:center;"><button style="color:var(--primary);font-weight:700;font-size:14px;display:flex;align-items:center;gap:4px;" onclick="openSeriesDetail('${s.id}')">${T('ดูรายละเอียด','Details')} <span class="material-symbols-rounded" style="font-size:1.2em">arrow_forward</span></button>${aB}</div></div></div>`));
   });
 }
 document.getElementById("worksCatMenu").addEventListener("click",e=>{const b=e.target.closest(".works-cat-btn");if(!b)return;document.querySelectorAll(".works-cat-btn").forEach(x=>x.classList.toggle("active",x===b));cWC=b.dataset.wcat;renderSeries();});
 document.getElementById("fSeries").addEventListener("click",e=>{const b=e.target.closest(".chip");if(!b)return;document.querySelectorAll("#fSeries .chip").forEach(c=>c.setAttribute("aria-pressed",c===b));ssf=b.dataset.f;renderSeries();});
-let edSr=null;
-function openSeriesAdminModal(id=null){edSr=id;if(id){const s=SERIES.find(x=>x.id===id);if(!s)return;document.getElementById("serWCat").value=s.wcat||"acting";document.getElementById("serTitleTh").value=s.th_t;document.getElementById("serStatusKey").value=s.k;document.getElementById("serNet").value=s.net;document.getElementById("serTrailer").value=s.tr||"";document.getElementById("serImgUrl").value=s.img||"";}else{document.getElementById("serWCat").value=cWC;["serTitleTh","serNet","serTrailer","serImgUrl"].forEach(k=>document.getElementById(k).value="");document.getElementById("serStatusKey").value="air";}document.getElementById("seriesAdminModal").classList.add("on");}
+function openSeriesAdminModal(id=null){
+  edSr=id;document.getElementById("serImgUpload").value="";document.getElementById("serImgStatus").innerText="";
+  if(id){const s=SERIES.find(x=>x.id===id);if(!s)return;document.getElementById("serWCat").value=s.wcat||"acting";document.getElementById("serTitleTh").value=s.th_t;document.getElementById("serStatusKey").value=s.k;document.getElementById("serNet").value=s.net;document.getElementById("serTrailer").value=s.tr||"";document.getElementById("serImgUrl").value=s.img||"";}
+  else{document.getElementById("serWCat").value=cWC;["serTitleTh","serNet","serTrailer","serImgUrl"].forEach(k=>document.getElementById(k).value="");document.getElementById("serStatusKey").value="air";}
+  document.getElementById("seriesAdminModal").classList.add("on");
+}
 function saveSeries(){const t=document.getElementById("serTitleTh").value.trim();if(!t)return;const p={wcat:document.getElementById("serWCat").value,th_t:t,k:document.getElementById("serStatusKey").value,net:document.getElementById("serNet").value.trim(),tr:document.getElementById("serTrailer").value.trim(),img:document.getElementById("serImgUrl").value.trim()||"https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=800&auto=format&fit=crop"};if(edSr){const i=SERIES.findIndex(x=>x.id===edSr);if(i>-1)SERIES[i]={...SERIES[i],...p};}else{SERIES.push({id:"s_"+Date.now(),...p});}saveToDB({SERIES});cWC=p.wcat;closeModal("seriesAdminModal");renderSeries();}
 function deleteSeries(id){if(!confirm(T("ลบ?","Delete?")))return;SERIES=SERIES.filter(x=>x.id!==id);saveToDB({SERIES});renderSeries();}
-function openSeriesDetail(id){const s=SERIES.find(x=>x.id===id);if(!s)return;document.getElementById("detCover").src=s.img;document.getElementById("detTitle").textContent=P(s,'t');document.getElementById("detNet").textContent=s.net;if(s.tr&&s.tr.includes("youtube.com")){document.getElementById("detTrailerBox").style.display="block";document.getElementById("detIframe").src=s.tr.replace("watch?v=","embed/");}else{document.getElementById("detTrailerBox").style.display="none";}document.getElementById("seriesDetailModal").classList.add("on");}
+function openSeriesDetail(id){
+  const s=SERIES.find(x=>x.id===id);if(!s)return;
+  document.getElementById("detCover").src=s.img;
+  document.getElementById("detTitle").textContent=P(s,'t');
+  document.getElementById("detNet").textContent=s.net;
+  let yLink=s.tr||"";
+  const ytMatch=yLink.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
+  if(ytMatch&&ytMatch[1]){document.getElementById("detTrailerBox").style.display="block";document.getElementById("detIframe").src=`https://www.youtube.com/embed/${ytMatch[1]}`;}
+  else{document.getElementById("detTrailerBox").style.display="none";document.getElementById("detIframe").src="";}
+  document.getElementById("seriesDetailModal").classList.add("on");
+}
 
-// ================= 8. MERCH (สินค้า) =================
+// 8. MERCH
 let edMc=null;
 function renderMerch(){
   const bx=document.getElementById("merchContainer");bx.innerHTML="";const isA=(cRole==="admin"||cRole==="head_admin");
@@ -489,11 +473,16 @@ function renderMerch(){
     bx.appendChild(el(`<div class="glass-panel" style="border-radius:24px;overflow:hidden;display:flex;flex-direction:column;transition:.3s;"><img src="${m.img}" style="width:100%;height:240px;object-fit:cover;background:var(--surface-alt);"><div style="padding:20px;display:flex;flex-direction:column;flex-grow:1;"><div><span style="font-size:12px;font-weight:700;padding:4px 12px;border-radius:8px;display:inline-block;margin-bottom:10px;background:${stCls};color:${stCol};">${stTxt}</span></div><div style="font-size:18px;font-weight:700;">${P(m,'t')}</div><div style="font-size:20px;font-weight:700;color:var(--accent);margin:10px 0;">${P(m,'p')}</div><div style="font-size:14px;color:var(--muted);margin-bottom:16px;">${P(m,'d')}</div><div style="margin-top:auto;"><a href="${m.link||'#'}" target="_blank" class="btn-submit" style="width:100%;text-align:center;display:flex;align-items:center;justify-content:center;gap:6px;"><span class="material-symbols-rounded">shopping_cart</span> ${T('สั่งซื้อสินค้า ↗','Order ↗')}</a>${aB}</div></div></div>`));
   });
 }
-function openMerchModal(id=null){edMc=id;if(id){const m=MERCH.find(x=>x.id===id);if(!m)return;document.getElementById("mcTitle").value=m.th_t;document.getElementById("mcPrice").value=m.th_p;document.getElementById("mcDesc").value=m.th_d;document.getElementById("mcStatus").value=m.status;document.getElementById("mcLink").value=m.link;document.getElementById("mcImgUrl").value=m.img;}else{["mcTitle","mcPrice","mcDesc","mcLink","mcImgUrl"].forEach(k=>document.getElementById(k).value="");document.getElementById("mcStatus").value="instock";}document.getElementById("merchModal").classList.add("on");}
+function openMerchModal(id=null){
+  edMc=id;document.getElementById("mcImgUpload").value="";document.getElementById("mcImgStatus").innerText="";
+  if(id){const m=MERCH.find(x=>x.id===id);if(!m)return;document.getElementById("mcTitle").value=m.th_t;document.getElementById("mcPrice").value=m.th_p;document.getElementById("mcDesc").value=m.th_d;document.getElementById("mcStatus").value=m.status;document.getElementById("mcLink").value=m.link;document.getElementById("mcImgUrl").value=m.img;}
+  else{["mcTitle","mcPrice","mcDesc","mcLink","mcImgUrl"].forEach(k=>document.getElementById(k).value="");document.getElementById("mcStatus").value="instock";}
+  document.getElementById("merchModal").classList.add("on");
+}
 function saveMerch(){const t=document.getElementById("mcTitle").value.trim(),p=document.getElementById("mcPrice").value.trim();if(!t||!p)return;const pl={th_t:t,th_p:p,th_d:document.getElementById("mcDesc").value.trim(),status:document.getElementById("mcStatus").value,link:document.getElementById("mcLink").value.trim()||"#",img:document.getElementById("mcImgUrl").value.trim()||"https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=600&auto=format&fit=crop"};if(edMc){const i=MERCH.findIndex(x=>x.id===edMc);if(i>-1)MERCH[i]={...MERCH[i],...pl};}else{MERCH.push({id:"mc_"+Date.now(),...pl});}saveToDB({MERCH});closeModal("merchModal");renderMerch();}
 function deleteMerch(id){if(!confirm(T("ลบ?","Delete?")))return;MERCH=MERCH.filter(x=>x.id!==id);saveToDB({MERCH});renderMerch();}
 
-// ================= 4. TRAVEL =================
+// 4. TRAVEL
 let edTrv=null;
 function renderTravel(){
   const bx=document.getElementById("venuesContainer");bx.innerHTML="";const isA=(cRole==="admin"||cRole==="head_admin");
@@ -504,112 +493,110 @@ function renderTravel(){
     bx.appendChild(el(`<div class="travel-card glass-panel"><img src="${v.img}" style="width:100%;height:200px;object-fit:cover;border-bottom:1px solid rgba(126,34,206,.1);"><div style="padding:24px;flex-grow:1;display:flex;flex-direction:column;"><div style="font-size:22px;font-weight:700;color:var(--primary);">${P(v,'n')}</div><div style="font-size:14px;color:var(--muted);margin-bottom:12px;display:flex;align-items:center;gap:4px;"><span class="material-symbols-rounded" style="font-size:1.1em">location_on</span> ${P(v,'a')}</div><div style="background:rgba(255,255,255,0.4);backdrop-filter:blur(8px);padding:12px 16px;border-radius:12px;border-left:4px solid var(--accent);font-size:14px;">🚆 <b>${T('วิธีไป:','How to go:')}</b> ${P(v,'h')}</div><div style="width:100%;height:200px;border-radius:16px;overflow:hidden;margin:16px 0;border:1px solid rgba(126,34,206,.2);"><iframe src="${emb}" loading="lazy" allowfullscreen style="width:100%;height:100%;border:none;"></iframe></div><div style="display:flex;justify-content:space-between;align-items:center;"><span style="font-size:13px;font-weight:700;color:var(--muted);">${T('ฮอลล์ / โซนย่อย:','Sub-zones:')}</span><a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(v.map_q)}" target="_blank" style="font-size:14px;font-weight:700;display:flex;align-items:center;gap:4px;"><span class="material-symbols-rounded" style="font-size:1.1em">map</span> ${T('เปิดใน Google Maps ↗','Open in Maps ↗')}</a></div><div style="background:rgba(255,255,255,0.3);padding:12px 18px;border-radius:14px;margin-top:12px;border:1px solid rgba(126,34,206,.1);">${zh||`<div style="font-size:13px;color:var(--muted);">${T('ไม่มีระบุ','None specified')}</div>`}</div>${aB}</div></div>`));
   });
 }
-function openTravelModal(id=null){edTrv=id;if(id){const v=TRAVEL.find(x=>x.id===id);if(!v)return;document.getElementById("trvName").value=v.th_n;document.getElementById("trvArea").value=v.th_a;document.getElementById("trvHow").value=v.th_h;document.getElementById("trvMapQ").value=v.map_q;document.getElementById("trvZones").value=(v.zones||[]).join(", ");document.getElementById("trvImgUrl").value=v.img;}else{["trvName","trvArea","trvHow","trvMapQ","trvZones","trvImgUrl"].forEach(k=>document.getElementById(k).value="");}document.getElementById("travelModal").classList.add("on");}
+function openTravelModal(id=null){
+  edTrv=id;document.getElementById("trvImgUpload").value="";document.getElementById("trvImgStatus").innerText="";
+  if(id){const v=TRAVEL.find(x=>x.id===id);if(!v)return;document.getElementById("trvName").value=v.th_n;document.getElementById("trvArea").value=v.th_a;document.getElementById("trvHow").value=v.th_h;document.getElementById("trvMapQ").value=v.map_q;document.getElementById("trvZones").value=(v.zones||[]).join(", ");document.getElementById("trvImgUrl").value=v.img;}
+  else{["trvName","trvArea","trvHow","trvMapQ","trvZones","trvImgUrl"].forEach(k=>document.getElementById(k).value="");}
+  document.getElementById("travelModal").classList.add("on");
+}
 function saveTravel(){const t=document.getElementById("trvName").value.trim();if(!t)return;const zR=document.getElementById("trvZones").value;const p={th_n:t,th_a:document.getElementById("trvArea").value.trim(),th_h:document.getElementById("trvHow").value.trim(),map_q:document.getElementById("trvMapQ").value.trim()||t,zones:zR?zR.split(",").map(s=>s.trim()).filter(Boolean):[],img:document.getElementById("trvImgUrl").value.trim()||"https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=800&auto=format&fit=crop"};if(edTrv){const i=TRAVEL.findIndex(x=>x.id===edTrv);if(i>-1)TRAVEL[i]={...TRAVEL[i],...p};}else{TRAVEL.push({id:"tr_"+Date.now(),...p});}saveToDB({TRAVEL});closeModal("travelModal");renderTravel();}
 function deleteTravel(id){if(!confirm(T("ลบ?","Delete?")))return;TRAVEL=TRAVEL.filter(x=>x.id!==id);saveToDB({TRAVEL});renderTravel();}
 
-// ================= 9. SEAT MAP (Smart Generator) =================
+// 9. SEAT MAP
 function renderSeatmapSelector(){
-  const s=document.getElementById("smEventSelect"); s.innerHTML=`<option value="">-- ${T('เลือกกิจกรรมที่มีผังที่นั่ง','Select Event with Seatmap')} --</option>`;
+  const s=document.getElementById("smEventSelect");s.innerHTML=`<option value="">-- ${T('เลือกกิจกรรมที่มีผังที่นั่ง','Select Event with Seatmap')} --</option>`;
   if(!SEATMAPS.length){document.getElementById("seatMapCanvas").innerHTML=`<div class="empty">${T('ยังไม่มีการสร้างผังที่นั่ง','No seatmaps created yet')}</div>`;document.getElementById("seatLegend").style.display="none";return;}
   SEATMAPS.forEach(sm=>{const ev=EVENTS.find(x=>x.id===sm.evId);s.innerHTML+=`<option value="${sm.evId}">${ev?P(ev,'t'):"Unknown Event"}</option>`;});
-  if(s.options.length>1&&!s.value)s.selectedIndex=1; renderActiveSeatmap();
+  if(s.options.length>1&&!s.value)s.selectedIndex=1;renderActiveSeatmap();
 }
 function renderActiveSeatmap(){
-  const evId=document.getElementById("smEventSelect").value, cv=document.getElementById("seatMapCanvas"), lg=document.getElementById("seatLegend");
+  const evId=document.getElementById("smEventSelect").value,cv=document.getElementById("seatMapCanvas"),lg=document.getElementById("seatLegend");
   if(!evId){cv.innerHTML=`<div class="empty">${T('กรุณาเลือกงานจากเมนูด้านบนเพื่อดูผังที่นั่ง','Please select an event above')}</div>`;lg.style.display="none";aSM=null;return;}
   aSM=SEATMAPS.find(sm=>sm.evId===evId);if(!aSM)return;
   const tpl=TEMPLATES[aSM.template];
   let h=`<div style="background:rgba(255,255,255,0.4);padding:14px;border-radius:16px 16px 0 0;border:2px solid rgba(126,34,206,0.3);margin:0 auto 30px;max-width:600px;font-weight:700;color:var(--primary);font-size:20px;letter-spacing:3px;">${T('เวที (STAGE)','STAGE')}</div>`;
-  if(tpl && tpl.zones) {
+  if(tpl&&tpl.zones){
     tpl.zones.forEach(z=>{
       h+=`<div style="margin-bottom:32px;"><div style="font-weight:700;color:var(--muted);margin-bottom:12px;font-size:15px;text-align:left;max-width:800px;margin:0 auto 12px;">${z.name}</div>`;
       for(let r=1;r<=z.rows;r++){
         h+=`<div style="display:flex;justify-content:center;gap:8px;margin-bottom:8px;flex-wrap:nowrap;">`;
         for(let c=1;c<=z.cols;c++){
-          const sId=`${z.id}-R${r}-C${c}`, sd=aSM.seats[sId];
-          let cls="seat"; if(z.type==="vip")cls+=" vip";
+          const sId=`${z.id}-R${r}-C${c}`,sd=aSM.seats[sId];
+          let cls="seat";if(z.type==="vip")cls+=" vip";
           if(sd){
-            cls+=" taken"; if(sd.user===cUser)cls+=" me";
-            h+=`<div class="${cls}" style="width:36px;height:36px;flex-shrink:0;border-radius:10px 10px 6px 6px;border:2px solid transparent;position:relative;display:flex;align-items:center;justify-content:center;background:${cls.includes('me')?'var(--accent)':(cls.includes('vip')?'#9333ea':'var(--primary)')};color:#fff;cursor:default;">
-                  <div style="display:none;position:absolute;bottom:120%;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--surface);padding:10px 14px;border-radius:10px;font-size:13px;white-space:nowrap;box-shadow:0 6px 16px rgba(0,0,0,.3);z-index:20;text-align:center;" class="s-tooltip"><b>${sd.flag} ${sd.user}</b><br><span style="color:#aaa;">"${sd.msg}"</span></div>
-                </div>`;
-          }else{ h+=`<div class="${cls}" style="width:36px;height:36px;flex-shrink:0;border-radius:10px 10px 6px 6px;border:2px solid rgba(126,34,206,.15);background:${cls.includes('vip')?'#e9d5ff':'rgba(255,255,255,0.5)'};cursor:pointer;transition:.2s;" onclick="openSeatBookModal('${sId}')" onmouseover="this.style.transform='scale(1.15)';this.style.borderColor='var(--primary)'" onmouseout="this.style.transform='none';this.style.borderColor='rgba(126,34,206,.15)'"></div>`; }
+            cls+=" taken";if(sd.user===cUser)cls+=" me";
+            h+=`<div class="${cls}" style="width:36px;height:36px;flex-shrink:0;border-radius:10px 10px 6px 6px;border:2px solid transparent;position:relative;display:flex;align-items:center;justify-content:center;background:${cls.includes('me')?'var(--accent)':(cls.includes('vip')?'#9333ea':'var(--primary)')};color:#fff;cursor:default;"><div style="display:none;position:absolute;bottom:120%;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--surface);padding:10px 14px;border-radius:10px;font-size:13px;white-space:nowrap;box-shadow:0 6px 16px rgba(0,0,0,.3);z-index:20;text-align:center;" class="s-tooltip"><b>${sd.flag} ${sd.user}</b><br><span style="color:#aaa;">"${sd.msg}"</span></div></div>`;
+          }else{h+=`<div class="${cls}" style="width:36px;height:36px;flex-shrink:0;border-radius:10px 10px 6px 6px;border:2px solid rgba(126,34,206,.15);background:${cls.includes('vip')?'#e9d5ff':'rgba(255,255,255,0.5)'};cursor:pointer;transition:.2s;" onclick="openSeatBookModal('${sId}')"></div>`;}
         }
         h+=`</div>`;
       }
       h+=`</div>`;
     });
-  } else { h += `<div class="empty">Error: Template not found</div>`; }
-  
-  cv.innerHTML=h; lg.style.display="flex";
+  }else{h+=`<div class="empty">Error: Template not found</div>`;}
+  cv.innerHTML=h;lg.style.display="flex";
   cv.querySelectorAll('.taken').forEach(el=>{el.onmouseenter=()=>el.querySelector('.s-tooltip').style.display='block';el.onmouseleave=()=>el.querySelector('.s-tooltip').style.display='none';});
 }
 function openSeatBookModal(sId){
   if(cRole==="guest")return alert(T("กรุณา Login ก่อน เพื่อจองที่นั่งครับ","Please login first to book a seat."));
-  bSeatId=sId; document.getElementById("sbSeatIdLabel").textContent=sId; document.getElementById("sbSeatIdCode").value=sId; document.getElementById("sbUser").value=cUser; document.getElementById("sbFlag").value="🇹🇭"; document.getElementById("sbMsg").value=""; document.getElementById("seatBookModal").classList.add("on");
+  bSeatId=sId;document.getElementById("sbSeatIdLabel").textContent=sId;document.getElementById("sbSeatIdCode").value=sId;document.getElementById("sbUser").value=cUser;document.getElementById("sbFlag").value="🇹🇭";document.getElementById("sbMsg").value="";document.getElementById("seatBookModal").classList.add("on");
 }
 function confirmSeatBooking(){
   if(!aSM||!bSeatId)return;
   aSM.seats[bSeatId]={user:cUser,flag:document.getElementById("sbFlag").value.trim()||"🇹🇭",msg:document.getElementById("sbMsg").value.trim()||T("เย้! ได้ที่นั่งแล้ว","Yay! Booked!")};
-  const idx=SEATMAPS.findIndex(sm=>sm.evId===aSM.evId); if(idx>-1)SEATMAPS[idx]=aSM; saveToDB({SEATMAPS});
-  closeModal("seatBookModal"); renderActiveSeatmap();
+  const idx=SEATMAPS.findIndex(sm=>sm.evId===aSM.evId);if(idx>-1)SEATMAPS[idx]=aSM;saveToDB({SEATMAPS});
+  closeModal("seatBookModal");renderActiveSeatmap();
 }
 function openSeatAdminModal(){
-  const s=document.getElementById("smCreateEventSelect"); s.innerHTML=`<option value="">-- ${T('เลือกงาน','Select Event')} --</option>`+EVENTS.map(e=>{if(SEATMAPS.some(sm=>sm.evId===e.id))return "";return `<option value="${e.id}">${P(e,'t')}</option>`;}).join("");
+  const s=document.getElementById("smCreateEventSelect");s.innerHTML=`<option value="">-- ${T('เลือกงาน','Select Event')} --</option>`+EVENTS.map(e=>{if(SEATMAPS.some(sm=>sm.evId===e.id))return "";return `<option value="${e.id}">${P(e,'t')}</option>`;}).join("");
   document.getElementById("seatAdminModal").classList.add("on");
 }
 function createSeatmap(){
-  const evId=document.getElementById("smCreateEventSelect").value, tplRaw=document.getElementById("smCreateTemplateSelect").value;
+  const evId=document.getElementById("smCreateEventSelect").value,tplRaw=document.getElementById("smCreateTemplateSelect").value;
   if(!evId)return alert(T("เลือกงานก่อนครับ","Select an event first."));
-  let finalTpl = tplRaw;
-  if(tplRaw === "custom"){
-    const lines = document.getElementById("smCustomInput").value.trim().split("\n");
-    let zData = [];
-    lines.forEach((l, i) => {
-      const p = l.split(",");
-      if(p.length >= 3){ zData.push({ id: "Z"+i, name: p[0].trim(), rows: parseInt(p[1])||1, cols: parseInt(p[2])||1, type: i===0?"vip":"normal" }); }
-    });
-    if(!zData.length) return alert("Invalid Zone format.");
-    const newTplId = "custom_" + Date.now();
-    CUSTOM_TPL[newTplId] = { name: "Custom Layout", zones: zData };
-    saveToDB({ CUSTOM_TPL }); TEMPLATES[newTplId] = CUSTOM_TPL[newTplId]; finalTpl = newTplId;
+  let finalTpl=tplRaw;
+  if(tplRaw==="custom"){
+    const lines=document.getElementById("smCustomInput").value.trim().split("\n");
+    let zData=[];
+    lines.forEach((l,i)=>{const p=l.split(",");if(p.length>=3){zData.push({id:"Z"+i,name:p[0].trim(),rows:parseInt(p[1])||1,cols:parseInt(p[2])||1,type:i===0?"vip":"normal"});}});
+    if(!zData.length)return alert("Invalid Zone format.");
+    const newTplId="custom_"+Date.now();
+    CUSTOM_TPL[newTplId]={name:"Custom Layout",zones:zData};
+    saveToDB({CUSTOM_TPL});TEMPLATES[newTplId]=CUSTOM_TPL[newTplId];finalTpl=newTplId;
   }
-  SEATMAPS.push({evId, template:finalTpl, seats:{}}); saveToDB({SEATMAPS});
-  closeModal("seatAdminModal"); renderSeatmapSelector(); document.getElementById("smEventSelect").value=evId; renderActiveSeatmap();
+  SEATMAPS.push({evId,template:finalTpl,seats:{}});saveToDB({SEATMAPS});
+  closeModal("seatAdminModal");renderSeatmapSelector();document.getElementById("smEventSelect").value=evId;renderActiveSeatmap();
 }
 
-// ================= 5. COMMU =================
-function openCommuPostModal(t){if(cRole==="guest"){alert(T("กรุณา Login ก่อนครับ","Please Login."));openLoginModal();return;}document.getElementById("cmType").value=t;document.getElementById("cmBadge").value=t==="ticket"?"Transfer":"Carpool";document.getElementById("cmTitle").value="";document.getElementById("cmDetail").value="";document.getElementById("commuPostModal").classList.add("on");}
+// 5. COMMU
+function openCommuPostModal(t){if(cRole==="guest"){alert(T("กรุณา Login ก่อนครับ","Please Login."));openLoginModal();return;}document.getElementById("cmType").value=t;document.getElementById("cmBadge").value=t==="ticket"?"ส่งต่อ":"แชร์รถ";document.getElementById("cmTitle").value="";document.getElementById("cmDetail").value="";document.getElementById("commuPostModal").classList.add("on");}
 function saveCommuPost(){const t=document.getElementById("cmTitle").value.trim(),d=document.getElementById("cmDetail").value.trim();if(!t||!d)return;COMMU.unshift({id:"cm_"+Date.now(),type:document.getElementById("cmType").value,th_b:document.getElementById("cmBadge").value.trim()||"New",th_t:t,th_d:d});saveToDB({COMMU});closeModal("commuPostModal");renderCommu();}
 function renderCommu(){
-  const tkL=COMMU.filter(c=>c.type==="ticket"), rdL=COMMU.filter(c=>c.type==="ride");
-  document.getElementById("commuTicketCount").textContent=`${tkL.length} ${T('ประกาศ','Posts')}`; document.getElementById("commuRideCount").textContent=`${rdL.length} ${T('ประกาศ','Posts')}`;
-  const tkB=document.getElementById("commuTicketList"); tkB.innerHTML=tkL.length?tkL.map(c=>`<div style="padding:16px 0;border-bottom:1px solid rgba(126,34,206,.1);font-size:14px;"><span class="tag" style="background:#fce7f3;color:#be185d;margin-bottom:6px;">${P(c,'b')}</span><b style="display:block;font-size:16px;margin-bottom:4px;">${P(c,'t')}</b><div style="color:var(--muted);display:flex;align-items:center;gap:4px;"><span class="material-symbols-rounded" style="font-size:1.1em">confirmation_number</span> ${P(c,'d')}</div></div>`).join(""):`<div class="empty">${T('ไม่มีประกาศ','No Posts')}</div>`;
-  const rdB=document.getElementById("commuRideList"); rdB.innerHTML=rdL.length?rdL.map(c=>`<div style="padding:16px 0;border-bottom:1px solid rgba(126,34,206,.1);font-size:14px;"><span class="tag" style="background:var(--surface-alt);color:var(--primary);margin-bottom:6px;">${P(c,'b')}</span><b style="display:block;font-size:16px;margin-bottom:4px;">${P(c,'t')}</b><div style="color:var(--muted);display:flex;align-items:center;gap:4px;"><span class="material-symbols-rounded" style="font-size:1.1em">directions_car</span> ${P(c,'d')}</div></div>`).join(""):`<div class="empty">${T('ไม่มีประกาศ','No Posts')}</div>`;
+  const tkL=COMMU.filter(c=>c.type==="ticket"),rdL=COMMU.filter(c=>c.type==="ride");
+  document.getElementById("commuTicketCount").textContent=`${tkL.length} ${T('ประกาศ','Posts')}`;document.getElementById("commuRideCount").textContent=`${rdL.length} ${T('ประกาศ','Posts')}`;
+  const tkB=document.getElementById("commuTicketList");tkB.innerHTML=tkL.length?tkL.map(c=>`<div style="padding:16px 0;border-bottom:1px solid rgba(126,34,206,.1);font-size:14px;"><span class="tag" style="background:#fce7f3;color:#be185d;margin-bottom:6px;">${P(c,'b')}</span><b style="display:block;font-size:16px;margin-bottom:4px;">${P(c,'t')}</b><div style="color:var(--muted);display:flex;align-items:center;gap:4px;"><span class="material-symbols-rounded" style="font-size:1.1em">confirmation_number</span> ${P(c,'d')}</div></div>`).join(""):`<div class="empty">${T('ไม่มีประกาศ','No Posts')}</div>`;
+  const rdB=document.getElementById("commuRideList");rdB.innerHTML=rdL.length?rdL.map(c=>`<div style="padding:16px 0;border-bottom:1px solid rgba(126,34,206,.1);font-size:14px;"><span class="tag" style="background:var(--surface-alt);color:var(--primary);margin-bottom:6px;">${P(c,'b')}</span><b style="display:block;font-size:16px;margin-bottom:4px;">${P(c,'t')}</b><div style="color:var(--muted);display:flex;align-items:center;gap:4px;"><span class="material-symbols-rounded" style="font-size:1.1em">directions_car</span> ${P(c,'d')}</div></div>`).join(""):`<div class="empty">${T('ไม่มีประกาศ','No Posts')}</div>`;
 }
 
-// ================= 7. ABOUT =================
+// 7. ABOUT
 let edAb=null;
 function renderAbout(){
   const bx=document.getElementById("aboutContainer");bx.innerHTML="";const isH=(cRole==="head_admin");
   ABOUT.forEach((a,idx)=>{
-    const bC=idx>=2?"full-bottom":"";
     const hB=isH?`<div style="margin-top:16px;padding-top:14px;border-top:1px dashed rgba(126,34,206,.2);display:flex;gap:10px;"><button class="chip" style="font-size:12px;" onclick="openAboutModal('${a.id}')">✏️ Edit</button><button class="chip" style="font-size:12px;color:#ef4444;" onclick="deleteAboutCard('${a.id}')">🗑️ Del</button></div>`:"";
-    bx.appendChild(el(`<div class="about-card glass-panel ${bC}"><div><h3 style="color:var(--primary);font-size:20px;margin-bottom:10px;">${P(a,'t')}</h3><p style="margin:0;font-size:15px;color:var(--ink);white-space:pre-line;">${P(a,'d')}</p></div>${hB}</div>`));
+    bx.appendChild(el(`<div class="about-card glass-panel"><div><h3 style="color:var(--primary);font-size:20px;margin-bottom:10px;">${P(a,'t')}</h3><p style="margin:0;font-size:15px;color:var(--ink);white-space:pre-line;">${P(a,'d')}</p></div>${hB}</div>`));
   });
 }
 function openAboutModal(id=null){if(cRole!=="head_admin")return;edAb=id;if(id){const a=ABOUT.find(x=>x.id===id);if(!a)return;document.getElementById("abtTitle").value=a.th_t;document.getElementById("abtDesc").value=a.th_d;}else{document.getElementById("abtTitle").value="";document.getElementById("abtDesc").value="";}document.getElementById("aboutModal").classList.add("on");}
 function saveAboutCard(){const t=document.getElementById("abtTitle").value.trim(),d=document.getElementById("abtDesc").value.trim();if(!t)return;if(edAb){const i=ABOUT.findIndex(x=>x.id===edAb);if(i>-1)ABOUT[i]={...ABOUT[i],th_t:t,th_d:d};}else{ABOUT.push({id:"ab_"+Date.now(),th_t:t,th_d:d});}saveToDB({ABOUT});closeModal("aboutModal");renderAbout();}
 function deleteAboutCard(id){if(!confirm(T("ลบ?","Delete?")))return;ABOUT=ABOUT.filter(x=>x.id!==id);saveToDB({ABOUT});renderAbout();}
 
-// ================= 6. BLESSING WALL (WITH DRAG REORDER FIX) =================
-function saveBW(){saveToDB({BW_WISH, BW_ORD});renderBW();}
+// 6. BLESSING WALL + HEAD ADMIN GIFT CHANGE & CUSTOMIZATION
+function saveBW(){saveToDB({BW_WISH,BW_ORD,BW_GIFTS});renderBW();}
 function sortedBW(){
-  let bN = BW_WISH.slice().sort((a,b)=>b.at-a.at);
-  let pos = {}; BW_ORD.forEach((id,i)=>pos[id]=i);
-  let rest = bN.filter(w=>!(w.id in pos));
-  let ord = bN.filter(w=>w.id in pos).sort((a,b)=>pos[a.id]-pos[b.id]);
+  let bN=BW_WISH.slice().sort((a,b)=>b.at-a.at);
+  let pos={};BW_ORD.forEach((id,i)=>pos[id]=i);
+  let rest=bN.filter(w=>!(w.id in pos));
+  let ord=bN.filter(w=>w.id in pos).sort((a,b)=>pos[a.id]-pos[b.id]);
   return rest.concat(ord);
 }
 
@@ -617,41 +604,77 @@ function renderBW(){
   if(bwDrag)return;
   const bx=document.getElementById("bdayGrid");bx.innerHTML="";
   bwRole=cRole==="head_admin"?"head":(cRole==="admin"?"admin":"guest");
-  const isH=bwRole==="head", isA=bwRole==="admin"||isH;
-  
+  const isH=bwRole==="head",isA=bwRole==="admin"||isH;
   const ls=bwFlt==="all"?sortedBW():sortedBW().filter(w=>w.to===bwFlt);
   document.getElementById("bdayFilters").innerHTML=[["all",T("ทั้งหมด","All")],["ginny","Ginny"],["jayna","Jayna"],["ginjay","GinJay"]].map(f=>`<button class="chip ${bwFlt===f[0]?'active':''}" onclick="bwFlt='${f[0]}';renderBW()" style="${bwFlt===f[0]?'background:var(--primary);color:#fff;':''}">${f[1]}</button>`).join("");
   document.getElementById("bdayChips").innerHTML=`<div class="bday-chip total"><span class="e">💌</span>${T('คำอวยพร','Blessings')} × ${ls.length}</div>`+BW_GIFTS.map(g=>`<div class="bday-chip"><span class="e">${g.e}</span>${P(g,'n')} × ${ls.filter(w=>w.gift===g.id).length}</div>`).join("");
-  document.getElementById("bdayTools").innerHTML=isH?`<label class="demo">Role Test: <select style="padding:6px;border-radius:8px;border:var(--glass-border);background:rgba(255,255,255,0.5);" onchange="cRole=this.value;updateUIRole()"><option value="guest" ${cRole==='guest'?'selected':''}>Guest</option><option value="admin" ${cRole==='admin'?'selected':''}>Admin</option><option value="head_admin" ${cRole==='head_admin'?'selected':''}>Head Admin</option></select></label>`:"";
-  
-  document.getElementById("bdayInfo").textContent=isH?(bwFlt==="all"?T("เรียงใหม่ → เก่า · ลาก ⠿ เพื่อจัดลำดับ","Newest → Oldest · Drag ⠿ to reorder"):T("กำลังกรองอยู่ กลับไปที่ “ทั้งหมด” เพื่อจัดลำดับ","Filtering. Go back to 'All' to reorder.")) : T("เรียงจากใหม่ไปเก่า","Sorted from newest to oldest");
+  document.getElementById("bdayTools").innerHTML=isH?`<button class="chip" onclick="openManageGiftsDlg()">⚙️ ${T('ตั้งค่าของขวัญ','Manage Gifts')}</button><label class="demo">Role: <select style="padding:6px;border-radius:8px;border:var(--glass-border);background:rgba(255,255,255,0.5);" onchange="cRole=this.value;updateUIRole()"><option value="guest" ${cRole==='guest'?'selected':''}>Guest</option><option value="admin" ${cRole==='admin'?'selected':''}>Admin</option><option value="head_admin" ${cRole==='head_admin'?'selected':''}>Head Admin</option></select></label>`:"";
+  document.getElementById("bdayInfo").textContent=isH?(bwFlt==="all"?T("เรียงใหม่ → เก่า · ลาก ⠿ เพื่อจัดลำดับ หรือกดเปลี่ยนของขวัญได้","Newest → Oldest · Drag ⠿ to reorder or change gift"):T("กลับไปที่ “ทั้งหมด” เพื่อจัดลำดับ","Go back to 'All' to reorder.")) : T("เรียงจากใหม่ไปเก่า","Sorted from newest to oldest");
 
   if(!ls.length){bx.innerHTML=`<div class="empty">${T('ยังไม่มีคำอวยพร มาเป็นคนแรกกันนะ 💜','No blessings yet. Be the first! 💜')}</div>`;return;}
-  ls.forEach((w, i)=>{
+  ls.forEach((w)=>{
     const g=BW_GIFTS.find(x=>x.id===w.gift)||BW_GIFTS[0];
-    let aB = "";
-    if(isH && bwFlt==="all") aB += `<button class="chip grip" style="font-size:12px;cursor:grab;padding:4px 12px;" onpointerdown="startDragBW(event, this.closest('article'))"><span class="material-symbols-rounded" style="font-size:1.1em">drag_indicator</span> ${T('ลากจัดเรียง','Reorder')}</button>`;
-    if(isA) aB += `<button class="chip" style="font-size:12px;color:#d6336c;padding:4px 12px;margin-left:8px;" onclick="deleteBW('${w.id}')">${T('ลบ','Del')}</button>`;
-    
-    bx.appendChild(el(`<article class="wish glass-panel" data-id="${w.id}"><div style="display:flex;justify-content:space-between;align-items:center;"><p style="margin:0;font-weight:700;font-size:17px;color:var(--w-pt);">${w.name||'Anonymous'}</p><span style="font-size:1.5rem;border-radius:50%;width:3.2rem;height:3.2rem;display:flex;align-items:center;justify-content:center;background:var(--w-bg2);border:3px solid ${w.to==='ginny'?'#8b5cf6':(w.to==='jayna'?'#ffb800':'var(--w-purple)')};box-shadow:0 4px 12px rgba(0,0,0,0.1);">${g.e}</span></div><p style="margin:14px 0;line-height:1.75;font-size:15px;white-space:pre-wrap;overflow-wrap:anywhere;">${w.text}</p><div style="display:flex;justify-content:space-between;color:var(--muted);font-size:13px;align-items:center;"><span>${new Date(w.at).toLocaleDateString()}</span><span style="color:var(--w-pt);font-weight:700;background:rgba(255,255,255,0.5);padding:4px 12px;border-radius:999px;">${T('ถึง','To')} ${w.to==='ginjay'?'GinJay':(w.to==='ginny'?'Ginny':'Jayna')}</span></div><div style="display:flex;margin-top:14px;">${aB}</div></article>`));
+    let aB="";
+    if(isH&&bwFlt==="all")aB+=`<button class="chip grip" style="font-size:12px;cursor:grab;padding:4px 10px;" onpointerdown="startDragBW(event,this.closest('article'))">⠿ ${T('ลาก','Move')}</button>`;
+    if(isH)aB+=`<button class="chip" style="font-size:12px;padding:4px 10px;margin-left:6px;" onclick="openChangeWishGift('${w.id}')">🎁 ${T('เปลี่ยนของขวัญ','Change Gift')}</button>`;
+    if(isA)aB+=`<button class="chip" style="font-size:12px;color:#d6336c;padding:4px 10px;margin-left:6px;" onclick="deleteBW('${w.id}')">🗑️ ${T('ลบ','Del')}</button>`;
+    bx.appendChild(el(`<article class="wish glass-panel" data-id="${w.id}"><div style="display:flex;justify-content:space-between;align-items:center;"><p style="margin:0;font-weight:700;font-size:17px;color:var(--w-pt);">${w.name||'Anonymous'}</p><span title="${isH?'คลิกเพื่อเปลี่ยนของขวัญ':''}" onclick="${isH?`openChangeWishGift('${w.id}')`:''}" style="cursor:${isH?'pointer':'default'};font-size:1.5rem;border-radius:50%;width:3.2rem;height:3.2rem;display:flex;align-items:center;justify-content:center;background:var(--w-bg2);border:3px solid ${w.to==='ginny'?'#8b5cf6':(w.to==='jayna'?'#ffb800':'var(--w-purple)')};box-shadow:0 4px 12px rgba(0,0,0,0.1);">${g.e}</span></div><p style="margin:14px 0;line-height:1.75;font-size:15px;white-space:pre-wrap;overflow-wrap:anywhere;">${w.text}</p><div style="display:flex;justify-content:space-between;color:var(--muted);font-size:13px;align-items:center;"><span>${new Date(w.at).toLocaleDateString()}</span><span style="color:var(--w-pt);font-weight:700;background:rgba(255,255,255,0.5);padding:4px 12px;border-radius:999px;">${T('ถึง','To')} ${w.to==='ginjay'?'GinJay':(w.to==='ginny'?'Ginny':'Jayna')}</span></div><div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:14px;">${aB}</div></article>`));
   });
 }
 function deleteBW(id){if(confirm(T("ลบคำอวยพรนี้?","Delete this blessing?"))){BW_WISH=BW_WISH.filter(w=>w.id!==id);BW_ORD=BW_ORD.filter(i=>i!==id);saveBW();}}
 
-// Drag & Drop for Blessing Wall
+// ฟังก์ชันของ Head Admin สำหรับเปลี่ยนของขวัญในการ์ดอวยพรแต่ละใบ
+function openChangeWishGift(wId){
+  const w=BW_WISH.find(x=>x.id===wId);if(!w)return;
+  const d=document.getElementById("dlg");
+  const gHtml=BW_GIFTS.map(g=>`<button class="chip" style="font-size:2rem;padding:10px 14px;border:${w.gift===g.id?'3px solid var(--primary)':'var(--glass-border)'};background:rgba(255,255,255,0.6);" onclick="setWishGift('${wId}','${g.id}')">${g.e} <span style="font-size:14px;">${P(g,'n')}</span></button>`).join("");
+  d.innerHTML=`<h3 style="text-align:center;color:var(--w-pt);margin-bottom:16px;">🎁 ${T('เลือกของขวัญใหม่ให้การ์ดของ','Change Gift for')} "${w.name}"</h3><div style="display:flex;gap:10px;justify-content:center;margin:20px 0;flex-wrap:wrap;">${gHtml}</div><div style="text-align:center;"><button class="chip" onclick="document.getElementById('dlg').close()">${T('ปิด','Close')}</button></div>`;
+  d.showModal();
+}
+function setWishGift(wId,gId){
+  const w=BW_WISH.find(x=>x.id===wId);
+  if(w){w.gift=gId;saveBW();}
+  document.getElementById("dlg").close();
+}
+
+// ฟังก์ชันของ Head Admin สำหรับตั้งค่า/เพิ่ม/แก้ไขชนิดของขวัญ
+function openManageGiftsDlg(){
+  const d=document.getElementById("dlg");
+  const listHtml=BW_GIFTS.map((g,idx)=>`<div style="display:flex;gap:8px;margin-bottom:8px;align-items:center;"><input type="text" value="${g.e}" id="ge_${idx}" style="width:60px;text-align:center;padding:8px;border-radius:10px;border:1px solid var(--line);"><input type="text" value="${g.th_n}" id="gth_${idx}" style="flex:1;padding:8px;border-radius:10px;border:1px solid var(--line);"><button class="chip" style="color:#ef4444;" onclick="removeGiftType(${idx})">🗑️</button></div>`).join("");
+  d.innerHTML=`<h3 style="color:var(--w-pt);margin-bottom:14px;">⚙️ ${T('ตั้งค่ารายการของขวัญ','Manage Gift Types')}</h3><div style="max-height:260px;overflow-y:auto;margin-bottom:14px;">${listHtml}</div><div style="display:flex;gap:8px;margin-bottom:20px;border-top:1px dashed var(--line);padding-top:12px;"><input type="text" id="newG_e" placeholder="อีโมจิ 🎀" style="width:80px;padding:8px;border-radius:10px;border:1px solid var(--line);"><input type="text" id="newG_n" placeholder="ชื่อของขวัญ" style="flex:1;padding:8px;border-radius:10px;border:1px solid var(--line);"><button class="btn-submit" onclick="addGiftType()">+ เพิ่ม</button></div><div style="display:flex;justify-content:space-between;"><button class="chip" onclick="document.getElementById('dlg').close()">ยกเลิก</button><button class="btn-submit" onclick="saveGiftTypes()">บันทึกการตั้งค่า</button></div>`;
+  d.showModal();
+}
+function addGiftType(){
+  const e=document.getElementById("newG_e").value.trim(),n=document.getElementById("newG_n").value.trim();
+  if(!e||!n)return;
+  BW_GIFTS.push({id:"g_"+Date.now(),e,th_n:n,en_n:n});
+  openManageGiftsDlg();
+}
+function removeGiftType(idx){
+  if(BW_GIFTS.length<=1)return alert("ต้องมีของขวัญอย่างน้อย 1 ชิ้นครับ");
+  BW_GIFTS.splice(idx,1);openManageGiftsDlg();
+}
+function saveGiftTypes(){
+  BW_GIFTS.forEach((g,idx)=>{
+    const elE=document.getElementById(`ge_${idx}`),elTh=document.getElementById(`gth_${idx}`);
+    if(elE&&elTh){g.e=elE.value.trim()||g.e;g.th_n=elTh.value.trim()||g.th_n;}
+  });
+  saveBW();document.getElementById("dlg").close();
+}
+
 function startDragBW(ev,card){
-  if(ev.button>0)return; ev.preventDefault();
-  const grid=document.getElementById("bdayGrid"), r=card.getBoundingClientRect(), ox=ev.clientX-r.left, oy=ev.clientY-r.top;
-  let x=ev.clientX, y=ev.clientY, raf=0;
+  if(ev.button>0)return;ev.preventDefault();
+  const grid=document.getElementById("bdayGrid"),r=card.getBoundingClientRect(),ox=ev.clientX-r.left,oy=ev.clientY-r.top;
+  let x=ev.clientX,y=ev.clientY,raf=0;
   const ids=()=>[].map.call(grid.children,c=>c.dataset.id);
   const start=ids().join();
-  const ghost=card.cloneNode(true); ghost.classList.add("ghost"); ghost.style.width=r.width+"px";
-  card.classList.add("placeholder"); document.body.append(ghost); document.body.classList.add("dragging");
+  const ghost=card.cloneNode(true);ghost.classList.add("ghost");ghost.style.width=r.width+"px";
+  card.classList.add("placeholder");document.body.append(ghost);document.body.classList.add("dragging");
   bwDrag=true;
   function frame(){
-    ghost.style.left=(x-ox)+"px"; ghost.style.top=(y-oy)+"px";
-    if(y<90)scrollBy(0,-16); else if(y>innerHeight-90)scrollBy(0,16);
-    const elAt=document.elementFromPoint(x,y), over=elAt&&elAt.closest?elAt.closest(".wish"):null;
+    ghost.style.left=(x-ox)+"px";ghost.style.top=(y-oy)+"px";
+    if(y<90)scrollBy(0,-16);else if(y>innerHeight-90)scrollBy(0,16);
+    const elAt=document.elementFromPoint(x,y),over=elAt&&elAt.closest?elAt.closest(".wish"):null;
     if(over&&over!==card&&over.parentNode===grid){
       const b=over.getBoundingClientRect();
       if(x>b.left+b.width*.2&&x<b.right-b.width*.2&&y>b.top+b.height*.2&&y<b.bottom-b.height*.2){
@@ -664,11 +687,11 @@ function startDragBW(ev,card){
   }
   function onMove(e){x=e.clientX;y=e.clientY;}
   function end(){
-    cancelAnimationFrame(raf); removeEventListener("pointermove",onMove); removeEventListener("pointerup",end); removeEventListener("pointercancel",end);
-    ghost.remove(); card.classList.remove("placeholder"); document.body.classList.remove("dragging"); bwDrag=false;
-    const now=ids(); if(now.join()!==start){BW_ORD=now; saveBW();} else {renderBW();}
+    cancelAnimationFrame(raf);removeEventListener("pointermove",onMove);removeEventListener("pointerup",end);removeEventListener("pointercancel",end);
+    ghost.remove();card.classList.remove("placeholder");document.body.classList.remove("dragging");bwDrag=false;
+    const now=ids();if(now.join()!==start){BW_ORD=now;saveBW();}else{renderBW();}
   }
-  addEventListener("pointermove",onMove); addEventListener("pointerup",end); addEventListener("pointercancel",end);
+  addEventListener("pointermove",onMove);addEventListener("pointerup",end);addEventListener("pointercancel",end);
   frame();
 }
 
@@ -687,14 +710,43 @@ function bwWrite(gid,to){
   d.innerHTML=`<h2 style="text-align:center;color:var(--w-pt);margin-bottom:20px;">${T('เขียนคำอวยพร','Write a Blessing')}</h2><div class="form-group"><input type="text" id="bwN" placeholder="${T('ชื่อของคุณ...','Your name...')}" style="border-color:var(--w-purple);"></div><div class="form-group"><textarea id="bwT" rows="5" placeholder="${T('เขียนความในใจ...','Write your message...')}" style="border-color:var(--w-purple);"></textarea></div><div style="display:flex;justify-content:space-between;margin-top:24px;"><button class="btn-submit" style="background:rgba(255,255,255,0.4);color:var(--ink);box-shadow:none;border:var(--glass-border);" onclick="document.getElementById('dlg').close()">${T('ยกเลิก','Cancel')}</button><button class="btn-submit" style="background:var(--w-purple);" onclick="bwSave('${gid}','${to}')">${T('ส่งคำอวยพร 💜','Send 💜')}</button></div>`;
 }
 function bwSave(gid,to){
-  const n=document.getElementById("bwN").value.trim(), t=document.getElementById("bwT").value.trim();
+  const n=document.getElementById("bwN").value.trim(),t=document.getElementById("bwT").value.trim();
   if(!n||!t)return alert(T("ใส่ชื่อและข้อความด้วยน้า","Please enter your name and message."));
   BW_WISH.push({id:"w_"+Date.now(),name:n,text:t,gift:gid,to:to,at:Date.now()});
-  BW_ORD=sortedBW().map(w=>w.id); 
-  document.getElementById("dlg").close(); saveBW(); alert(T("ส่งคำอวยพรเรียบร้อย 💜","Blessing sent 💜"));
+  BW_ORD=sortedBW().map(w=>w.id);
+  document.getElementById("dlg").close();saveBW();alert(T("ส่งคำอวยพรเรียบร้อย 💜","Blessing sent 💜"));
 }
 
-// INIT
+// ระบบอัปโหลดรูปภาพผ่าน ImgBB อัตโนมัติ
+async function handleImgUpload(inputElement,targetInputId,statusId){
+  const file=inputElement.files[0];if(!file)return;
+  const statusBox=document.getElementById(statusId);
+  statusBox.innerText="⏳ กำลังอัปโหลดรูปภาพ รอสักครู่...";
+  statusBox.style.color="var(--muted)";
+  const formData=new FormData();formData.append('image',file);
+
+  // ใส่ API Key ของเว็บ ImgBB ตรงนี้ (เมื่อสมัครเสร็จแล้ว)
+  const apiKey="ใส่_API_KEY_IMGBB_ตรงนี้";
+
+  if(apiKey==="ใส่_API_KEY_IMGBB_ตรงนี้"){
+    statusBox.innerText="⚠️ ยังไม่ได้ใส่ API Key ของ ImgBB (วางลิงก์รูปในช่องด้านล่างแทนไปก่อนได้เลยครับ)";
+    statusBox.style.color="#f59e0b";
+    return;
+  }
+  try{
+    const response=await fetch(`https://api.imgbb.com/1/upload?key=${apiKey}`,{method:'POST',body:formData});
+    const data=await response.json();
+    if(data.success){
+      document.getElementById(targetInputId).value=data.data.url;
+      statusBox.innerText="✅ อัปโหลดรูปสำเร็จแล้ว! (กดบันทึกได้เลย)";
+      statusBox.style.color="#15803d";
+    }else{throw new Error("Upload Failed");}
+  }catch(error){
+    statusBox.innerText="❌ อัปโหลดไม่สำเร็จ กรุณาลองใหม่ หรือวางลิงก์รูปแทน";
+    statusBox.style.color="#ef4444";
+  }
+}
+
 loadDataFromDB();
 </script>
 </body>
