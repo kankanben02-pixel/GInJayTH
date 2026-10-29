@@ -273,9 +273,8 @@ body[data-role="admin"] .head-only{display:none!important}
 
 <script>
 // =========================================
-// DATA & LOGIC V23 (Bilingual + Smart Gen Edition)
+// DATA & LOGIC V23 (Bilingual + Smart Gen Edition + MongoDB Ready)
 // =========================================
-const K_EV="g23_e",K_TK="g23_t",K_SR="g23_s",K_MC="g23_m",K_SM="g23_sm",K_TR="g23_tr",K_CM="g23_cm",K_AB="g23_ab",K_PL="g23_p",K_AD="g23_a",K_BW="g23_bw",K_BO="g23_bo";
 const HEAD_ADMIN_USER="GinJay17",HEAD_ADMIN_PASS="พกginjay",TODAY="2026-10-26";
 const TH_M=["ม.ค.","ก.พ.","มี.ค.","เม.ย.","พ.ค.","มิ.ย.","ก.ค.","ส.ค.","ก.ย.","ต.ค.","พ.ย.","ธ.ค."], TH_FM=["มกราคม","กุมภาพันธ์","มีนาคม","เมษายน","พฤษภาคม","มิถุนายน","กรกฎาคม","สิงหาคม","กันยายน","ตุลาคม","พฤศจิกายน","ธันวาคม"];
 const EN_M=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"], EN_FM=["January","February","March","April","May","June","July","August","September","October","November","December"];
@@ -285,7 +284,7 @@ let cRole="guest", cUser="Guest", currLang="th";
 const T = (th, en) => currLang === 'th' ? th : en;
 const P = (obj, key) => obj[`${currLang}_${key}`] || obj[`th_${key}`] || obj[key] || ''; 
 
-// Mock Data (Supports multi-lang keys, fallbacks to th_)
+// Mock Data
 const DEF_EV=[{id:"ev15",d:"2026-10-22",time:"16:00 น.",artist:"duo",th_c:"รอบพิเศษ",en_c:"Special Event",th_t:"รับจ้างเลิกรัก : Love on Hire First EP",th_v:"Siam Pavalai สยามพารากอน",en_v:"Siam Pavalai Siam Paragon",ticketUrl:"#",img:"https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=600&auto=format&fit=crop"},{id:"ev18",d:"2026-10-29",time:"20:00 น.",artist:"duo",th_c:"ซีรีส์ออนแอร์",en_c:"Series On Air",th_t:"รับจ้างเลิกรัก EP.2",en_t:"Love on Hire EP.2",th_v:"WeTV",img:"https://images.unsplash.com/photo-1485846234645-a62644f84728?w=600&auto=format&fit=crop"}];
 const DEF_TK=[{id:"tk1",evId:"ev15",d:"22",th_mo:"ต.ค. 69",en_mo:"Oct 26",th_t:"Love on Hire First EP",th_m:"บัตร 2,000–2,800 บาท",en_m:"Ticket 2,000–2,800 THB",status:"ended",url:"#"}];
 const DEF_SR=[{id:"s2",wcat:"acting",k:"air",th_t:"รับจ้างเลิกรัก (Love on Hire)",en_t:"Love on Hire",net:"WeTV Original",tr:"https://www.youtube.com/watch?v=dQw4w9WgXcQ",img:"https://images.unsplash.com/photo-1485846234645-a62644f84728?w=800&auto=format&fit=crop"}];
@@ -294,10 +293,21 @@ const DEF_SM=[{evId:"ev15",template:"pavalai",seats:{"VIP-R1-C5":{user:"AlKey_Bo
 const DEF_TR=[{id:"tr1",img:"https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=800&auto=format&fit=crop",th_n:"Siam Paragon",th_a:"กรุงเทพฯ (สยาม)",en_a:"Bangkok (Siam)",th_h:"BTS ลงสถานีสยาม",en_h:"Take BTS to Siam Station",map_q:"Siam Paragon",zones:["Siam Pavalai ชั้น 6 / 6th Floor"]}];
 const DEF_CM=[{id:"cm1",type:"ticket",th_b:"ส่งต่อ",en_b:"Transfer",th_t:"Love on Hire First EP · 22 ต.ค.",en_t:"Love on Hire First EP · 22 Oct",th_d:"1 ใบ · โซน A · 2,000 บาท · ติดต่อ X @AlKey_fan",en_d:"1 Ticket · Zone A · 2000 THB · DM X @AlKey_fan"}];
 const DEF_AB=[{id:"ab1",th_t:"🦙 จินนี่ ณัฐณิชา",en_t:"🦙 Ginny Natnicha",th_d:"เกิด 17 ธันวาคม 2000 สังกัด North Star",en_d:"Born Dec 17, 2000. Label: North Star"},{id:"ab2",th_t:"🐒 เจน่า แองเจลิน่า",en_t:"🐒 Jayna Angelina",th_d:"เกิด 17 กุมภาพันธ์ 2006 สังกัด North Star",en_d:"Born Feb 17, 2006. Label: North Star"}];
+const BW_GIFTS=[{id:"sunflower",e:"🌻",th_n:"ทานตะวัน",en_n:"Sunflower"},{id:"salad",e:"🥬",th_n:"ผักสลัด",en_n:"Lettuce"},{id:"mic",e:"🎤",th_n:"ไมโครโฟน",en_n:"Mic"},{id:"chick",e:"🐥",th_n:"น้องเจี๊ยบ",en_n:"Chick"},{id:"potion",e:"🧪",th_n:"โพชั่น",en_n:"Potion"},{id:"bomb",e:"💣",th_n:"ระเบิด",en_n:"Bomb"}];
 
 let EVENTS=DEF_EV, TICKETS=DEF_TK, SERIES=DEF_SR, MERCH=DEF_MC, SEATMAPS=DEF_SM, TRAVEL=DEF_TR, COMMU=DEF_CM, ABOUT=DEF_AB;
-let MY_PLAN={}, CUSTOM_ADMINS=[];
+let MY_PLAN={}, CUSTOM_ADMINS=[], CUSTOM_TPL={};
+let BW_WISH=[{id:"w1",name:"AlKey Members",text:"Wish you massive success! 💜💛",gift:"sunflower",to:"ginjay",at:Date.now()}];
+let BW_ORD=[];
+let bwFlt="all", bwRole="guest", bwDrag=false;
+let aSM=null, bSeatId=null;
 
+let TEMPLATES = {
+  pavalai: { name:"Siam Pavalai (3 Zones)", zones: [{id:"VIP",name:"VIP Zone",rows:2,cols:10,type:"vip"},{id:"A",name:"Zone A",rows:3,cols:12,type:"normal"},{id:"B",name:"Zone B",rows:4,cols:14,type:"normal"}] },
+  bravo: { name:"BRAVO BKK (2 Zones)", zones: [{id:"VIP",name:"VIP Standing",rows:3,cols:12,type:"vip"},{id:"GA",name:"General Admission",rows:4,cols:16,type:"normal"}] }
+};
+
+// Database Connector
 async function loadDataFromDB() {
   try {
     const res = await fetch('/api/data');
@@ -312,6 +322,12 @@ async function loadDataFromDB() {
     if(db.ABOUT) ABOUT = db.ABOUT;
     if(db.MY_PLAN) MY_PLAN = db.MY_PLAN;
     if(db.CUSTOM_ADMINS) CUSTOM_ADMINS = db.CUSTOM_ADMINS;
+    if(db.BW_WISH) BW_WISH = db.BW_WISH;
+    if(db.BW_ORD) BW_ORD = db.BW_ORD;
+    if(db.CUSTOM_TPL) {
+       CUSTOM_TPL = db.CUSTOM_TPL;
+       Object.assign(TEMPLATES, CUSTOM_TPL);
+    }
     updateUIRole();
   } catch(e) {
     console.error("Load failed", e);
@@ -329,7 +345,6 @@ async function saveToDB(payload) {
 
 function el(h){const d=document.createElement("div");d.innerHTML=h.trim();return d.firstElementChild}
 function closeModal(id){document.getElementById(id).classList.remove("on")}
-
 function updateLangUI() {
   document.querySelectorAll("[data-th]").forEach(el => { el.innerHTML = el.getAttribute(`data-${currLang}`); });
   document.querySelectorAll("[data-pth]").forEach(el => { el.placeholder = el.getAttribute(`data-p${currLang}`); });
@@ -354,8 +369,8 @@ function toggleAdminLoginView(s){document.getElementById("socialLoginState").sty
 function doSocialLogin(p){cRole="user";cUser=`AlKey_${p}`;updateUIRole();closeModal("loginModal");switchTab("seatmap");alert(T(`ล็อกอินด้วย ${p} สำเร็จ! ไปเล่นผังที่นั่งกันเลย`,`Logged in via ${p}! Let's try the Seatmap.`))}
 function doAdminLogin(){const u=document.getElementById("loginUser").value.trim(),p=document.getElementById("loginPass").value.trim();if(u===HEAD_ADMIN_USER&&p===HEAD_ADMIN_PASS){cRole="head_admin";cUser=u;updateUIRole();closeModal("loginModal")}else{const f=CUSTOM_ADMINS.find(a=>a.u===u&&a.p===p);if(f){cRole="admin";cUser=u;updateUIRole();closeModal("loginModal")}else alert(T("รหัสผิด!","Wrong Password!"))}}
 function openManageAdminsModal(){const bx=document.getElementById("adminListContainer");bx.innerHTML=CUSTOM_ADMINS.length?CUSTOM_ADMINS.map(a=>`<div style="display:flex;justify-content:space-between;padding:12px;background:rgba(255,255,255,0.4);border:1px solid rgba(126,34,206,0.2);border-radius:12px;margin-bottom:8px;"><span><b>${a.u}</b> (${T('รหัส','Pass')}: ${a.p})</span><button style="color:#ef4444;font-weight:700;font-size:13px;" onclick="deleteCustomAdmin('${a.u}')">${T('ลบ','Del')}</button></div>`).join(""):`<div class="empty">${T('ไม่มีแอดมินเสริม','No custom admins')}</div>`;document.getElementById("manageAdminsModal").classList.add("on")}
-function addCustomAdmin(){const u=document.getElementById("newAdminUser").value.trim(),p=document.getElementById("newAdminPass").value.trim();if(!u||!p)return;CUSTOM_ADMINS.push({u,p});localStorage.setItem(K_AD,JSON.stringify(CUSTOM_ADMINS));document.getElementById("newAdminUser").value="";document.getElementById("newAdminPass").value="";openManageAdminsModal()}
-function deleteCustomAdmin(u){CUSTOM_ADMINS=CUSTOM_ADMINS.filter(a=>a.u!==u);localStorage.setItem(K_AD,JSON.stringify(CUSTOM_ADMINS));openManageAdminsModal()}
+function addCustomAdmin(){const u=document.getElementById("newAdminUser").value.trim(),p=document.getElementById("newAdminPass").value.trim();if(!u||!p)return;CUSTOM_ADMINS.push({u,p});saveToDB({CUSTOM_ADMINS});document.getElementById("newAdminUser").value="";document.getElementById("newAdminPass").value="";openManageAdminsModal()}
+function deleteCustomAdmin(u){CUSTOM_ADMINS=CUSTOM_ADMINS.filter(a=>a.u!==u);saveToDB({CUSTOM_ADMINS});openManageAdminsModal()}
 
 // ================= NAV =================
 function switchTab(id){
@@ -410,7 +425,7 @@ function openEventDetailModal(id){
   document.getElementById("eventDetailModal").classList.add("on");
 }
 function goToSeatMapFromEvent(){closeModal('eventDetailModal');switchTab('seatmap');document.getElementById("smEventSelect").value=EVENTS.find(x=>x.id===document.getElementById("smEventSelect").options[document.getElementById("smEventSelect").selectedIndex]?.value)?.id || ""; renderActiveSeatmap();}
-function togglePlan(id){if(MY_PLAN[id])delete MY_PLAN[id];else MY_PLAN[id]=1;localStorage.setItem(K_PL,JSON.stringify(MY_PLAN));renderAllSched()}
+function togglePlan(id){if(MY_PLAN[id])delete MY_PLAN[id];else MY_PLAN[id]=1;saveToDB({MY_PLAN});renderAllSched()}
 document.getElementById("prevMonthBtn").onclick=()=>{cMo--;if(cMo<0){cMo=11;cYr--;}sDt=null;renderAllSched()};
 document.getElementById("nextMonthBtn").onclick=()=>{cMo++;if(cMo>11){cMo=0;cYr++;}sDt=null;renderAllSched()};
 document.getElementById("btnCalView").onclick=()=>{document.getElementById("btnCalView").classList.add("active");document.getElementById("btnListView").classList.remove("active");document.getElementById("calContainer").classList.add("active");document.getElementById("listContainer").classList.remove("active");};
@@ -418,8 +433,8 @@ document.getElementById("btnListView").onclick=()=>{document.getElementById("btn
 document.getElementById("fSched").addEventListener("click",e=>{const b=e.target.closest(".chip");if(!b)return;document.querySelectorAll("#fSched .chip").forEach(c=>c.setAttribute("aria-pressed",c===b));sf=b.dataset.f;renderAllSched()});
 let edEv=null;
 function openEventModal(id=null){if(cRole==="guest")return alert(T("กรุณา Login ก่อนครับ","Please Login first."));edEv=id;if(id){const e=EVENTS.find(x=>x.id===id);if(!e)return;document.getElementById("evTitleTh").value=e.th_t;document.getElementById("evDate").value=e.d;document.getElementById("evTime").value=e.time||"";document.getElementById("evCat").value=e.th_c||"";document.getElementById("evVenueTh").value=e.th_v;document.getElementById("evImgUrl").value=e.img||"";}else{["evTitleTh","evTime","evCat","evVenueTh","evImgUrl"].forEach(k=>document.getElementById(k).value="");document.getElementById("evDate").value=sDt||TODAY;}document.getElementById("eventModal").classList.add("on")}
-function saveEvent(){const t=document.getElementById("evTitleTh").value.trim(),d=document.getElementById("evDate").value;if(!t||!d)return;const p={th_t:t,d,time:document.getElementById("evTime").value.trim(),artist:document.getElementById("evArtist").value,th_c:document.getElementById("evCat").value.trim(),th_v:document.getElementById("evVenueTh").value.trim(),img:document.getElementById("evImgUrl").value.trim()||"https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=600&auto=format&fit=crop"};if(edEv){const i=EVENTS.findIndex(x=>x.id===edEv);if(i>-1)EVENTS[i]={...EVENTS[i],...p}}else{EVENTS.push({id:"ev_"+Date.now(),...p})}localStorage.setItem(K_EV,JSON.stringify(EVENTS));closeModal("eventModal");renderAllSched()}
-function deleteEvent(id){if(!confirm(T("ลบ?","Delete?")))return;EVENTS=EVENTS.filter(x=>x.id!==id);localStorage.setItem(K_EV,JSON.stringify(EVENTS));renderAllSched()}
+function saveEvent(){const t=document.getElementById("evTitleTh").value.trim(),d=document.getElementById("evDate").value;if(!t||!d)return;const p={th_t:t,d,time:document.getElementById("evTime").value.trim(),artist:document.getElementById("evArtist").value,th_c:document.getElementById("evCat").value.trim(),th_v:document.getElementById("evVenueTh").value.trim(),img:document.getElementById("evImgUrl").value.trim()||"https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=600&auto=format&fit=crop"};if(edEv){const i=EVENTS.findIndex(x=>x.id===edEv);if(i>-1)EVENTS[i]={...EVENTS[i],...p}}else{EVENTS.push({id:"ev_"+Date.now(),...p})}saveToDB({EVENTS});closeModal("eventModal");renderAllSched()}
+function deleteEvent(id){if(!confirm(T("ลบ?","Delete?")))return;EVENTS=EVENTS.filter(x=>x.id!==id);saveToDB({EVENTS});renderAllSched()}
 
 // ================= 2. TICKETS =================
 let edTk=null;
@@ -437,8 +452,8 @@ function openTicketModal(id=null){
   document.getElementById("ticketModal").classList.add("on");
 }
 function fillTicketFromEvent(){const evId=document.getElementById("tkEventSelect").value;const ev=EVENTS.find(x=>x.id===evId);if(!ev)return;const p=ev.d.split("-");document.getElementById("tkTitle").value=ev.th_t;document.getElementById("tkDay").value=+p[2];document.getElementById("tkMonth").value=`${TH_M[+p[1]-1]} ${String(+p[0]+543).slice(-2)}`;document.getElementById("tkMeta").value=`สถานที่: ${ev.th_v} ${ev.time?'· เวลา '+ev.time:''}`;}
-function saveTicket(){const t=document.getElementById("tkTitle").value.trim();if(!t)return;const payload={evId:document.getElementById("tkEventSelect").value,th_t:t,d:document.getElementById("tkDay").value.trim(),th_mo:document.getElementById("tkMonth").value.trim(),th_m:document.getElementById("tkMeta").value.trim(),url:document.getElementById("tkUrl").value.trim()||"#",status:document.getElementById("tkStatus").value};if(edTk){const i=TICKETS.findIndex(x=>x.id===edTk);if(i>-1)TICKETS[i]={...TICKETS[i],...payload};}else{TICKETS.unshift({id:"tk_"+Date.now(),...payload});}localStorage.setItem(K_TK,JSON.stringify(TICKETS));closeModal("ticketModal");renderTickets();}
-function deleteTicket(id){if(!confirm(T("ลบ?","Delete?")))return;TICKETS=TICKETS.filter(x=>x.id!==id);localStorage.setItem(K_TK,JSON.stringify(TICKETS));renderTickets();}
+function saveTicket(){const t=document.getElementById("tkTitle").value.trim();if(!t)return;const payload={evId:document.getElementById("tkEventSelect").value,th_t:t,d:document.getElementById("tkDay").value.trim(),th_mo:document.getElementById("tkMonth").value.trim(),th_m:document.getElementById("tkMeta").value.trim(),url:document.getElementById("tkUrl").value.trim()||"#",status:document.getElementById("tkStatus").value};if(edTk){const i=TICKETS.findIndex(x=>x.id===edTk);if(i>-1)TICKETS[i]={...TICKETS[i],...payload};}else{TICKETS.unshift({id:"tk_"+Date.now(),...payload});}saveToDB({TICKETS});closeModal("ticketModal");renderTickets();}
+function deleteTicket(id){if(!confirm(T("ลบ?","Delete?")))return;TICKETS=TICKETS.filter(x=>x.id!==id);saveToDB({TICKETS});renderTickets();}
 
 // ================= 3. SERIES =================
 let cWC="acting", ssf="all";
@@ -457,8 +472,8 @@ document.getElementById("worksCatMenu").addEventListener("click",e=>{const b=e.t
 document.getElementById("fSeries").addEventListener("click",e=>{const b=e.target.closest(".chip");if(!b)return;document.querySelectorAll("#fSeries .chip").forEach(c=>c.setAttribute("aria-pressed",c===b));ssf=b.dataset.f;renderSeries();});
 let edSr=null;
 function openSeriesAdminModal(id=null){edSr=id;if(id){const s=SERIES.find(x=>x.id===id);if(!s)return;document.getElementById("serWCat").value=s.wcat||"acting";document.getElementById("serTitleTh").value=s.th_t;document.getElementById("serStatusKey").value=s.k;document.getElementById("serNet").value=s.net;document.getElementById("serTrailer").value=s.tr||"";document.getElementById("serImgUrl").value=s.img||"";}else{document.getElementById("serWCat").value=cWC;["serTitleTh","serNet","serTrailer","serImgUrl"].forEach(k=>document.getElementById(k).value="");document.getElementById("serStatusKey").value="air";}document.getElementById("seriesAdminModal").classList.add("on");}
-function saveSeries(){const t=document.getElementById("serTitleTh").value.trim();if(!t)return;const p={wcat:document.getElementById("serWCat").value,th_t:t,k:document.getElementById("serStatusKey").value,net:document.getElementById("serNet").value.trim(),tr:document.getElementById("serTrailer").value.trim(),img:document.getElementById("serImgUrl").value.trim()||"https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=800&auto=format&fit=crop"};if(edSr){const i=SERIES.findIndex(x=>x.id===edSr);if(i>-1)SERIES[i]={...SERIES[i],...p};}else{SERIES.push({id:"s_"+Date.now(),...p});}localStorage.setItem(K_SR,JSON.stringify(SERIES));cWC=p.wcat;closeModal("seriesAdminModal");renderSeries();}
-function deleteSeries(id){if(!confirm(T("ลบ?","Delete?")))return;SERIES=SERIES.filter(x=>x.id!==id);localStorage.setItem(K_SR,JSON.stringify(SERIES));renderSeries();}
+function saveSeries(){const t=document.getElementById("serTitleTh").value.trim();if(!t)return;const p={wcat:document.getElementById("serWCat").value,th_t:t,k:document.getElementById("serStatusKey").value,net:document.getElementById("serNet").value.trim(),tr:document.getElementById("serTrailer").value.trim(),img:document.getElementById("serImgUrl").value.trim()||"https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=800&auto=format&fit=crop"};if(edSr){const i=SERIES.findIndex(x=>x.id===edSr);if(i>-1)SERIES[i]={...SERIES[i],...p};}else{SERIES.push({id:"s_"+Date.now(),...p});}saveToDB({SERIES});cWC=p.wcat;closeModal("seriesAdminModal");renderSeries();}
+function deleteSeries(id){if(!confirm(T("ลบ?","Delete?")))return;SERIES=SERIES.filter(x=>x.id!==id);saveToDB({SERIES});renderSeries();}
 function openSeriesDetail(id){const s=SERIES.find(x=>x.id===id);if(!s)return;document.getElementById("detCover").src=s.img;document.getElementById("detTitle").textContent=P(s,'t');document.getElementById("detNet").textContent=s.net;if(s.tr&&s.tr.includes("youtube.com")){document.getElementById("detTrailerBox").style.display="block";document.getElementById("detIframe").src=s.tr.replace("watch?v=","embed/");}else{document.getElementById("detTrailerBox").style.display="none";}document.getElementById("seriesDetailModal").classList.add("on");}
 
 // ================= 8. MERCH (สินค้า) =================
@@ -475,8 +490,8 @@ function renderMerch(){
   });
 }
 function openMerchModal(id=null){edMc=id;if(id){const m=MERCH.find(x=>x.id===id);if(!m)return;document.getElementById("mcTitle").value=m.th_t;document.getElementById("mcPrice").value=m.th_p;document.getElementById("mcDesc").value=m.th_d;document.getElementById("mcStatus").value=m.status;document.getElementById("mcLink").value=m.link;document.getElementById("mcImgUrl").value=m.img;}else{["mcTitle","mcPrice","mcDesc","mcLink","mcImgUrl"].forEach(k=>document.getElementById(k).value="");document.getElementById("mcStatus").value="instock";}document.getElementById("merchModal").classList.add("on");}
-function saveMerch(){const t=document.getElementById("mcTitle").value.trim(),p=document.getElementById("mcPrice").value.trim();if(!t||!p)return;const pl={th_t:t,th_p:p,th_d:document.getElementById("mcDesc").value.trim(),status:document.getElementById("mcStatus").value,link:document.getElementById("mcLink").value.trim()||"#",img:document.getElementById("mcImgUrl").value.trim()||"https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=600&auto=format&fit=crop"};if(edMc){const i=MERCH.findIndex(x=>x.id===edMc);if(i>-1)MERCH[i]={...MERCH[i],...pl};}else{MERCH.push({id:"mc_"+Date.now(),...pl});}localStorage.setItem(K_MC,JSON.stringify(MERCH));closeModal("merchModal");renderMerch();}
-function deleteMerch(id){if(!confirm(T("ลบ?","Delete?")))return;MERCH=MERCH.filter(x=>x.id!==id);localStorage.setItem(K_MC,JSON.stringify(MERCH));renderMerch();}
+function saveMerch(){const t=document.getElementById("mcTitle").value.trim(),p=document.getElementById("mcPrice").value.trim();if(!t||!p)return;const pl={th_t:t,th_p:p,th_d:document.getElementById("mcDesc").value.trim(),status:document.getElementById("mcStatus").value,link:document.getElementById("mcLink").value.trim()||"#",img:document.getElementById("mcImgUrl").value.trim()||"https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=600&auto=format&fit=crop"};if(edMc){const i=MERCH.findIndex(x=>x.id===edMc);if(i>-1)MERCH[i]={...MERCH[i],...pl};}else{MERCH.push({id:"mc_"+Date.now(),...pl});}saveToDB({MERCH});closeModal("merchModal");renderMerch();}
+function deleteMerch(id){if(!confirm(T("ลบ?","Delete?")))return;MERCH=MERCH.filter(x=>x.id!==id);saveToDB({MERCH});renderMerch();}
 
 // ================= 4. TRAVEL =================
 let edTrv=null;
@@ -490,19 +505,10 @@ function renderTravel(){
   });
 }
 function openTravelModal(id=null){edTrv=id;if(id){const v=TRAVEL.find(x=>x.id===id);if(!v)return;document.getElementById("trvName").value=v.th_n;document.getElementById("trvArea").value=v.th_a;document.getElementById("trvHow").value=v.th_h;document.getElementById("trvMapQ").value=v.map_q;document.getElementById("trvZones").value=(v.zones||[]).join(", ");document.getElementById("trvImgUrl").value=v.img;}else{["trvName","trvArea","trvHow","trvMapQ","trvZones","trvImgUrl"].forEach(k=>document.getElementById(k).value="");}document.getElementById("travelModal").classList.add("on");}
-function saveTravel(){const t=document.getElementById("trvName").value.trim();if(!t)return;const zR=document.getElementById("trvZones").value;const p={th_n:t,th_a:document.getElementById("trvArea").value.trim(),th_h:document.getElementById("trvHow").value.trim(),map_q:document.getElementById("trvMapQ").value.trim()||t,zones:zR?zR.split(",").map(s=>s.trim()).filter(Boolean):[],img:document.getElementById("trvImgUrl").value.trim()||"https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=800&auto=format&fit=crop"};if(edTrv){const i=TRAVEL.findIndex(x=>x.id===edTrv);if(i>-1)TRAVEL[i]={...TRAVEL[i],...p};}else{TRAVEL.push({id:"tr_"+Date.now(),...p});}localStorage.setItem(K_TR,JSON.stringify(TRAVEL));closeModal("travelModal");renderTravel();}
-function deleteTravel(id){if(!confirm(T("ลบ?","Delete?")))return;TRAVEL=TRAVEL.filter(x=>x.id!==id);localStorage.setItem(K_TR,JSON.stringify(TRAVEL));renderTravel();}
+function saveTravel(){const t=document.getElementById("trvName").value.trim();if(!t)return;const zR=document.getElementById("trvZones").value;const p={th_n:t,th_a:document.getElementById("trvArea").value.trim(),th_h:document.getElementById("trvHow").value.trim(),map_q:document.getElementById("trvMapQ").value.trim()||t,zones:zR?zR.split(",").map(s=>s.trim()).filter(Boolean):[],img:document.getElementById("trvImgUrl").value.trim()||"https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=800&auto=format&fit=crop"};if(edTrv){const i=TRAVEL.findIndex(x=>x.id===edTrv);if(i>-1)TRAVEL[i]={...TRAVEL[i],...p};}else{TRAVEL.push({id:"tr_"+Date.now(),...p});}saveToDB({TRAVEL});closeModal("travelModal");renderTravel();}
+function deleteTravel(id){if(!confirm(T("ลบ?","Delete?")))return;TRAVEL=TRAVEL.filter(x=>x.id!==id);saveToDB({TRAVEL});renderTravel();}
 
 // ================= 9. SEAT MAP (Smart Generator) =================
-let TEMPLATES = {
-  pavalai: { name:"Siam Pavalai (3 Zones)", zones: [{id:"VIP",name:"VIP Zone",rows:2,cols:10,type:"vip"},{id:"A",name:"Zone A",rows:3,cols:12,type:"normal"},{id:"B",name:"Zone B",rows:4,cols:14,type:"normal"}] },
-  bravo: { name:"BRAVO BKK (2 Zones)", zones: [{id:"VIP",name:"VIP Standing",rows:3,cols:12,type:"vip"},{id:"GA",name:"General Admission",rows:4,cols:16,type:"normal"}] }
-};
-const K_TPL = "g23_tpl";
-let CUSTOM_TPL = ld(K_TPL, {});
-Object.assign(TEMPLATES, CUSTOM_TPL);
-
-let aSM=null, bSeatId=null;
 function renderSeatmapSelector(){
   const s=document.getElementById("smEventSelect"); s.innerHTML=`<option value="">-- ${T('เลือกกิจกรรมที่มีผังที่นั่ง','Select Event with Seatmap')} --</option>`;
   if(!SEATMAPS.length){document.getElementById("seatMapCanvas").innerHTML=`<div class="empty">${T('ยังไม่มีการสร้างผังที่นั่ง','No seatmaps created yet')}</div>`;document.getElementById("seatLegend").style.display="none";return;}
@@ -546,7 +552,7 @@ function openSeatBookModal(sId){
 function confirmSeatBooking(){
   if(!aSM||!bSeatId)return;
   aSM.seats[bSeatId]={user:cUser,flag:document.getElementById("sbFlag").value.trim()||"🇹🇭",msg:document.getElementById("sbMsg").value.trim()||T("เย้! ได้ที่นั่งแล้ว","Yay! Booked!")};
-  const idx=SEATMAPS.findIndex(sm=>sm.evId===aSM.evId); if(idx>-1)SEATMAPS[idx]=aSM; localStorage.setItem(K_SM,JSON.stringify(SEATMAPS));
+  const idx=SEATMAPS.findIndex(sm=>sm.evId===aSM.evId); if(idx>-1)SEATMAPS[idx]=aSM; saveToDB({SEATMAPS});
   closeModal("seatBookModal"); renderActiveSeatmap();
 }
 function openSeatAdminModal(){
@@ -567,15 +573,15 @@ function createSeatmap(){
     if(!zData.length) return alert("Invalid Zone format.");
     const newTplId = "custom_" + Date.now();
     CUSTOM_TPL[newTplId] = { name: "Custom Layout", zones: zData };
-    localStorage.setItem(K_TPL, JSON.stringify(CUSTOM_TPL)); TEMPLATES[newTplId] = CUSTOM_TPL[newTplId]; finalTpl = newTplId;
+    saveToDB({ CUSTOM_TPL }); TEMPLATES[newTplId] = CUSTOM_TPL[newTplId]; finalTpl = newTplId;
   }
-  SEATMAPS.push({evId, template:finalTpl, seats:{}}); localStorage.setItem(K_SM,JSON.stringify(SEATMAPS));
+  SEATMAPS.push({evId, template:finalTpl, seats:{}}); saveToDB({SEATMAPS});
   closeModal("seatAdminModal"); renderSeatmapSelector(); document.getElementById("smEventSelect").value=evId; renderActiveSeatmap();
 }
 
 // ================= 5. COMMU =================
 function openCommuPostModal(t){if(cRole==="guest"){alert(T("กรุณา Login ก่อนครับ","Please Login."));openLoginModal();return;}document.getElementById("cmType").value=t;document.getElementById("cmBadge").value=t==="ticket"?"Transfer":"Carpool";document.getElementById("cmTitle").value="";document.getElementById("cmDetail").value="";document.getElementById("commuPostModal").classList.add("on");}
-function saveCommuPost(){const t=document.getElementById("cmTitle").value.trim(),d=document.getElementById("cmDetail").value.trim();if(!t||!d)return;COMMU.unshift({id:"cm_"+Date.now(),type:document.getElementById("cmType").value,th_b:document.getElementById("cmBadge").value.trim()||"New",th_t:t,th_d:d});localStorage.setItem(K_CM,JSON.stringify(COMMU));closeModal("commuPostModal");renderCommu();}
+function saveCommuPost(){const t=document.getElementById("cmTitle").value.trim(),d=document.getElementById("cmDetail").value.trim();if(!t||!d)return;COMMU.unshift({id:"cm_"+Date.now(),type:document.getElementById("cmType").value,th_b:document.getElementById("cmBadge").value.trim()||"New",th_t:t,th_d:d});saveToDB({COMMU});closeModal("commuPostModal");renderCommu();}
 function renderCommu(){
   const tkL=COMMU.filter(c=>c.type==="ticket"), rdL=COMMU.filter(c=>c.type==="ride");
   document.getElementById("commuTicketCount").textContent=`${tkL.length} ${T('ประกาศ','Posts')}`; document.getElementById("commuRideCount").textContent=`${rdL.length} ${T('ประกาศ','Posts')}`;
@@ -594,17 +600,11 @@ function renderAbout(){
   });
 }
 function openAboutModal(id=null){if(cRole!=="head_admin")return;edAb=id;if(id){const a=ABOUT.find(x=>x.id===id);if(!a)return;document.getElementById("abtTitle").value=a.th_t;document.getElementById("abtDesc").value=a.th_d;}else{document.getElementById("abtTitle").value="";document.getElementById("abtDesc").value="";}document.getElementById("aboutModal").classList.add("on");}
-function saveAboutCard(){const t=document.getElementById("abtTitle").value.trim(),d=document.getElementById("abtDesc").value.trim();if(!t)return;if(edAb){const i=ABOUT.findIndex(x=>x.id===edAb);if(i>-1)ABOUT[i]={...ABOUT[i],th_t:t,th_d:d};}else{ABOUT.push({id:"ab_"+Date.now(),th_t:t,th_d:d});}localStorage.setItem(K_AB,JSON.stringify(ABOUT));closeModal("aboutModal");renderAbout();}
-function deleteAboutCard(id){if(!confirm(T("ลบ?","Delete?")))return;ABOUT=ABOUT.filter(x=>x.id!==id);localStorage.setItem(K_AB,JSON.stringify(ABOUT));renderAbout();}
+function saveAboutCard(){const t=document.getElementById("abtTitle").value.trim(),d=document.getElementById("abtDesc").value.trim();if(!t)return;if(edAb){const i=ABOUT.findIndex(x=>x.id===edAb);if(i>-1)ABOUT[i]={...ABOUT[i],th_t:t,th_d:d};}else{ABOUT.push({id:"ab_"+Date.now(),th_t:t,th_d:d});}saveToDB({ABOUT});closeModal("aboutModal");renderAbout();}
+function deleteAboutCard(id){if(!confirm(T("ลบ?","Delete?")))return;ABOUT=ABOUT.filter(x=>x.id!==id);saveToDB({ABOUT});renderAbout();}
 
 // ================= 6. BLESSING WALL (WITH DRAG REORDER FIX) =================
-const BW_GIFTS=[{id:"sunflower",e:"🌻",th_n:"ทานตะวัน",en_n:"Sunflower"},{id:"salad",e:"🥬",th_n:"ผักสลัด",en_n:"Lettuce"},{id:"mic",e:"🎤",th_n:"ไมโครโฟน",en_n:"Mic"},{id:"chick",e:"🐥",th_n:"น้องเจี๊ยบ",en_n:"Chick"},{id:"potion",e:"🧪",th_n:"โพชั่น",en_n:"Potion"},{id:"bomb",e:"💣",th_n:"ระเบิด",en_n:"Bomb"}];
-let BW_WISH=[{id:"w1",name:"AlKey Members",text:"Wish you massive success! 💜💛",gift:"sunflower",to:"ginjay",at:Date.now()}];
-let BW_ORD=[];
-try{const r=localStorage.getItem("g23_bw");if(r)BW_WISH=JSON.parse(r);const ro=localStorage.getItem("g23_bw_o");if(ro)BW_ORD=JSON.parse(ro);}catch(e){}
-let bwFlt="all", bwRole="guest", bwDrag=false;
-
-function saveBW(){localStorage.setItem("g23_bw",JSON.stringify(BW_WISH));localStorage.setItem("g23_bw_o",JSON.stringify(BW_ORD));renderBW();}
+function saveBW(){saveToDB({BW_WISH, BW_ORD});renderBW();}
 function sortedBW(){
   let bN = BW_WISH.slice().sort((a,b)=>b.at-a.at);
   let pos = {}; BW_ORD.forEach((id,i)=>pos[id]=i);
