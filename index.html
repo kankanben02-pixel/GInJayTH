@@ -258,7 +258,7 @@ body[data-role="admin"] .head-only{display:none!important}
 <div class="modal" id="aboutModal"><div class="modal-box"><h3 style="color:var(--primary);margin-bottom:18px;display:flex;align-items:center;gap:6px;"><span class="material-symbols-rounded">info</span> <span data-th="จัดการหน้าเกี่ยวกับ" data-en="Manage About">จัดการหน้าเกี่ยวกับ</span></h3><div class="form-group"><input type="text" id="abtTitle" placeholder="หัวข้อ"></div><div class="form-group"><textarea id="abtDesc" rows="4" placeholder="รายละเอียด"></textarea></div><div style="text-align:right;margin-top:20px;"><button class="chip" onclick="closeModal('aboutModal')" data-th="ยกเลิก" data-en="Cancel">ยกเลิก</button><button class="btn-submit" onclick="saveAboutCard()" data-th="บันทึก" data-en="Save">บันทึก</button></div></div></div>
 
 <script>
-const HEAD_ADMIN_USER="GinJay17",HEAD_ADMIN_PASS="พกginjay",TODAY="2026-10-26";
+const TODAY="2026-10-26";
 const TH_M=["ม.ค.","ก.พ.","มี.ค.","เม.ย.","พ.ค.","มิ.ย.","ก.ค.","ส.ค.","ก.ย.","ต.ค.","พ.ย.","ธ.ค."],TH_FM=["มกราคม","กุมภาพันธ์","มีนาคม","เมษายน","พฤษภาคม","มิถุนายน","กรกฎาคม","สิงหาคม","กันยายน","ตุลาคม","พฤศจิกายน","ธันวาคม"];
 const EN_M=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],EN_FM=["January","February","March","April","May","June","July","August","September","October","November","December"];
 
@@ -723,7 +723,7 @@ async function handleImgUpload(inputElement,targetInputId,statusId){
   statusBox.style.color="var(--muted)";
   const formData=new FormData();formData.append('image',file);
 
-  const apiKey = "b81fb03a77fb26f8a931399ca852ba43";
+  const apiKey = "ad1d68d1f6ad62eaa1e2f0d976e72969";
 
   if(apiKey === "ใส่_API_KEY_IMGBB_ตรงนี้"){
     statusBox.innerText = "⚠️ ยังไม่ได้ใส่ API Key ของ ImgBB";
@@ -741,6 +741,105 @@ async function handleImgUpload(inputElement,targetInputId,statusId){
     statusBox.innerText = "❌ อัปโหลดไม่สำเร็จ";
   }
 }
+/* ===== ระบบใหม่: ฟังก์ชันชื่อซ้ำกับด้านบน ตัวนี้ชนะ ===== */
+let AUTH_TOKEN="",MISSING_KEYS=[];
+
+async function loadDataFromDB(){
+  try{
+    const res=await fetch('/api/data',{cache:'no-store',headers:AUTH_TOKEN?{'Authorization':'Bearer '+AUTH_TOKEN}:{}});
+    if(!res.ok)throw new Error("HTTP "+res.status);
+    const db=await res.json();
+    MISSING_KEYS=["EVENTS","TICKETS","SERIES","MERCH","SEATMAPS","TRAVEL","COMMU","ABOUT","BW_WISH","BW_GIFTS"].filter(k=>!(k in db));
+    if(db.EVENTS)EVENTS=db.EVENTS;
+    if(db.TICKETS)TICKETS=db.TICKETS;
+    if(db.SERIES)SERIES=db.SERIES;
+    if(db.MERCH)MERCH=db.MERCH;
+    if(db.SEATMAPS)SEATMAPS=db.SEATMAPS;
+    if(db.TRAVEL)TRAVEL=db.TRAVEL;
+    if(db.COMMU)COMMU=db.COMMU;
+    if(db.ABOUT)ABOUT=db.ABOUT;
+    if(db.CUSTOM_ADMINS)CUSTOM_ADMINS=db.CUSTOM_ADMINS;
+    if(db.BW_WISH)BW_WISH=db.BW_WISH;
+    if(db.BW_ORD)BW_ORD=db.BW_ORD;
+    if(db.BW_GIFTS)BW_GIFTS=db.BW_GIFTS;
+    if(db.CUSTOM_TPL){CUSTOM_TPL=db.CUSTOM_TPL;Object.assign(TEMPLATES,CUSTOM_TPL);}
+    updateUIRole();
+  }catch(e){console.error("Load failed",e);updateUIRole();}
+}
+
+async function saveToDB(payload,silent){
+  try{
+    const res=await fetch('/api/data',{method:'POST',headers:{'Content-Type':'application/json',...(AUTH_TOKEN?{'Authorization':'Bearer '+AUTH_TOKEN}:{})},body:JSON.stringify(payload)});
+    if(!res.ok&&!silent){
+      if(res.status===401||res.status===403)alert(T("ไม่มีสิทธิ์บันทึก หรือเซสชันหมดอายุ กรุณาล็อกอินใหม่","No permission or session expired. Please log in again."));
+      else alert(T("บันทึกไม่สำเร็จ ลองใหม่อีกครั้ง","Save failed. Please try again."));
+    }
+    return res.ok;
+  }catch(e){
+    if(!silent)alert(T("เชื่อมต่อเซิร์ฟเวอร์ไม่ได้","Cannot reach server."));
+    return false;
+  }
+}
+
+async function doAdminLogin(){
+  const u=document.getElementById("loginUser").value.trim(),p=document.getElementById("loginPass").value.trim();
+  if(!u||!p)return;
+  try{
+    const res=await fetch('/api/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({u,p})});
+    const data=await res.json();
+    if(!res.ok||!data.token){alert(T("รหัสผิด!","Wrong Password!"));return;}
+    AUTH_TOKEN=data.token;cRole=data.role;cUser=u;
+    closeModal("loginModal");
+    await loadDataFromDB();
+    if(MISSING_KEYS.length){
+      const cur={EVENTS,TICKETS,SERIES,MERCH,SEATMAPS,TRAVEL,COMMU,ABOUT,BW_WISH,BW_GIFTS},seed={};
+      MISSING_KEYS.forEach(k=>seed[k]=cur[k]);
+      await saveToDB(seed,true);
+    }
+  }catch(e){alert(T("เชื่อมต่อเซิร์ฟเวอร์ไม่ได้","Cannot reach server."));}
+}
+
+function openLoginModal(){
+  if(cRole!=="guest"){
+    if(confirm(T("ออกจากระบบ?","Logout?"))){cRole="guest";cUser="Guest";AUTH_TOKEN="";CUSTOM_ADMINS=[];updateUIRole();switchTab("schedule");}
+    return;
+  }
+  document.getElementById("loginUser").value="";document.getElementById("loginPass").value="";
+  toggleAdminLoginView(false);document.getElementById("loginModal").classList.add("on");
+}
+
+async function handleImgUpload(inputElement,targetInputId,statusId){
+  const file=inputElement.files[0];if(!file)return;
+  const statusBox=document.getElementById(statusId);
+  const fail=m=>{statusBox.innerText="❌ "+m;statusBox.style.color="#b91c1c";};
+  statusBox.style.color="var(--muted)";
+  if(cRole==="guest"){fail(T("กรุณาล็อกอินก่อนอัปโหลด","Please log in first"));return;}
+  if(!["image/jpeg","image/png","image/webp","image/gif"].includes(file.type)){fail(T("รองรับเฉพาะ JPG, PNG, WEBP, GIF","Only JPG, PNG, WEBP, GIF"));return;}
+  const isA=(cRole==="admin"||cRole==="head_admin"),maxMB=isA?4:2;
+  if(file.size>maxMB*1024*1024){fail(T(`ไฟล์ใหญ่เกิน ${maxMB}MB`,`File larger than ${maxMB}MB`));return;}
+  statusBox.innerText="⏳ กำลังอัปโหลดรูปภาพ รอสักครู่...";
+  try{
+    const res=await fetch('/api/upload',{method:'POST',headers:{'Content-Type':file.type,...(AUTH_TOKEN?{'Authorization':'Bearer '+AUTH_TOKEN}:{})},body:file});
+    const data=await res.json().catch(()=>({}));
+    if(res.ok&&data.success){
+      document.getElementById(targetInputId).value=data.data.url;
+      statusBox.innerText="✅ อัปโหลดรูปสำเร็จแล้ว!";
+      statusBox.style.color="#15803d";
+    }else{
+      fail((data.error&&data.error.message)||("HTTP "+res.status));
+    }
+  }catch(error){
+    console.error("Upload error:",error);
+    fail(T("เชื่อมต่อเซิร์ฟเวอร์ไม่ได้","Cannot reach server"));
+  }
+}
+
+function loadMyPlan(){try{MY_PLAN=JSON.parse(localStorage.getItem("gj_my_plan")||"{}")||{};}catch(e){MY_PLAN={};}}
+function saveMyPlan(){try{localStorage.setItem("gj_my_plan",JSON.stringify(MY_PLAN));}catch(e){}}
+function togglePlan(id){if(MY_PLAN[id])delete MY_PLAN[id];else MY_PLAN[id]=1;saveMyPlan();renderAllSched()}
+
+loadMyPlan();
+loadDataFromDB();
 </script>
 </body>
 </html>
