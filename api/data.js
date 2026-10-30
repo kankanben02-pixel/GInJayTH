@@ -1,9 +1,10 @@
 const { getCol, getSession } = require('./_lib');
 
-const ADMIN_KEYS = ['TICKETS', 'SERIES', 'MERCH', 'TRAVEL', 'BW_ORD', 'CUSTOM_TPL'];
-const HEAD_KEYS  = ['ABOUT', 'CUSTOM_ADMINS', 'BW_GIFTS'];
-const OPEN_KEYS  = ['EVENTS', 'COMMU', 'BW_WISH', 'SEATMAPS'];
-const OBJ_KEYS   = ['CUSTOM_TPL'];
+const ADMIN_KEYS  = ['TICKETS', 'SERIES', 'MERCH', 'TRAVEL', 'BW_ORD', 'CUSTOM_TPL'];
+const HEAD_KEYS   = ['ABOUT', 'CUSTOM_ADMINS', 'BW_GIFTS'];
+const OPEN_KEYS   = ['EVENTS', 'COMMU', 'BW_WISH', 'SEATMAPS'];
+const MEMBER_KEYS = ['EVENTS', 'COMMU', 'SEATMAPS']; // ต้องล็อกอินจริง (BW_WISH ใครก็เขียนได้เหมือนเดิม)
+const OBJ_KEYS    = ['CUSTOM_TPL'];
 const KNOWN = [...ADMIN_KEYS, ...HEAD_KEYS, ...OPEN_KEYS];
 
 const ID = /^[A-Za-z0-9_-]{1,40}$/;
@@ -38,8 +39,9 @@ const clean = {
   }
 };
 
-// คนทั่วไปจองที่นั่งได้อย่างเดียว แก้/แย่งที่นั่งคนอื่นไม่ได้
-function mergeSeats(old, inc) {
+// สมาชิกจองที่นั่งได้อย่างเดียว ชื่อบนที่นั่งใช้ชื่อบัญชีที่ล็อกอินจริง
+function mergeSeats(old, inc, sess) {
+  const who = sess ? sess.u : 'Guest';
   return old.map(om => {
     const nm = inc.find(m => m && m.evId === om.evId);
     if (!nm || !nm.seats || typeof nm.seats !== 'object') return om;
@@ -48,17 +50,17 @@ function mergeSeats(old, inc) {
     for (const [k, v] of Object.entries(nm.seats)) {
       if (n >= 3) break;
       if (k in seats || !ID.test(k) || !v || typeof v !== 'object') continue;
-      seats[k] = { user: str(v.user, 40), flag: str(v.flag, 8), msg: str(v.msg, 60) };
+      seats[k] = { user: who, flag: str(v.flag, 8), msg: str(v.msg, 60) };
       n++;
     }
     return { ...om, seats };
   });
 }
 
-// กฎของคนที่ไม่ใช่แอดมิน: เพิ่มได้อย่างเดียว ลบ/แก้ของเดิมไม่ได้
-function mergeOpen(key, old, inc) {
+// คนที่ไม่ใช่แอดมิน: เพิ่มได้อย่างเดียว ลบ/แก้ของเดิมไม่ได้
+function mergeOpen(key, old, inc, sess) {
   if (!Array.isArray(inc)) return null;
-  if (key === 'SEATMAPS') return Array.isArray(old) ? mergeSeats(old, inc) : null;
+  if (key === 'SEATMAPS') return Array.isArray(old) ? mergeSeats(old, inc, sess) : null;
 
   const base = Array.isArray(old) ? old : [];
   if (base.length >= 500) return null;
@@ -85,7 +87,8 @@ module.exports = async (req, res) => {
       const docs = await col.find({}).toArray();
       const out = {};
       for (const d of docs) {
-        if (d._id === 'CUSTOM_ADMINS' && !isHead) continue; // รหัสแอดมินเสริม เห็นเฉพาะ Head Admin
+        if (!KNOWN.includes(d._id)) continue;                 // ไม่ปล่อยข้อมูลส่วนตัว เช่น แพลนของสมาชิก
+        if (d._id === 'CUSTOM_ADMINS' && !isHead) continue;  // รหัสแอดมินเสริม เห็นเฉพาะ Head Admin
         out[d._id] = d.value;
       }
       res.setHeader('Cache-Control', 'no-store');
@@ -118,7 +121,8 @@ module.exports = async (req, res) => {
         if (!isAdmin) { denied.push(key); continue; }
         value = inc;
       } else {
-        value = isAdmin ? inc : mergeOpen(key, old, inc);
+        if (!isAdmin && MEMBER_KEYS.includes(key) && !sess) { denied.push(key); continue; }
+        value = isAdmin ? inc : mergeOpen(key, old, inc, sess);
         if (value === null) { denied.push(key); continue; }
       }
       if (JSON.stringify(old) === JSON.stringify(value)) continue;
