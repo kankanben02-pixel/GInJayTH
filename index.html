@@ -906,6 +906,111 @@ function renderNowBanner(){
   if(!html){box.style.display="none";return;}
   box.innerHTML=html;box.style.display="block";
 }
+ /* ===== ล็อกอิน Google จริง (ฟรี) ===== */
+const GOOGLE_CLIENT_ID="1006503642221-9sa2qrdm1mrqoooqieir2cjd0s9at42k.apps.googleusercontent.com";
+let gReady=false;
+
+function setupGoogleLogin(){
+  document.querySelectorAll("#socialLoginState button").forEach(b=>{
+    const oc=b.getAttribute("onclick")||"";
+    if(oc.includes("'X'"))b.style.display="none";
+    if(oc.includes("'Google'")){
+      const h=document.createElement("div");
+      h.id="gBtnHolder";
+      h.style.cssText="display:flex;justify-content:center;align-items:center;margin-bottom:12px;min-height:44px;color:var(--muted);font-size:14px;";
+      h.textContent=T("กำลังโหลดปุ่ม Google...","Loading Google button...");
+      b.replaceWith(h);
+    }
+  });
+  const h=document.getElementById("gBtnHolder");
+  if(!h||!window.google||!google.accounts||!google.accounts.id)return false;
+  if(GOOGLE_CLIENT_ID.includes("วาง_")){h.textContent="⚠️ ยังไม่ได้ใส่ Google Client ID ในโค้ด";return true;}
+  if(!gReady){google.accounts.id.initialize({client_id:GOOGLE_CLIENT_ID,callback:onGoogleCredential});gReady=true;}
+  h.textContent="";
+  google.accounts.id.renderButton(h,{theme:"outline",size:"large",shape:"pill",width:300,locale:"th"});
+  return true;
+}
+
+async function onGoogleCredential(resp){
+  try{
+    const res=await fetch('/api/auth-google',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({credential:resp.credential})});
+    const data=await res.json();
+    if(!res.ok||!data.token){alert(T("ล็อกอินด้วย Google ไม่สำเร็จ","Google login failed"));return;}
+    AUTH_TOKEN=data.token;cRole="user";cUser=data.name;
+    try{localStorage.setItem("gj_member",JSON.stringify({token:data.token,name:data.name,exp:data.exp}));}catch(e){}
+    closeModal("loginModal");
+    await loadDataFromDB();
+    await loadMemberPlan();
+    switchTab("seatmap");
+    alert(T("ล็อกอินด้วย Google สำเร็จ!","Logged in via Google!"));
+  }catch(e){alert(T("เชื่อมต่อเซิร์ฟเวอร์ไม่ได้","Cannot reach server."));}
+}
+
+function doSocialLogin(p){alert(T("ตอนนี้รองรับเฉพาะ Google","Only Google login is available"));}
+
+function openLoginModal(){
+  if(cRole!=="guest"){
+    if(confirm(T("ออกจากระบบ?","Logout?"))){
+      cRole="guest";cUser="Guest";AUTH_TOKEN="";CUSTOM_ADMINS=[];
+      try{localStorage.removeItem("gj_member");}catch(e){}
+      try{if(window.google&&google.accounts&&google.accounts.id)google.accounts.id.disableAutoSelect();}catch(e){}
+      loadMyPlan();
+      updateUIRole();switchTab("schedule");
+    }
+    return;
+  }
+  document.getElementById("loginUser").value="";document.getElementById("loginPass").value="";
+  toggleAdminLoginView(false);
+  document.getElementById("loginModal").classList.add("on");
+  setupGoogleLogin();
+}
+
+function restoreMember(){
+  try{
+    const s=JSON.parse(localStorage.getItem("gj_member")||"null");
+    if(s&&s.token&&s.exp>Date.now()){AUTH_TOKEN=s.token;cRole="user";cUser=s.name;}
+    else localStorage.removeItem("gj_member");
+  }catch(e){}
+}
+
+async function loadMemberPlan(){
+  if(cRole!=="user"||!AUTH_TOKEN)return;
+  try{
+    const r=await fetch('/api/plan',{headers:{'Authorization':'Bearer '+AUTH_TOKEN}});
+    if(r.ok){const d=await r.json();MY_PLAN=d.plan||{};renderAllSched();}
+  }catch(e){}
+}
+function loadMyPlan(){
+  if(cRole==="user"&&AUTH_TOKEN){loadMemberPlan();return;}
+  try{MY_PLAN=JSON.parse(localStorage.getItem("gj_my_plan")||"{}")||{};}catch(e){MY_PLAN={};}
+}
+function saveMyPlan(){
+  if(cRole==="user"&&AUTH_TOKEN){
+    fetch('/api/plan',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+AUTH_TOKEN},body:JSON.stringify({plan:MY_PLAN})}).catch(()=>{});
+    return;
+  }
+  try{localStorage.setItem("gj_my_plan",JSON.stringify(MY_PLAN));}catch(e){}
+}
+
+(function(){
+  const f=window.updateUIRole;
+  window.updateUIRole=function(){
+    const r=f.apply(this,arguments);
+    if(cRole==="user"){
+      const b=document.getElementById("mainLoginBtn");
+      if(b)b.innerHTML=`<span class="material-symbols-rounded" style="font-size:1.1em;color:#a3e635">verified_user</span> ${cUser} (${T('ออก','Out')})`;
+    }
+    return r;
+  };
+})();
+
+restoreMember();
+(function(){
+  const s=document.createElement("script");
+  s.src="https://accounts.google.com/gsi/client";s.async=true;
+  s.onload=()=>setupGoogleLogin();
+  document.head.appendChild(s);
+})();
   loadMyPlan();
 loadDataFromDB();
 </script>
