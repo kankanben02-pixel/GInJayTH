@@ -166,7 +166,7 @@ body[data-role="admin"] .head-only{display:none!important}
   <div class="hero content-narrow" id="mainHeroBanner">
     <div class="duo"><span class="g">🦙 Ginny</span><span style="font-size:0.5em;color:var(--muted)">×</span><span class="j">Jayna 🐒</span></div>
     <p style="color:var(--muted);margin:4px 0 0" data-th="ไกด์แฟนเมดสำหรับชาวอัลกี้ (AlKey) รวมตารางงาน กดบัตร ผลงาน เพลง สินค้า ผังที่นั่ง คอมมู และการเดินทาง" data-en="Fanmade guide for AlKey featuring schedules, tickets, series, merch, seatmaps, community, and travel guides.">ไกด์แฟนเมดสำหรับชาวอัลกี้ (AlKey) รวมตารางงาน กดบัตร ผลงาน เพลง สินค้า ผังที่นั่ง คอมมู และการเดินทาง</p>
-    <div class="now-banner glass-panel"><b data-th="📺 กำลังออนแอร์:" data-en="📺 On Air:">📺 กำลังออนแอร์:</b> <span data-th="รับจ้างเลิกรัก (Love on Hire) ทุกพฤหัส 20:00 น. ทาง WeTV — ตอนต่อไป:" data-en="Love on Hire, every Thu 8:00 PM on WeTV — Next EP:">รับจ้างเลิกรัก (Love on Hire) ทุกพฤหัส 20:00 น. ทาง WeTV — ตอนต่อไป:</span> <b style="color:var(--primary);" data-th="29 ต.ค. 2569 (EP.2)" data-en="Oct 29, 2026 (EP.2)">29 ต.ค. 2569 (EP.2)</b></div>
+<div class="now-banner glass-panel" id="nowBanner" style="display:none"></div>
   </div>
 
   <!-- 1. SCHEDULE -->
@@ -838,7 +838,35 @@ function loadMyPlan(){try{MY_PLAN=JSON.parse(localStorage.getItem("gj_my_plan")|
 function saveMyPlan(){try{localStorage.setItem("gj_my_plan",JSON.stringify(MY_PLAN));}catch(e){}}
 function togglePlan(id){if(MY_PLAN[id])delete MY_PLAN[id];else MY_PLAN[id]=1;saveMyPlan();renderAllSched()}
 
-loadMyPlan();
+/* ===== แถบ "กำลังออนแอร์" ดึงจากตารางงานอัตโนมัติ ===== */
+function renderNowBanner(){
+  const box=document.getElementById("nowBanner");if(!box)return;
+  const WD_TH=["อา.","จ.","อ.","พ.","พฤ.","ศ.","ส."],WD_EN=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+  const fmt=d=>{
+    const p=d.split("-").map(Number),w=new Date(p[0],p[1]-1,p[2]).getDay();
+    return currLang==="th"?`${WD_TH[w]} ${p[2]} ${TH_M[p[1]-1]} ${p[0]+543}`:`${WD_EN[w]}, ${EN_M[p[1]-1]} ${p[2]}, ${p[0]}`;
+  };
+  const epRe=/EP\.?\s*(\d+)/i;
+  const lines=SERIES.filter(s=>s.k==="air"&&(s.wcat||"acting")==="acting").map(s=>{
+    const base=(s.th_t||"").split("(")[0].trim(),en=(s.en_t||"").toLowerCase();
+    const next=EVENTS.filter(e=>e.d>=TODAY&&[e.th_t,e.en_t].some(x=>x&&epRe.test(x)&&((base&&x.includes(base))||(en&&x.toLowerCase().includes(en))))).sort((a,b)=>a.d.localeCompare(b.d))[0];
+    let tail;
+    if(next){
+      const txt=[next.th_t,next.en_t].find(x=>x&&epRe.test(x)),m=epRe.exec(txt);
+      tail=`<b style="color:var(--primary);">${fmt(next.d)}${next.time?" · "+next.time:""}${m?" (EP."+m[1]+")":""}</b>`;
+    }else{
+      tail=`<span style="color:var(--muted);">${T("ยังไม่มีตอนถัดไปในตาราง","No upcoming episode in the schedule")}</span>`;
+    }
+    return `<div><b>📺 ${T("กำลังออนแอร์:","On Air:")}</b> ${P(s,"t")}${s.net?" "+T("ทาง","on")+" "+s.net:""} — ${T("ตอนต่อไป:","Next EP:")} ${tail}</div>`;
+  });
+  if(!lines.length){box.style.display="none";return;}
+  box.innerHTML=lines.join("");box.style.display="block";
+}
+["updateUIRole","renderAllSched","renderSeries"].forEach(n=>{
+  const f=window[n];
+  window[n]=function(){const r=f.apply(this,arguments);renderNowBanner();return r;};
+});
+  loadMyPlan();
 loadDataFromDB();
 </script>
 </body>
