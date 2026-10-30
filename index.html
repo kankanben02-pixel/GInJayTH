@@ -258,7 +258,7 @@ body[data-role="admin"] .head-only{display:none!important}
 <div class="modal" id="aboutModal"><div class="modal-box"><h3 style="color:var(--primary);margin-bottom:18px;display:flex;align-items:center;gap:6px;"><span class="material-symbols-rounded">info</span> <span data-th="จัดการหน้าเกี่ยวกับ" data-en="Manage About">จัดการหน้าเกี่ยวกับ</span></h3><div class="form-group"><input type="text" id="abtTitle" placeholder="หัวข้อ"></div><div class="form-group"><textarea id="abtDesc" rows="4" placeholder="รายละเอียด"></textarea></div><div style="text-align:right;margin-top:20px;"><button class="chip" onclick="closeModal('aboutModal')" data-th="ยกเลิก" data-en="Cancel">ยกเลิก</button><button class="btn-submit" onclick="saveAboutCard()" data-th="บันทึก" data-en="Save">บันทึก</button></div></div></div>
 
 <script>
-const TODAY="2026-10-26";
+const TODAY=(()=>{const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;})();
 const TH_M=["ม.ค.","ก.พ.","มี.ค.","เม.ย.","พ.ค.","มิ.ย.","ก.ค.","ส.ค.","ก.ย.","ต.ค.","พ.ย.","ธ.ค."],TH_FM=["มกราคม","กุมภาพันธ์","มีนาคม","เมษายน","พฤษภาคม","มิถุนายน","กรกฎาคม","สิงหาคม","กันยายน","ตุลาคม","พฤศจิกายน","ธันวาคม"];
 const EN_M=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],EN_FM=["January","February","March","April","May","June","July","August","September","October","November","December"];
 
@@ -348,7 +348,7 @@ document.getElementById("langToggle").onclick=()=>{currLang=currLang==="th"?"en"
 document.getElementById("themeToggle").onclick=()=>{const n=document.documentElement.getAttribute("data-theme")==="light"?"dark":"light";document.documentElement.setAttribute("data-theme",n);document.getElementById("themeToggle").innerHTML=n==="light"?"<span class='material-symbols-rounded'>dark_mode</span>":"<span class='material-symbols-rounded'>light_mode</span>"};
 
 // 1. SCHEDULE
-let sf="all",cYr=2026,cMo=9,sDt=null;
+let sf="all",cYr=+TODAY.slice(0,4),cMo=+TODAY.slice(5,7)-1,sDt=null;
 function fltEv(e){const ip=e.d<TODAY;if(sf==="up"&&ip)return false;if(sf==="past"&&!ip)return false;if(sf==="mine"&&!MY_PLAN[e.id])return false;return true}
 function renderAllSched(){renderCalendar();renderDayDetail();renderList()}
 function jumpToMonth(y,m){cYr=y;cMo=m;sDt=null;renderAllSched()}
@@ -723,7 +723,7 @@ async function handleImgUpload(inputElement,targetInputId,statusId){
   statusBox.style.color="var(--muted)";
   const formData=new FormData();formData.append('image',file);
 
-  const apiKey = "ad1d68d1f6ad62eaa1e2f0d976e72969";
+  const apiKey = "";
 
   if(apiKey === "ใส่_API_KEY_IMGBB_ตรงนี้"){
     statusBox.innerText = "⚠️ ยังไม่ได้ใส่ API Key ของ ImgBB";
