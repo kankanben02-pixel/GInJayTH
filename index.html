@@ -866,6 +866,46 @@ function renderNowBanner(){
   const f=window[n];
   window[n]=function(){const r=f.apply(this,arguments);renderNowBanner();return r;};
 });
+  /* ===== แถบด้านบน v2: ซีรีส์ที่มี EP.เลข มาก่อน ถ้าไม่มีให้โชว์งานที่ใกล้ที่สุด ===== */
+function renderNowBanner(){
+  const box=document.getElementById("nowBanner");if(!box)return;
+  const WD_TH=["อา.","จ.","อ.","พ.","พฤ.","ศ.","ส."],WD_EN=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+  const fmt=d=>{
+    const p=d.split("-").map(Number),w=new Date(p[0],p[1]-1,p[2]).getDay();
+    return currLang==="th"?`${WD_TH[w]} ${p[2]} ${TH_M[p[1]-1]} ${p[0]+543}`:`${WD_EN[w]}, ${EN_M[p[1]-1]} ${p[2]}, ${p[0]}`;
+  };
+  const dayGap=d=>{
+    const a=TODAY.split("-").map(Number),b=d.split("-").map(Number);
+    return Math.round((Date.UTC(b[0],b[1]-1,b[2])-Date.UTC(a[0],a[1]-1,a[2]))/86400000);
+  };
+  const gapTxt=d=>{const n=dayGap(d);return n===0?T("วันนี้","Today"):n===1?T("พรุ่งนี้","Tomorrow"):T(`อีก ${n} วัน`,`in ${n} days`);};
+  const epRe=/EP\.?\s*(\d+)/i;
+  const byTime=(a,b)=>(a.d+(a.time||"")).localeCompare(b.d+(b.time||""));
+  const row=(label,e)=>`<div style="margin:2px 0;"><b>${label}</b> ${P(e,"t")} — <b style="color:var(--primary);">${fmt(e.d)}${e.time?" · "+e.time:""}</b> <span style="color:var(--muted);">(${gapTxt(e.d)})</span>${P(e,"v")?` <span style="color:var(--muted);">· ${P(e,"v")}</span>`:""}</div>`;
+
+  const upcoming=EVENTS.filter(e=>e.d>=TODAY).sort(byTime);
+
+  // 1) งานที่ชื่อมี EP.เลข เลือกตอนที่ใกล้ที่สุดของแต่ละเรื่อง
+  const epNext={};
+  upcoming.forEach(e=>{
+    const txt=(e.th_t&&epRe.test(e.th_t))?e.th_t:((e.en_t&&epRe.test(e.en_t))?e.en_t:null);
+    if(!txt)return;
+    const key=txt.replace(epRe,"").replace(/[\s:·\-–—]+$/,"").trim().toLowerCase();
+    if(!(key in epNext))epNext[key]=e;
+  });
+  const eps=Object.values(epNext).sort(byTime).slice(0,3);
+
+  let html="";
+  if(eps.length){
+    html=eps.map(e=>row("📺 "+T("ตอนต่อไป:","Next EP:"),e)).join("");
+  }else if(upcoming.length){
+    // 2) ไม่มี EP ในอนาคต → โชว์งานที่ใกล้วันนี้ที่สุด (ถ้าวันเดียวกันมีหลายงาน โชว์ได้สูงสุด 3)
+    const first=upcoming[0].d;
+    html=upcoming.filter(e=>e.d===first).slice(0,3).map(e=>row("📌 "+T("งานที่ใกล้ที่สุด:","Next up:"),e)).join("");
+  }
+  if(!html){box.style.display="none";return;}
+  box.innerHTML=html;box.style.display="block";
+}
   loadMyPlan();
 loadDataFromDB();
 </script>
