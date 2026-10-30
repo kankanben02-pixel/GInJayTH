@@ -1,7 +1,7 @@
 const { getSession } = require('./_lib');
 
 const MAX_ADMIN = 4 * 1024 * 1024; // แอดมิน/Head Admin 4MB
-const MAX_USER = 2 * 1024 * 1024;  // สมาชิกทั่วไป 2MB
+const MAX_USER = 2 * 1024 * 1024;  // สมาชิก 2MB
 
 function detectType(b) {
   if (b.length < 12) return null;
@@ -24,7 +24,8 @@ module.exports = async (req, res) => {
     if (!process.env.IMGBB_KEY) return fail(res, 500, 'IMGBB_KEY is not set on the server');
 
     const sess = getSession(req);
-    const isAdmin = !!sess && (sess.role === 'admin' || sess.role === 'head_admin');
+    if (!sess) return fail(res, 401, 'Please log in first'); // ต้องล็อกอินจริงเท่านั้น
+    const isAdmin = sess.role === 'admin' || sess.role === 'head_admin';
     const limit = isAdmin ? MAX_ADMIN : MAX_USER;
 
     const chunks = [];
@@ -36,7 +37,7 @@ module.exports = async (req, res) => {
     }
     const buf = Buffer.concat(chunks);
 
-    const type = detectType(buf); // ตรวจจากเนื้อไฟล์จริง ไม่เชื่อนามสกุล
+    const type = detectType(buf);
     if (!type) return fail(res, 415, 'Only JPG, PNG, WEBP, GIF allowed');
 
     const form = new FormData();
