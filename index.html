@@ -1011,6 +1011,440 @@ restoreMember();
   s.onload=()=>setupGoogleLogin();
   document.head.appendChild(s);
 })();
+/* ===== อัปเดตใหญ่: มือถือ / แผนที่ในงาน / เรียงผลงาน / ของขวัญรูปวาด / เดินทาง 4 ทาง / นำเข้าหลายรายการ ===== */
+const ONLINE_RE=/wetv|youtube|online|ออนไลน์|livestream|live stream|ไลฟ์สด|facebook|tiktok|instagram|zoom|netflix|one ?31|ช่อง ?\d+/i;
+const DEF_EV_IMG="https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=600&auto=format&fit=crop";
+const DEF_TR_IMG="https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=800&auto=format&fit=crop";
+const DEF_SR_IMG="https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=800&auto=format&fit=crop";
+const YT_RE=/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
+const impEsc=s=>String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const impNorm=s=>String(s||"").toLowerCase().replace(/\s+/g," ").trim();
+function impHash(s){let h=5381;for(let i=0;i<s.length;i++)h=((h<<5)+h+s.charCodeAt(i))|0;return (h>>>0).toString(36);}
+
+/* ---------- 5) โหมดมือถือ + สไตล์ใหม่ ---------- */
+try{
+  const st=document.createElement("style");
+  st.textContent=`
+  .gift-img{width:1.15em;height:1.15em;object-fit:contain;vertical-align:middle;display:inline-block;background:none}
+  .bday-chip .e .gift-img{width:1.3em;height:1.3em}
+  .mv-btn{font-size:12px!important;padding:4px 10px!important}
+  .trv-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:6px}
+  .trv-grid input{width:100%;padding:10px 12px;border-radius:12px;border:1px solid rgba(126,34,206,.3);background:rgba(255,255,255,.4);color:var(--ink);min-width:0}
+  .trv-lab{font-size:13px;font-weight:700;color:var(--primary);margin:10px 0 4px}
+  .mode-row{display:flex;gap:10px;align-items:flex-start;padding:5px 0}
+  @media(max-width:640px){
+    body{font-size:14px}
+    .wrap{padding:0 10px}
+    .header-top-row{padding:8px 0 4px}
+    .brand{font-size:17px}
+    .icon-btn{height:32px;padding:0 9px;font-size:13px}
+    .login-btn{padding:5px 10px;font-size:12px}
+    nav button{padding:7px 11px;font-size:13px}
+    .hero{padding:14px 0 8px}
+    .now-banner{font-size:13px;padding:10px 12px}
+    h2{font-size:22px!important}
+    .month-title{font-size:20px}
+    .calendar-card{padding:10px;border-radius:18px}
+    .cal-weekdays{font-size:12px;margin-bottom:6px}
+    .cal-grid{gap:3px}
+    .cal-cell{min-height:58px;padding:3px;border-radius:9px}
+    .cal-cell-day{font-size:12px;margin-bottom:3px;padding:0 2px}
+    .cal-cell.today .cal-cell-day{padding:1px 6px}
+    .event-capsule{font-size:0;height:5px;padding:0;margin-bottom:3px;border-left:0;border-radius:99px;background:var(--primary)}
+    .cal-cell > div[style*="text-align:center"]{font-size:9px!important}
+    .day-detail-header{margin:20px 0 14px}
+    .event-detail-grid,.series-grid,.merch-grid,.w-grid{grid-template-columns:1fr}
+    .ev-card-img{height:150px}
+    .modal{padding:8px}
+    .modal-box,.modal-detail-box{padding:18px;border-radius:20px}
+    #aboutContainer{grid-template-columns:1fr!important}
+    #seatMapCanvas{padding:14px!important;-webkit-overflow-scrolling:touch}
+    #celeb{font-size:2rem!important}
+    .bday-box{padding:20px 12px 90px}
+    .trv-grid{grid-template-columns:1fr}
+    .ticket-card{padding:14px}
+    #selectedDateText{scroll-margin-top:120px}
+  }
+  @media(max-width:400px){#commu div[style*="minmax(320px"]{grid-template-columns:1fr!important}}
+  `;
+  document.head.appendChild(st);
+  const cg=document.getElementById("calendarGrid");
+  if(cg)cg.addEventListener("click",e=>{
+    if(innerWidth<=640&&e.target.closest(".cal-cell:not(.other-month)"))
+      setTimeout(()=>{const h=document.getElementById("selectedDateText");if(h)h.scrollIntoView({behavior:"smooth",block:"start"});},80);
+  });
+}catch(e){console.error(e);}
+
+/* ---------- 1) งาน: ช่องแผนที่/ลิงก์/รายละเอียด + หน้ารายละเอียดงาน ---------- */
+try{
+  const vg=document.getElementById("evVenueTh").closest(".form-group");
+  vg.insertAdjacentHTML("afterend",`<div class="form-group"><label data-th="🗺️ คำค้นแผนที่ (เว้นว่าง = ใช้ชื่อสถานที่)" data-en="🗺️ Map search (blank = venue name)">🗺️ คำค้นแผนที่ (เว้นว่าง = ใช้ชื่อสถานที่)</label><input type="text" id="evMapQ" placeholder="เช่น Siam Paragon Bangkok"></div><div class="form-group"><label data-th="🔗 ลิงก์เพิ่มเติม (ประกาศงาน / ซื้อบัตร)" data-en="🔗 Extra link (announcement / tickets)">🔗 ลิงก์เพิ่มเติม (ประกาศงาน / ซื้อบัตร)</label><input type="text" id="evLink" placeholder="https://..."></div><div class="form-group"><label data-th="📝 รายละเอียดเพิ่มเติม" data-en="📝 More details">📝 รายละเอียดเพิ่มเติม</label><textarea id="evNote" rows="3" placeholder="เช่น เวลาเปิดประตู ของที่ต้องเตรียม"></textarea></div>`);
+}catch(e){console.error(e);}
+
+function openEventModal(id=null){
+  if(cRole==="guest")return alert(T("กรุณา Login ก่อนครับ","Please Login first."));
+  edEv=id;document.getElementById("evImgUpload").value="";document.getElementById("evImgStatus").innerText="";
+  const f=(k,v)=>{document.getElementById(k).value=v||"";};
+  if(id){
+    const e=EVENTS.find(x=>x.id===id);if(!e)return;
+    f("evTitleTh",e.th_t);f("evDate",e.d);f("evTime",e.time);f("evCat",e.th_c);f("evVenueTh",e.th_v);f("evImgUrl",e.img);
+    f("evMapQ",e.map_q);f("evLink",e.link);f("evNote",e.note);
+    document.getElementById("evArtist").value=e.artist||"duo";
+  }else{
+    ["evTitleTh","evTime","evCat","evVenueTh","evImgUrl","evMapQ","evLink","evNote"].forEach(k=>f(k,""));
+    f("evDate",sDt||TODAY);document.getElementById("evArtist").value="duo";
+  }
+  document.getElementById("eventModal").classList.add("on");
+}
+function saveEvent(){
+  const g=k=>document.getElementById(k).value.trim();
+  const t=g("evTitleTh"),d=document.getElementById("evDate").value;
+  if(!t||!d)return;
+  let lk=g("evLink");if(lk&&!/^https?:\/\//i.test(lk))lk="https://"+lk;
+  const p={th_t:t,d,time:g("evTime"),artist:document.getElementById("evArtist").value,th_c:g("evCat"),th_v:g("evVenueTh"),map_q:g("evMapQ"),link:lk,note:g("evNote"),img:g("evImgUrl")||DEF_EV_IMG};
+  if(edEv){const i=EVENTS.findIndex(x=>x.id===edEv);if(i>-1)EVENTS[i]={...EVENTS[i],...p};}else{EVENTS.push({id:"ev_"+Date.now(),...p});}
+  saveToDB({EVENTS});closeModal("eventModal");renderAllSched();
+}
+try{
+  const f0=window.openEventDetailModal;
+  window.openEventDetailModal=function(id){
+    f0.apply(this,arguments);
+    const e=EVENTS.find(x=>x.id===id);if(!e)return;
+    const mp=document.getElementById("evDetMap"),box=mp.parentElement,venue=P(e,"v");
+    document.getElementById("evDetVenue").textContent=venue||"-";
+    document.getElementById("evDetDate").textContent=e.d+(e.time?" · "+e.time:"");
+    let ex=document.getElementById("evDetExtra");
+    if(!ex){ex=document.createElement("div");ex.id="evDetExtra";box.before(ex);}
+    const q=(e.map_q||venue||"").trim(),showMap=!!q&&(!!e.map_q||!ONLINE_RE.test(venue));
+    let h="";
+    if(e.note)h+=`<div style="white-space:pre-line;background:rgba(255,255,255,.4);padding:14px 16px;border-radius:14px;border:1px solid rgba(126,34,206,.2);margin-bottom:12px;font-size:14px;">${e.note}</div>`;
+    const links=[];
+    if(/^https?:\/\//i.test(e.link||""))links.push(`<a class="chip" href="${e.link}" target="_blank" rel="noopener">🔗 ${T("ลิงก์เพิ่มเติม","More info")} ↗</a>`);
+    if(showMap)links.push(`<a class="chip" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(q)}" target="_blank" rel="noopener"><span class="material-symbols-rounded">map</span> ${T("เปิดใน Google Maps","Open in Google Maps")} ↗</a>`);
+    if(links.length)h+=`<div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px;">${links.join("")}</div>`;
+    ex.innerHTML=h;ex.style.display=h?"block":"none";
+    box.style.display=showMap?"block":"none";
+    mp.src=showMap?`https://maps.google.com/maps?q=${encodeURIComponent(q)}&t=&z=15&ie=UTF8&iwloc=&output=embed`:"about:blank";
+    const pb=document.getElementById("evDetPlanBtn");
+    const paint=()=>{pb.innerHTML=`<span class="material-symbols-rounded" style="color:var(--accent)">${MY_PLAN[id]?"star":"star_border"}</span> ${MY_PLAN[id]?T("เซฟแล้ว","Saved"):T("เพิ่มเข้าแพลน","Add to Plan")}`;};
+    paint();pb.onclick=()=>{togglePlan(id);paint();};
+  };
+}catch(e){console.error(e);}
+
+/* ---------- 2) เรียงลำดับผลงาน (Admin / Head Admin) ---------- */
+function moveSeries(id,dir){
+  const vis=SERIES.filter(s=>(s.wcat||"acting")===cWC&&(ssf==="all"||s.k===ssf));
+  const i=vis.findIndex(s=>s.id===id),j=i+dir;
+  if(i<0||j<0||j>=vis.length)return;
+  const a=SERIES.indexOf(vis[i]),b=SERIES.indexOf(vis[j]);
+  [SERIES[a],SERIES[b]]=[SERIES[b],SERIES[a]];
+  saveToDB({SERIES});renderSeries();
+}
+function renderSeries(){
+  ["acting","music","fashion","other"].forEach(c=>{const el=document.getElementById(`cnt-${c}`);if(el)el.textContent=SERIES.filter(s=>(s.wcat||"acting")===c).length;});
+  const bx=document.getElementById("seriesList");bx.innerHTML="";
+  const ls=SERIES.filter(s=>(s.wcat||"acting")===cWC&&(ssf==="all"||s.k===ssf));
+  if(!ls.length){bx.innerHTML=`<div class="empty">${T('ไม่มีผลงานในหมวดนี้','No works in this category')}</div>`;return;}
+  const isA=(cRole==="admin"||cRole==="head_admin");
+  const dis=c=>c?'disabled style="opacity:.35;cursor:default"':'';
+  ls.forEach((s,i)=>{
+    const aB=isA?`<div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;"><button class="chip mv-btn" ${dis(i===0)} onclick="moveSeries('${s.id}',-1)" title="${T('เลื่อนขึ้น','Move up')}">⬆️</button><button class="chip mv-btn" ${dis(i===ls.length-1)} onclick="moveSeries('${s.id}',1)" title="${T('เลื่อนลง','Move down')}">⬇️</button><button style="font-size:14px;font-weight:700;color:var(--primary);" onclick="openSeriesAdminModal('${s.id}')">✏️</button><button style="font-size:14px;font-weight:700;color:#ef4444;" onclick="deleteSeries('${s.id}')">🗑️</button></div>`:"";
+    const kTxt=s.k==='air'?T('On Air','On Air'):(s.k==='soon'?T('เร็วๆ นี้','Soon'):T('จบแล้ว','Ended'));
+    bx.appendChild(el(`<div class="series-card glass-panel"><img src="${s.img||DEF_SR_IMG}" style="width:100%;height:180px;object-fit:cover;border-bottom:1px solid rgba(126,34,206,0.1);"><div class="series-content" style="padding:20px;flex-grow:1;display:flex;flex-direction:column;position:relative;"><div class="series-badge">${kTxt}</div><div style="font-size:19px;font-weight:700;margin-bottom:4px;">${P(s,'t')}</div><div style="font-size:14px;color:var(--primary);font-weight:700;margin:4px 0 14px;display:flex;align-items:center;gap:4px;"><span class="material-symbols-rounded" style="font-size:1.1em">live_tv</span> ${s.net||""}</div><div style="margin-top:auto;padding-top:16px;border-top:1px solid rgba(126,34,206,.1);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;"><button style="color:var(--primary);font-weight:700;font-size:14px;display:flex;align-items:center;gap:4px;" onclick="openSeriesDetail('${s.id}')">${T('ดูรายละเอียด','Details')} <span class="material-symbols-rounded" style="font-size:1.2em">arrow_forward</span></button>${aB}</div></div></div>`));
+  });
+}
+
+/* ---------- 3) ของขวัญเป็นรูปวาด (อีโมจิหรือรูปก็ได้) ---------- */
+function giftIcon(g){return g&&g.img?`<img class="gift-img" src="${g.img}" alt="">`:(g?g.e:"");}
+let NEWG={e:"",n:"",img:""};
+function renderBW(){
+  if(bwDrag)return;
+  const bx=document.getElementById("bdayGrid");bx.innerHTML="";
+  bwRole=cRole==="head_admin"?"head":(cRole==="admin"?"admin":"guest");
+  const isH=bwRole==="head",isA=bwRole==="admin"||isH;
+  const ls=bwFlt==="all"?sortedBW():sortedBW().filter(w=>w.to===bwFlt);
+  document.getElementById("bdayFilters").innerHTML=[["all",T("ทั้งหมด","All")],["ginny","Ginny"],["jayna","Jayna"],["ginjay","GinJay"]].map(f=>`<button class="chip ${bwFlt===f[0]?'active':''}" onclick="bwFlt='${f[0]}';renderBW()" style="${bwFlt===f[0]?'background:var(--primary);color:#fff;':''}">${f[1]}</button>`).join("");
+  document.getElementById("bdayChips").innerHTML=`<div class="bday-chip total"><span class="e">💌</span>${T('คำอวยพร','Blessings')} × ${ls.length}</div>`+BW_GIFTS.map(g=>`<div class="bday-chip"><span class="e">${giftIcon(g)}</span>${P(g,'n')} × ${ls.filter(w=>w.gift===g.id).length}</div>`).join("");
+  document.getElementById("bdayTools").innerHTML=isH?`<button class="chip" onclick="openManageGiftsDlg()">⚙️ ${T('ตั้งค่าของขวัญ','Manage Gifts')}</button><label class="demo">Role: <select style="padding:6px;border-radius:8px;border:var(--glass-border);background:rgba(255,255,255,0.5);" onchange="cRole=this.value;updateUIRole()"><option value="guest" ${cRole==='guest'?'selected':''}>Guest</option><option value="admin" ${cRole==='admin'?'selected':''}>Admin</option><option value="head_admin" ${cRole==='head_admin'?'selected':''}>Head Admin</option></select></label>`:"";
+  document.getElementById("bdayInfo").textContent=isH?(bwFlt==="all"?T("เรียงใหม่ → เก่า · ลาก ⠿ เพื่อจัดลำดับ หรือกดเปลี่ยนของขวัญได้","Newest → Oldest · Drag ⠿ to reorder or change gift"):T("กลับไปที่ “ทั้งหมด” เพื่อจัดลำดับ","Go back to 'All' to reorder.")):T("เรียงจากใหม่ไปเก่า","Sorted from newest to oldest");
+  if(!ls.length){bx.innerHTML=`<div class="empty">${T('ยังไม่มีคำอวยพร มาเป็นคนแรกกันนะ 💜','No blessings yet. Be the first! 💜')}</div>`;return;}
+  ls.forEach(w=>{
+    const g=BW_GIFTS.find(x=>x.id===w.gift)||BW_GIFTS[0];
+    let aB="";
+    if(isH&&bwFlt==="all")aB+=`<button class="chip grip" style="font-size:12px;cursor:grab;padding:4px 10px;" onpointerdown="startDragBW(event,this.closest('article'))">⠿ ${T('ลาก','Move')}</button>`;
+    if(isH)aB+=`<button class="chip" style="font-size:12px;padding:4px 10px;margin-left:6px;" onclick="openChangeWishGift('${w.id}')">🎁 ${T('เปลี่ยนของขวัญ','Change Gift')}</button>`;
+    if(isA)aB+=`<button class="chip" style="font-size:12px;color:#d6336c;padding:4px 10px;margin-left:6px;" onclick="deleteBW('${w.id}')">🗑️ ${T('ลบ','Del')}</button>`;
+    bx.appendChild(el(`<article class="wish glass-panel" data-id="${w.id}"><div style="display:flex;justify-content:space-between;align-items:center;"><p style="margin:0;font-weight:700;font-size:17px;color:var(--w-pt);">${w.name||'Anonymous'}</p><span title="${isH?'คลิกเพื่อเปลี่ยนของขวัญ':''}" onclick="${isH?`openChangeWishGift('${w.id}')`:''}" style="cursor:${isH?'pointer':'default'};font-size:1.5rem;border-radius:50%;width:3.2rem;height:3.2rem;display:flex;align-items:center;justify-content:center;background:var(--w-bg2);border:3px solid ${w.to==='ginny'?'#8b5cf6':(w.to==='jayna'?'#ffb800':'var(--w-purple)')};box-shadow:0 4px 12px rgba(0,0,0,0.1);">${giftIcon(g)}</span></div><p style="margin:14px 0;line-height:1.75;font-size:15px;white-space:pre-wrap;overflow-wrap:anywhere;">${w.text}</p><div style="display:flex;justify-content:space-between;color:var(--muted);font-size:13px;align-items:center;"><span>${new Date(w.at).toLocaleDateString()}</span><span style="color:var(--w-pt);font-weight:700;background:rgba(255,255,255,0.5);padding:4px 12px;border-radius:999px;">${T('ถึง','To')} ${w.to==='ginjay'?'GinJay':(w.to==='ginny'?'Ginny':'Jayna')}</span></div><div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:14px;">${aB}</div></article>`));
+  });
+}
+function openChangeWishGift(wId){
+  const w=BW_WISH.find(x=>x.id===wId);if(!w)return;
+  const d=document.getElementById("dlg");
+  const gHtml=BW_GIFTS.map(g=>`<button class="chip" style="font-size:2rem;padding:10px 14px;border:${w.gift===g.id?'3px solid var(--primary)':'var(--glass-border)'};background:rgba(255,255,255,0.6);" onclick="setWishGift('${wId}','${g.id}')">${giftIcon(g)} <span style="font-size:14px;">${P(g,'n')}</span></button>`).join("");
+  d.innerHTML=`<h3 style="text-align:center;color:var(--w-pt);margin-bottom:16px;">🎁 ${T('เลือกของขวัญใหม่ให้การ์ดของ','Change Gift for')} "${w.name}"</h3><div style="display:flex;gap:10px;justify-content:center;margin:20px 0;flex-wrap:wrap;">${gHtml}</div><div style="text-align:center;"><button class="chip" onclick="document.getElementById('dlg').close()">${T('ปิด','Close')}</button></div>`;
+  d.showModal();
+}
+try{
+  document.getElementById("bdayFab").onclick=()=>{
+    const d=document.getElementById("dlg");
+    const gHtml=BW_GIFTS.map(g=>`<button class="chip" style="font-size:2.4rem;padding:12px;border:var(--glass-border);background:rgba(255,255,255,0.4);" onclick="bwPickG('${g.id}')">${giftIcon(g)}</button>`).join("");
+    d.innerHTML=`<h2 style="text-align:center;color:var(--w-pt);margin-bottom:12px;">${T('เลือกของขวัญ','Pick a Gift')}</h2><div style="display:flex;gap:12px;justify-content:center;margin:24px 0;flex-wrap:wrap;">${gHtml}</div><div style="text-align:center;"><button class="btn-submit" style="background:rgba(255,255,255,0.4);color:var(--ink);box-shadow:none;border:var(--glass-border);" onclick="document.getElementById('dlg').close()">${T('ยกเลิก','Cancel')}</button></div>`;
+    d.showModal();
+  };
+}catch(e){console.error(e);}
+function collectGiftInputs(){
+  BW_GIFTS.forEach((g,idx)=>{
+    const a=document.getElementById(`ge_${idx}`),b=document.getElementById(`gth_${idx}`);
+    if(a&&b){g.e=a.value.trim()||g.e;g.th_n=b.value.trim()||g.th_n;}
+  });
+  const ne=document.getElementById("newG_e"),nn=document.getElementById("newG_n");
+  if(ne)NEWG.e=ne.value;if(nn)NEWG.n=nn.value;
+}
+function openManageGiftsDlg(){
+  const d=document.getElementById("dlg");
+  const rows=BW_GIFTS.map((g,idx)=>`<div style="display:flex;gap:6px;margin-bottom:8px;align-items:center;"><span style="width:40px;text-align:center;font-size:1.6rem;">${giftIcon(g)}</span><input type="text" value="${g.e||''}" id="ge_${idx}" style="width:54px;text-align:center;padding:8px;border-radius:10px;border:1px solid var(--line);"><input type="text" value="${g.th_n}" id="gth_${idx}" style="flex:1;min-width:0;padding:8px;border-radius:10px;border:1px solid var(--line);"><button class="chip" title="อัปโหลดรูปวาด" onclick="pickGiftImg(${idx})">🖼️</button>${g.img?`<button class="chip" title="กลับไปใช้อีโมจิ" onclick="clearGiftImg(${idx})">↩️</button>`:""}<button class="chip" style="color:#ef4444;" onclick="removeGiftType(${idx})">🗑️</button></div>`).join("");
+  d.innerHTML=`<h3 style="color:var(--w-pt);margin-bottom:8px;">⚙️ ${T('ตั้งค่ารายการของขวัญ','Manage Gift Types')}</h3><p style="font-size:12px;color:var(--muted);margin:0 0 10px;">🖼️ = อัปโหลดรูปวาด (PNG พื้นหลังโปร่งใสสวยที่สุด) · ใช้อีโมจิหรือรูปก็ได้</p><div style="max-height:260px;overflow-y:auto;margin-bottom:14px;">${rows}</div><div style="display:flex;gap:6px;margin-bottom:20px;border-top:1px dashed var(--line);padding-top:12px;align-items:center;"><span style="width:40px;text-align:center;font-size:1.6rem;">${NEWG.img?`<img class="gift-img" src="${NEWG.img}" alt="">`:""}</span><input type="text" id="newG_e" value="${impEsc(NEWG.e)}" placeholder="🎀" style="width:54px;text-align:center;padding:8px;border-radius:10px;border:1px solid var(--line);"><input type="text" id="newG_n" value="${impEsc(NEWG.n)}" placeholder="ชื่อของขวัญ" style="flex:1;min-width:0;padding:8px;border-radius:10px;border:1px solid var(--line);"><button class="chip" onclick="pickGiftImg(-1)">🖼️</button><button class="btn-submit" onclick="addGiftType()">+ เพิ่ม</button></div><div style="display:flex;justify-content:space-between;"><button class="chip" onclick="document.getElementById('dlg').close()">ยกเลิก</button><button class="btn-submit" onclick="saveGiftTypes()">บันทึกการตั้งค่า</button></div>`;
+  if(!d.open)d.showModal();
+}
+async function uploadGiftImage(file){
+  if(!AUTH_TOKEN)throw new Error(T("ต้องล็อกอินแอดมินก่อน","Admin login required"));
+  const bmp=await createImageBitmap(file);
+  const sc=Math.min(1,192/Math.max(bmp.width,bmp.height));
+  const c=document.createElement("canvas");c.width=Math.max(1,Math.round(bmp.width*sc));c.height=Math.max(1,Math.round(bmp.height*sc));
+  c.getContext("2d").drawImage(bmp,0,0,c.width,c.height);
+  const blob=await new Promise(r=>c.toBlob(r,"image/png"));
+  const res=await fetch('/api/upload',{method:'POST',headers:{'Content-Type':'image/png','Authorization':'Bearer '+AUTH_TOKEN},body:blob});
+  const data=await res.json().catch(()=>({}));
+  if(!res.ok||!data.success)throw new Error((data.error&&data.error.message)||("HTTP "+res.status));
+  return data.data.url;
+}
+function pickGiftImg(idx){
+  const inp=document.createElement("input");inp.type="file";inp.accept="image/png,image/webp,image/gif,image/jpeg";
+  inp.onchange=async()=>{
+    const file=inp.files[0];if(!file)return;
+    collectGiftInputs();
+    try{
+      const url=await uploadGiftImage(file);
+      if(idx>=0)BW_GIFTS[idx].img=url;else NEWG.img=url;
+      openManageGiftsDlg();
+    }catch(e){alert("❌ "+e.message);}
+  };
+  inp.click();
+}
+function clearGiftImg(idx){collectGiftInputs();delete BW_GIFTS[idx].img;openManageGiftsDlg();}
+function addGiftType(){
+  collectGiftInputs();
+  const e=NEWG.e.trim(),n=NEWG.n.trim();
+  if(!n||(!e&&!NEWG.img))return alert(T("ใส่ชื่อ และอีโมจิหรือรูปวาดอย่างใดอย่างหนึ่ง","Enter a name and an emoji or image"));
+  const g={id:"g_"+Date.now(),e:e||"🎁",th_n:n,en_n:n};if(NEWG.img)g.img=NEWG.img;
+  BW_GIFTS.push(g);NEWG={e:"",n:"",img:""};openManageGiftsDlg();
+}
+function removeGiftType(idx){
+  collectGiftInputs();
+  if(BW_GIFTS.length<=1)return alert("ต้องมีของขวัญอย่างน้อย 1 ชิ้นครับ");
+  BW_GIFTS.splice(idx,1);openManageGiftsDlg();
+}
+function saveGiftTypes(){collectGiftInputs();saveBW();document.getElementById("dlg").close();}
+
+/* ---------- 4) การเดินทาง: ช่องไทย/อังกฤษ + 4 ทาง ---------- */
+try{
+  const box=document.querySelector("#travelModal .modal-box");
+  const row=(lab,a,b,ph)=>`<div class="trv-lab">${lab}</div><div class="trv-grid"><input type="text" id="${a}" placeholder="${ph||'ภาษาไทย'}"><input type="text" id="${b}" placeholder="English"></div>`;
+  box.innerHTML=`<h3 style="color:var(--primary);margin-bottom:6px;display:flex;align-items:center;gap:6px;"><span class="material-symbols-rounded">train</span> เพิ่ม/แก้ไขสถานที่</h3><p style="font-size:12px;color:var(--muted);margin:0 0 6px;">ช่องซ้าย = ไทย · ช่องขวา = English (เว้นว่างได้ ระบบจะใช้ภาษาไทยแทน หรือกดปุ่ม 🌐 ให้แปลอัตโนมัติ)</p>${row("ชื่อสถานที่","trvName","trvNameEn")}${row("ย่าน / เขต","trvArea","trvAreaEn")}${row("🚆 BTS / MRT","trvBts","trvBtsEn","ไม่บังคับ")}${row("🚌 รถเมล์","trvBus","trvBusEn","ไม่บังคับ")}${row("⛴️ เรือ","trvBoat","trvBoatEn","ไม่บังคับ")}${row("🚶 เดินทางด้วยตนเอง (รถส่วนตัว / แท็กซี่ / เดินเท้า)","trvSelf","trvSelfEn","ไม่บังคับ")}${row("🧭 ข้อมูลเดินทางทั่วไป (ถ้ามี)","trvHow","trvHowEn","ไม่บังคับ")}<div class="trv-lab">📍 คำค้นพิกัด Maps (เว้นว่าง = ใช้ชื่อสถานที่)</div><div class="form-group"><input type="text" id="trvMapQ"></div><div class="trv-lab">ฮอลล์ย่อย (คั่นด้วยลูกน้ำ)</div><div class="form-group"><input type="text" id="trvZones"></div><div class="form-group"><label>รูปสถานที่ (อัปโหลดหรือวางลิงก์)</label><input type="file" id="trvImgUpload" accept="image/*" onchange="handleImgUpload(this,'trvImgUrl','trvImgStatus')" style="background:rgba(255,255,255,0.5);padding:8px 12px;border-radius:14px;width:100%;border:2px dashed rgba(126,34,206,0.4);cursor:pointer;margin-bottom:6px;"><span id="trvImgStatus" style="font-size:13px;font-weight:700;display:block;margin-bottom:6px;"></span><input type="text" id="trvImgUrl" placeholder="หรือวางลิงก์รูปสถานที่ (URL) ที่นี่..."></div><div style="display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap;margin-top:16px;"><button class="chip" onclick="closeModal('travelModal')">ยกเลิก</button><button class="chip" onclick="trvAutoTranslate()">🌐 แปลเป็นอังกฤษให้</button><button class="btn-submit" onclick="saveTravel()">บันทึก</button></div>`;
+}catch(e){console.error(e);}
+const TRV_MAP={trvName:"th_n",trvNameEn:"en_n",trvArea:"th_a",trvAreaEn:"en_a",trvBts:"th_bts",trvBtsEn:"en_bts",trvBus:"th_bus",trvBusEn:"en_bus",trvBoat:"th_boat",trvBoatEn:"en_boat",trvSelf:"th_self",trvSelfEn:"en_self",trvHow:"th_h",trvHowEn:"en_h"};
+function openTravelModal(id=null){
+  edTrv=id;
+  document.getElementById("trvImgUpload").value="";document.getElementById("trvImgStatus").innerText="";
+  const v=id?TRAVEL.find(x=>x.id===id):null;
+  if(id&&!v)return;
+  const set=(k,x)=>{document.getElementById(k).value=x||"";};
+  Object.keys(TRV_MAP).forEach(k=>set(k,v?v[TRV_MAP[k]]:""));
+  set("trvMapQ",v?v.map_q:"");set("trvZones",v?(v.zones||[]).join(", "):"");set("trvImgUrl",v?v.img:"");
+  document.getElementById("travelModal").classList.add("on");
+}
+function saveTravel(){
+  const g=k=>document.getElementById(k).value.trim();
+  const t=g("trvName");if(!t)return alert(T("ใส่ชื่อสถานที่ก่อนครับ","Please enter a venue name"));
+  const zR=g("trvZones"),p={};
+  Object.keys(TRV_MAP).forEach(k=>{p[TRV_MAP[k]]=g(k);});
+  p.map_q=g("trvMapQ")||t;p.zones=zR?zR.split(",").map(s=>s.trim()).filter(Boolean):[];p.img=g("trvImgUrl")||DEF_TR_IMG;
+  if(edTrv){const i=TRAVEL.findIndex(x=>x.id===edTrv);if(i>-1)TRAVEL[i]={...TRAVEL[i],...p};}else{TRAVEL.push({id:"tr_"+Date.now(),...p});}
+  saveToDB({TRAVEL});closeModal("travelModal");renderTravel();
+}
+async function trvTr(text){
+  const r=await fetch("https://api.mymemory.translated.net/get?q="+encodeURIComponent(text.slice(0,450))+"&langpair=th|en");
+  const d=await r.json(),t=d&&d.responseData&&d.responseData.translatedText;
+  if(!t||Number(d.responseStatus)!==200||/MYMEMORY WARNING/i.test(t))return "";
+  return t;
+}
+async function trvAutoTranslate(){
+  const pairs=[["trvName","trvNameEn"],["trvArea","trvAreaEn"],["trvBts","trvBtsEn"],["trvBus","trvBusEn"],["trvBoat","trvBoatEn"],["trvSelf","trvSelfEn"],["trvHow","trvHowEn"]];
+  let done=0,fail=0;
+  for(const [a,b] of pairs){
+    const A=document.getElementById(a),B=document.getElementById(b);
+    if(!A.value.trim()||B.value.trim())continue;
+    try{const t=await trvTr(A.value.trim());if(t){B.value=t;done++;}else fail++;}catch(e){fail++;}
+  }
+  alert(done?T(`แปลให้ ${done} ช่องแล้ว กรุณาตรวจทานก่อนบันทึก`+(fail?` (แปลไม่ได้ ${fail} ช่อง)`:""),`Translated ${done} fields - please review`):T("ไม่มีช่องที่ต้องแปล หรือบริการแปลใช้ไม่ได้ชั่วคราว","Nothing to translate, or the service is unavailable"));
+}
+function renderTravel(){
+  const bx=document.getElementById("venuesContainer");bx.innerHTML="";const isA=(cRole==="admin"||cRole==="head_admin");
+  const MODES=[["bts","🚆","BTS / MRT"],["bus","🚌",T('รถเมล์','Bus')],["boat","⛴️",T('เรือ','Boat')],["self","🚶",T('เดินทางด้วยตนเอง','On your own')]];
+  TRAVEL.forEach(v=>{
+    const emb=`https://maps.google.com/maps?q=${encodeURIComponent(v.map_q||P(v,'n'))}&t=&z=15&ie=UTF8&iwloc=&output=embed`;
+    const zh=(v.zones||[]).map(z=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px dashed rgba(126,34,206,.2);font-size:14px;"><span><b>${z}</b></span></div>`).join("");
+    const aB=isA?`<div style="display:flex;gap:10px;margin-top:14px;"><button class="chip" onclick="openTravelModal('${v.id}')">✏️ Edit</button><button class="chip" style="color:#ef4444;" onclick="deleteTravel('${v.id}')">🗑️ Del</button></div>`:"";
+    const modes=MODES.filter(m=>P(v,m[0])).map(m=>`<div class="mode-row"><span style="font-size:1.2em">${m[1]}</span><div><b>${m[2]}</b><div>${P(v,m[0])}</div></div></div>`).join("");
+    const gen=P(v,'h');
+    const how=(modes||gen)?`<div style="background:rgba(255,255,255,0.4);backdrop-filter:blur(8px);padding:12px 16px;border-radius:12px;border-left:4px solid var(--accent);font-size:14px;">${gen?`<div style="margin-bottom:${modes?'6px':'0'};">🧭 <b>${T('วิธีไป:','How to go:')}</b> ${gen}</div>`:""}${modes}</div>`:"";
+    bx.appendChild(el(`<div class="travel-card glass-panel"><img src="${v.img||DEF_TR_IMG}" style="width:100%;height:200px;object-fit:cover;border-bottom:1px solid rgba(126,34,206,.1);"><div style="padding:24px;flex-grow:1;display:flex;flex-direction:column;"><div style="font-size:22px;font-weight:700;color:var(--primary);">${P(v,'n')}</div><div style="font-size:14px;color:var(--muted);margin-bottom:12px;display:flex;align-items:center;gap:4px;"><span class="material-symbols-rounded" style="font-size:1.1em">location_on</span> ${P(v,'a')}</div>${how}<div style="width:100%;height:200px;border-radius:16px;overflow:hidden;margin:16px 0;border:1px solid rgba(126,34,206,.2);"><iframe src="${emb}" loading="lazy" allowfullscreen style="width:100%;height:100%;border:none;"></iframe></div><div style="display:flex;justify-content:space-between;align-items:center;"><span style="font-size:13px;font-weight:700;color:var(--muted);">${T('ฮอลล์ / โซนย่อย:','Sub-zones:')}</span><a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(v.map_q||P(v,'n'))}" target="_blank" style="font-size:14px;font-weight:700;display:flex;align-items:center;gap:4px;"><span class="material-symbols-rounded" style="font-size:1.1em">map</span> ${T('เปิดใน Google Maps ↗','Open in Maps ↗')}</a></div><div style="background:rgba(255,255,255,0.3);padding:12px 18px;border-radius:14px;margin-top:12px;border:1px solid rgba(126,34,206,.1);">${zh||`<div style="font-size:13px;color:var(--muted);">${T('ไม่มีระบุ','None specified')}</div>`}</div>${aB}</div></div>`));
+  });
+}
+
+/* ---------- นำเข้าหลายรายการ (Admin / Head Admin) ---------- */
+let IMP={type:"events",items:[],mk:[]};
+const ART={duo:"duo","คู่":"duo","งานคู่":"duo",ginjay:"duo",ginny:"ginny","จินนี่":"ginny",jayna:"jayna","เจน่า":"jayna"};
+const WCAT={acting:"acting","การแสดง":"acting",music:"music","เพลง":"music",fashion:"fashion","แฟชั่น":"fashion",other:"other","อื่นๆ":"other"};
+const WST={air:"air","ออนแอร์":"air","on air":"air",soon:"soon","เร็วๆนี้":"soon","เร็วๆ นี้":"soon","กำลังจะมา":"soon",done:"done","จบแล้ว":"done"};
+const IMP_HELP={
+  events:"1 บรรทัด = 1 งาน แยกช่องด้วย | (หรือ Tab ถ้า copy มาจาก Google Sheets)\nวันที่ | เวลา | ชื่องาน | ชื่ออังกฤษ | ประเภท | สถานที่ | ศิลปิน(duo/ginny/jayna) | ลิงก์รูป\nตัวอย่าง: 2026-11-14 | 12:00 น. | VONE Electric Fan Meeting | | แฟนมีต | สยามสแควร์ | jayna |\nวันที่ใช้ได้: 2026-11-14 หรือ 14/11/2026 หรือ 14/11/2569 · ช่องท้ายๆ ที่ไม่มีข้อมูลตัดทิ้งได้",
+  works:"1 บรรทัด = 1 ผลงาน\nหมวด | สถานะ | ชื่อผลงาน | ชื่ออังกฤษ | ช่องทาง | ลิงก์ YouTube | ลิงก์รูป\nหมวด: acting / music / fashion / other · สถานะ: air / soon / done\nถ้ามีชื่อผลงานเดิมอยู่แล้วจะอัปเดตให้ ไม่สร้างซ้ำ",
+  venues:"1 บรรทัด = 1 สถานที่ (ช่องไหนไม่มีเว้นว่างไว้)\nชื่อ | ชื่ออังกฤษ | ย่าน | ย่านอังกฤษ | BTS/MRT | รถเมล์ | เรือ | เดินทางเอง | คำค้นแผนที่ | ฮอลล์ย่อย(คั่นด้วย ;) | ลิงก์รูป"
+};
+function impParseDate(s){
+  s=(s||"").trim();let y,mo,d,m=s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);
+  if(m){y=+m[1];mo=+m[2];d=+m[3];}
+  else{m=s.match(/^(\d{1,2})[\/\-.](\d{1,2})[\/\-.](\d{4})$/);if(!m)return null;d=+m[1];mo=+m[2];y=+m[3];}
+  if(y>2400)y-=543;
+  const dt=new Date(y,mo-1,d);
+  if(dt.getFullYear()!==y||dt.getMonth()!==mo-1||dt.getDate()!==d)return null;
+  return `${y}-${String(mo).padStart(2,"0")}-${String(d).padStart(2,"0")}`;
+}
+function impRows(text){
+  const lines=text.split(/\r?\n/).map(l=>l.trim()).filter(Boolean);
+  const dl=lines.some(l=>l.includes("|"))?"|":(lines.some(l=>l.includes("\t"))?"\t":",");
+  return lines.map((l,i)=>({n:i+1,c:l.split(dl).map(s=>s.trim())}));
+}
+const impFindEvent=p=>EVENTS.find(e=>e.d===p.d&&(impNorm(e.th_t)===impNorm(p.th_t)||impNorm(e.en_t)===impNorm(p.th_t)));
+const impFindWork=p=>SERIES.find(s=>(s.wcat||"acting")===p.wcat&&impNorm(s.th_t)===impNorm(p.th_t));
+const impFindVenue=p=>TRAVEL.find(v=>impNorm(v.th_n)===impNorm(p.th_n));
+function impEvents(rows){
+  const items=[],errs=[];
+  rows.forEach((r,idx)=>{
+    const c=r.c,d=impParseDate(c[0]);
+    if(!d){if(idx===0&&!/\d/.test(c[0]||""))return;errs.push(`บรรทัด ${r.n}: วันที่ไม่ถูกต้อง (${c[0]||"ว่าง"})`);return;}
+    if(!c[2]){errs.push(`บรรทัด ${r.n}: ไม่มีชื่องาน`);return;}
+    items.push({d,time:c[1]||"",th_t:c[2],en_t:c[3]||"",th_c:c[4]||"",th_v:c[5]||"",artist:ART[(c[6]||"").toLowerCase()]||"",img:/^https?:\/\//i.test(c[7]||"")?c[7]:""});
+  });
+  return {items,errs};
+}
+function impWorks(rows){
+  const items=[],errs=[];
+  rows.forEach((r,idx)=>{
+    const c=r.c,wcat=WCAT[(c[0]||"").toLowerCase()],k=WST[(c[1]||"").toLowerCase()];
+    if(!wcat||!k){if(idx===0&&!k)return;errs.push(`บรรทัด ${r.n}: หมวดหรือสถานะไม่ถูกต้อง (${c[0]||"ว่าง"} / ${c[1]||"ว่าง"})`);return;}
+    if(!c[2]){errs.push(`บรรทัด ${r.n}: ไม่มีชื่อผลงาน`);return;}
+    const tr=c[5]||"";
+    if(tr&&!YT_RE.test(tr)){errs.push(`บรรทัด ${r.n}: ลิงก์ YouTube ไม่ถูกต้อง`);return;}
+    items.push({wcat,k,th_t:c[2],en_t:c[3]||"",net:c[4]||"",tr,img:/^https?:\/\//i.test(c[6]||"")?c[6]:""});
+  });
+  return {items,errs};
+}
+function impVenues(rows){
+  const items=[],errs=[];
+  rows.forEach((r,idx)=>{
+    const c=r.c;
+    if(!c[0]){errs.push(`บรรทัด ${r.n}: ไม่มีชื่อสถานที่`);return;}
+    if(idx===0&&/^(ชื่อ|name)/i.test(c[0]))return;
+    items.push({th_n:c[0],en_n:c[1]||"",th_a:c[2]||"",en_a:c[3]||"",th_bts:c[4]||"",th_bus:c[5]||"",th_boat:c[6]||"",th_self:c[7]||"",map_q:c[8]||"",zones:(c[9]||"").split(";").map(s=>s.trim()).filter(Boolean),img:/^https?:\/\//i.test(c[10]||"")?c[10]:""});
+  });
+  return {items,errs};
+}
+function setImpBtn(on){const b=document.getElementById("impSaveBtn");b.style.opacity=on?"1":".4";b.style.pointerEvents=on?"auto":"none";}
+function importHelp(){
+  const t=document.getElementById("impType").value;
+  document.getElementById("impHelpBox").textContent=IMP_HELP[t];
+  document.getElementById("impMkWrap").style.display=t==="events"?"flex":"none";
+  document.getElementById("impPrev").innerHTML="";setImpBtn(false);
+}
+function openImport(){
+  if(!(cRole==="admin"||cRole==="head_admin"))return alert(T("เฉพาะ Admin / Head Admin","Admin only"));
+  document.getElementById("impText").value="";importHelp();
+  document.getElementById("importModal").classList.add("on");
+}
+function importPreview(){
+  const type=document.getElementById("impType").value,rows=impRows(document.getElementById("impText").value);
+  const box=document.getElementById("impPrev");
+  IMP={type,items:[],mk:[]};
+  if(!rows.length){box.innerHTML="⚠️ ยังไม่ได้วางข้อมูล";setImpBtn(false);return;}
+  const res=type==="events"?impEvents(rows):type==="works"?impWorks(rows):impVenues(rows);
+  IMP.items=res.items;
+  let nNew=0,nUp=0;const lines=[];
+  res.items.forEach(p=>{
+    const ex=type==="events"?impFindEvent(p):type==="works"?impFindWork(p):impFindVenue(p);
+    ex?nUp++:nNew++;
+    const lab=type==="events"?`${p.d} ${p.time} · ${p.th_t}`:type==="works"?`[${p.wcat}] ${p.th_t}${p.tr?" ▶":""}`:p.th_n;
+    lines.push(`${ex?"🔄":"✅"} ${impEsc(lab)}`);
+  });
+  if(type==="events"){
+    const seen={};
+    res.items.forEach(p=>{
+      const n=impNorm(p.th_v);
+      if(!n||seen[n]||ONLINE_RE.test(p.th_v))return;seen[n]=1;
+      if(!TRAVEL.some(v=>impNorm(v.th_n)===n||impNorm(v.en_n)===n||impNorm(v.map_q)===n))IMP.mk.push(p.th_v);
+    });
+  }
+  let h=`<div style="margin-bottom:6px;"><b>✅ ใหม่ ${nNew}</b> · <b>🔄 อัปเดต ${nUp}</b> · <b>⚠️ ข้าม ${res.errs.length}</b></div>`;
+  if(res.errs.length)h+=`<div style="color:#b91c1c;margin-bottom:6px;">${res.errs.map(impEsc).join("<br>")}</div>`;
+  if(IMP.mk.length)h+=`<div style="margin-bottom:6px;">🚆 จะสร้างการ์ดสถานที่ใหม่: ${IMP.mk.map(impEsc).join(", ")}</div>`;
+  h+=lines.slice(0,60).join("<br>")+(lines.length>60?`<br>… อีก ${lines.length-60} รายการ`:"");
+  box.innerHTML=h;setImpBtn(res.items.length>0);
+}
+async function importSave(){
+  if(!(cRole==="admin"||cRole==="head_admin")||!IMP.items.length)return;
+  const payload={};
+  if(IMP.type==="events"){
+    IMP.items.forEach(p=>{
+      const ex=impFindEvent(p);
+      if(ex){["time","th_t","en_t","th_c","th_v","artist","img"].forEach(k=>{if(p[k])ex[k]=p[k];});}
+      else{let id="ev_i"+impHash(p.d+"|"+impNorm(p.th_t));while(EVENTS.some(e=>e.id===id))id+="x";EVENTS.push({id,d:p.d,time:p.time,th_t:p.th_t,en_t:p.en_t,th_c:p.th_c,th_v:p.th_v,artist:p.artist||"duo",img:p.img||DEF_EV_IMG});}
+    });
+    payload.EVENTS=EVENTS;
+    if(document.getElementById("impMk").checked&&IMP.mk.length){
+      IMP.mk.forEach(n=>{let id="tr_i"+impHash(impNorm(n));while(TRAVEL.some(v=>v.id===id))id+="x";TRAVEL.push({id,th_n:n,map_q:n,zones:[],img:DEF_TR_IMG});});
+      payload.TRAVEL=TRAVEL;
+    }
+  }else if(IMP.type==="works"){
+    IMP.items.forEach(p=>{
+      const ex=impFindWork(p);
+      if(ex){["k","en_t","net","tr","img"].forEach(k=>{if(p[k])ex[k]=p[k];});}
+      else{let id="s_i"+impHash(p.wcat+"|"+impNorm(p.th_t));while(SERIES.some(s=>s.id===id))id+="x";SERIES.push({id,wcat:p.wcat,k:p.k,th_t:p.th_t,en_t:p.en_t,net:p.net,tr:p.tr,img:p.img||DEF_SR_IMG});}
+    });
+    payload.SERIES=SERIES;
+  }else{
+    IMP.items.forEach(p=>{
+      const ex=impFindVenue(p);
+      if(ex){["en_n","th_a","en_a","th_bts","th_bus","th_boat","th_self","map_q","img"].forEach(k=>{if(p[k])ex[k]=p[k];});if(p.zones.length)ex.zones=p.zones;}
+      else{let id="tr_i"+impHash(impNorm(p.th_n));while(TRAVEL.some(v=>v.id===id))id+="x";TRAVEL.push({id,...p,map_q:p.map_q||p.th_n,img:p.img||DEF_TR_IMG});}
+    });
+    payload.TRAVEL=TRAVEL;
+  }
+  const ok=await saveToDB(payload);
+  if(ok){closeModal("importModal");updateUIRole();alert(T(`นำเข้าสำเร็จ ${IMP.items.length} รายการ 🎉`,`Imported ${IMP.items.length} items`));}
+}
+try{
+  const m=document.createElement("div");m.className="modal";m.id="importModal";
+  m.innerHTML=`<div class="modal-box" style="max-width:760px;"><h3 style="color:var(--primary);margin-bottom:10px;">📥 นำเข้าหลายรายการ (วางข้อความครั้งเดียว)</h3><div class="form-group"><select id="impType" onchange="importHelp()"><option value="events">📅 ตารางงาน</option><option value="works">🎬 ผลงาน (พร้อมลิงก์ YouTube)</option><option value="venues">🚆 สถานที่ / การเดินทาง</option></select></div><div id="impHelpBox" style="font-size:13px;color:var(--muted);margin-bottom:10px;white-space:pre-line;"></div><div class="form-group"><textarea id="impText" rows="9" style="font-family:monospace;font-size:13px;white-space:pre;" placeholder="วางข้อมูลตรงนี้ (1 บรรทัด = 1 รายการ) แล้วกด ตรวจสอบ"></textarea></div><label id="impMkWrap" style="font-size:13px;display:flex;gap:6px;align-items:center;margin-bottom:8px;"><input type="checkbox" id="impMk" checked> สร้างการ์ดสถานที่ (หน้าการเดินทาง) ให้อัตโนมัติสำหรับสถานที่ใหม่</label><div id="impPrev" style="font-size:13px;max-height:200px;overflow:auto;margin-bottom:8px;"></div><div style="display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap;"><button class="chip" onclick="closeModal('importModal')">ยกเลิก</button><button class="chip" onclick="importPreview()">🔍 ตรวจสอบ</button><button class="btn-submit" id="impSaveBtn" onclick="importSave()" style="opacity:.4;pointer-events:none;">นำเข้า</button></div></div>`;
+  document.body.appendChild(m);
+  const ab=document.querySelector("#schedule .add-banner");
+  if(ab){
+    const b=document.createElement("button");
+    b.className="btn-submit admin-only";b.style.cssText="margin-left:8px;background:var(--accent);color:#000;";
+    b.innerHTML='<span class="material-symbols-rounded">upload</span> นำเข้าหลายรายการ';
+    b.onclick=openImport;ab.appendChild(b);
+  }
+}catch(e){console.error(e);}
   loadMyPlan();
 loadDataFromDB();
 </script>
