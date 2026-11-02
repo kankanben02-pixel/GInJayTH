@@ -16,9 +16,11 @@ const clean = {
   EVENTS(it) {
     if (!/^\d{4}-\d{2}-\d{2}$/.test(it.d || '')) return null;
     const o = { id: it.id, d: it.d, artist: ['duo', 'ginny', 'jayna'].includes(it.artist) ? it.artist : 'duo' };
-    for (const k of ['time', 'th_t', 'en_t', 'th_c', 'en_c', 'th_v', 'en_v'])
+       for (const k of ['time', 'th_t', 'en_t', 'th_c', 'en_c', 'th_v', 'en_v', 'map_q'])
       if (typeof it[k] === 'string') o[k] = str(it[k], 200);
+    if (typeof it.note === 'string') o.note = str(it.note, 600);
     if (URLRE.test(it.img || '')) o.img = it.img;
+    if (URLRE.test(it.link || '')) o.link = it.link;
     return o.th_t ? o : null;
   },
   COMMU(it) {
