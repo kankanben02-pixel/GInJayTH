@@ -1445,6 +1445,236 @@ try{
     b.onclick=openImport;ab.appendChild(b);
   }
 }catch(e){console.error(e);}
+ /* ===== อัปเดต 2: นำเข้าแบบ "หัวข้อ : ข้อมูล" / ปกจาก YouTube / ปุ่มล้างข้อมูลเก่า ===== */
+const MONTH_MAP={};
+[["มค","มกราคม","jan","january"],["กพ","กุมภาพันธ์","feb","february"],["มีค","มีนาคม","mar","march"],["เมย","เมษายน","apr","april"],["พค","พฤษภาคม","may"],["มิย","มิถุนายน","jun","june"],["กค","กรกฎาคม","jul","july"],["สค","สิงหาคม","aug","august"],["กย","กันยายน","sep","sept","september"],["ตค","ตุลาคม","oct","october"],["พย","พฤศจิกายน","nov","november"],["ธค","ธันวาคม","dec","december"]].forEach((names,i)=>names.forEach(n=>{MONTH_MAP[n]=i+1;}));
+const impUrl=s=>{s=(s||"").trim();if(!s)return "";if(/^https?:\/\//i.test(s))return s;return /^[\w.-]+\.[a-z]{2,}(\/|$)/i.test(s)?"https://"+s:"";};
+function impTime(s){s=(s||"").trim();const m=s.match(/^(\d{1,2})[:.](\d{2})\s*(น\.?)?$/);return m?`${m[1].padStart(2,"0")}:${m[2]} น.`:s;}
+function impParseDate(s){
+  s=(s||"").trim().replace(/,/g," ").replace(/\s+/g," ");
+  let y,mo,d,m;
+  if((m=s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/))){y=+m[1];mo=+m[2];d=+m[3];}
+  else if((m=s.match(/^(\d{1,2})[\/\-.](\d{1,2})[\/\-.](\d{4})$/))){d=+m[1];mo=+m[2];y=+m[3];}
+  else if((m=s.match(/^(\d{1,2}) ?([A-Za-z\u0E00-\u0E7F.]+) ?(\d{4})$/))){d=+m[1];mo=MONTH_MAP[m[2].replace(/\./g,"").toLowerCase()];y=+m[3];}
+  else if((m=s.match(/^([A-Za-z.]+) (\d{1,2}) (\d{4})$/))){mo=MONTH_MAP[m[1].replace(/\./g,"").toLowerCase()];d=+m[2];y=+m[3];}
+  else return null;
+  if(!mo)return null;
+  if(y>2400)y-=543;
+  const dt=new Date(y,mo-1,d);
+  if(dt.getFullYear()!==y||dt.getMonth()!==mo-1||dt.getDate()!==d)return null;
+  return `${y}-${String(mo).padStart(2,"0")}-${String(d).padStart(2,"0")}`;
+}
+const IMP_KEYS_RAW={
+  events:{"งาน":"t","ชื่องาน":"t","ชื่อ":"t","title":"t","event":"t","วันที่":"d","วัน":"d","date":"d","เวลา":"time","time":"time","ชื่ออังกฤษ":"en","อังกฤษ":"en","english":"en","en":"en","ประเภท":"cat","หมวด":"cat","category":"cat","type":"cat","สถานที่":"v","venue":"v","place":"v","location":"v","ศิลปิน":"artist","artist":"artist","รูป":"img","ลิงก์รูป":"img","โปสเตอร์":"img","image":"img","img":"img","poster":"img","แผนที่":"map","คำค้นแผนที่":"map","map":"map","ลิงก์":"link","ลิงค์":"link","link":"link","url":"link","รายละเอียด":"note","หมายเหตุ":"note","note":"note","details":"note","detail":"note"},
+  works:{"หมวด":"cat","ประเภท":"cat","category":"cat","สถานะ":"st","status":"st","ผลงาน":"t","ชื่อผลงาน":"t","งาน":"t","ชื่อ":"t","title":"t","ชื่ออังกฤษ":"en","อังกฤษ":"en","english":"en","en":"en","ช่องทาง":"net","ช่อง":"net","network":"net","platform":"net","youtube":"yt","ยูทูป":"yt","ลิงก์":"yt","ลิงค์":"yt","ลิงก์ youtube":"yt","ตัวอย่าง":"yt","trailer":"yt","link":"yt","รูป":"img","ปก":"img","image":"img","img":"img"},
+  venues:{"ชื่อ":"n","ชื่อสถานที่":"n","สถานที่":"n","name":"n","venue":"n","ชื่ออังกฤษ":"en","อังกฤษ":"en","english":"en","en":"en","ย่าน":"a","เขต":"a","area":"a","ย่านอังกฤษ":"aen","bts":"bts","mrt":"bts","bts/mrt":"bts","รถไฟฟ้า":"bts","รถเมล์":"bus","bus":"bus","เรือ":"boat","boat":"boat","เดินทางเอง":"self","เดินทางด้วยตนเอง":"self","รถส่วนตัว":"self","แผนที่":"map","คำค้นแผนที่":"map","map":"map","ฮอลล์ย่อย":"zones","โซน":"zones","ฮอลล์":"zones","zones":"zones","รูป":"img","image":"img","img":"img"}
+};
+const IMP_KEYS={};
+Object.keys(IMP_KEYS_RAW).forEach(t=>{IMP_KEYS[t]={};Object.keys(IMP_KEYS_RAW[t]).forEach(k=>{IMP_KEYS[t][k.toLowerCase().replace(/\s+/g,"")]=IMP_KEYS_RAW[t][k];});});
+const IMP_TPL={
+  events:"งาน : \nวันที่ : \nเวลา : \nสถานที่ : \nประเภท : \nศิลปิน : \nชื่ออังกฤษ : \nแผนที่ : \nลิงก์ : \nรายละเอียด : \nรูป : \n",
+  works:"หมวด : \nสถานะ : \nผลงาน : \nชื่ออังกฤษ : \nช่องทาง : \nYouTube : \nรูป : \n",
+  venues:"ชื่อสถานที่ : \nชื่ออังกฤษ : \nย่าน : \nBTS/MRT : \nรถเมล์ : \nเรือ : \nเดินทางเอง : \nแผนที่ : \nฮอลล์ย่อย : \nรูป : \n"
+};
+const IMP_HELP2={
+  events:"พิมพ์ทีละบรรทัดแบบ \"หัวข้อ : ข้อมูล\" แล้วเว้น 1 บรรทัดว่างเมื่อขึ้นงานใหม่\nตัวอย่าง:\nงาน : ไฟนอล test\nวันที่ : 15 Nov 2026\nเวลา : 10:37\nสถานที่ : สยามพารากอน\nต้องมี \"งาน\" กับ \"วันที่\" · ใส่เฉพาะช่องที่มี · หัวข้อที่ใช้ได้: งาน, วันที่, เวลา, สถานที่, ประเภท, ศิลปิน (duo/ginny/jayna), ชื่ออังกฤษ, แผนที่, ลิงก์, รายละเอียด, รูป\nวันที่เขียนได้: 15 Nov 2026 · 15 พ.ย. 2569 · 15/11/2026 · 2026-11-15 · กดปุ่ม 📝 เพื่อได้แบบฟอร์มว่างให้กรอก\n(แบบเดิมที่คั่นด้วย | ก็ยังใช้ได้)",
+  works:"พิมพ์ทีละบรรทัดแบบ \"หัวข้อ : ข้อมูล\" เว้น 1 บรรทัดว่างเมื่อขึ้นผลงานใหม่\nตัวอย่าง:\nหมวด : acting\nสถานะ : air\nผลงาน : รับจ้างเลิกรัก (Love on Hire)\nช่องทาง : WeTV\nYouTube : https://www.youtube.com/watch?v=...\nหมวด: acting / music / fashion / other (ไม่ใส่ = other) · สถานะ: air / soon / done (ไม่ใส่ = done)\nใส่ลิงก์ YouTube แล้วไม่ใส่รูป ระบบใช้หน้าปกคลิปให้อัตโนมัติ · ถ้าชื่อผลงานตรงกับของเดิมจะอัปเดตให้",
+  venues:"พิมพ์ทีละบรรทัดแบบ \"หัวข้อ : ข้อมูล\" เว้น 1 บรรทัดว่างเมื่อขึ้นสถานที่ใหม่\nตัวอย่าง:\nชื่อสถานที่ : สยามพารากอน\nย่าน : สยาม\nBTS/MRT : BTS สยาม ทางออก 5\nรถเมล์ : สาย 15, 73\nใส่เฉพาะช่องที่มี ต้องมีอย่างน้อย \"ชื่อสถานที่\" · ฮอลล์ย่อยคั่นด้วยลูกน้ำ"
+};
+function impKV(text,type){
+  const map=IMP_KEYS[type],recs=[];let cur=null,last=null;
+  text.split(/\r?\n/).forEach(raw=>{
+    const line=raw.trim();
+    if(!line){cur=null;last=null;return;}
+    const m=line.match(/^([^:：]{1,30}?)\s*[:：]\s*(.*)$/),key=m?map[m[1].toLowerCase().replace(/\s+/g,"")]:null;
+    if(m&&key){
+      if(!cur||(key in cur.f)){cur={f:{}};recs.push(cur);}
+      cur.f[key]=m[2].trim();last=key;
+    }else if(cur&&last){cur.f[last]+=(cur.f[last]?"\n":"")+line;}
+  });
+  return recs;
+}
+function impParseText(text,type){
+  const map=IMP_KEYS[type];
+  const isKV=text.split(/\r?\n/).some(l=>{const m=l.trim().match(/^([^:：]{1,30}?)\s*[:：]/);return m&&map[m[1].toLowerCase().replace(/\s+/g,"")];});
+  if(isKV){
+    const rows=[];
+    impKV(text,type).forEach(r=>{
+      const f=r.f;if(!Object.values(f).some(v=>v))return;
+      let c;
+      if(type==="events")c=[f.d,f.time,f.t,f.en,f.cat,f.v,f.artist,f.img,f.map,f.link,f.note];
+      else if(type==="works")c=[f.cat,f.st,f.t,f.en,f.net,f.yt,f.img];
+      else c=[f.n,f.en,f.a,f.aen,f.bts,f.bus,f.boat,f.self,f.map,f.zones,f.img];
+      rows.push({lab:`รายการที่ ${rows.length+1}`,c:c.map(x=>(x||"").trim()),kv:true});
+    });
+    return rows;
+  }
+  return impRows(text).map(r=>({lab:`บรรทัด ${r.n}`,c:r.c}));
+}
+function impEvents(rows){
+  const items=[],errs=[];
+  rows.forEach((r,idx)=>{
+    const c=r.c,d=impParseDate(c[0]);
+    if(!d){if(idx===0&&!r.kv&&!/\d/.test(c[0]||""))return;errs.push(`${r.lab}: วันที่ไม่ถูกต้องหรือไม่ได้ใส่ (${c[0]||"ว่าง"})`);return;}
+    if(!c[2]){errs.push(`${r.lab}: ไม่มีชื่องาน`);return;}
+    items.push({d,time:impTime(c[1]),th_t:c[2],en_t:c[3]||"",th_c:c[4]||"",th_v:c[5]||"",artist:ART[(c[6]||"").toLowerCase()]||"",img:impUrl(c[7]),map_q:c[8]||"",link:impUrl(c[9]),note:c[10]||""});
+  });
+  return {items,errs};
+}
+function impWorks(rows){
+  const items=[],errs=[];
+  rows.forEach((r,idx)=>{
+    const c=r.c,wcat=c[0]?WCAT[c[0].toLowerCase()]:"other",k=c[1]?WST[c[1].toLowerCase()]:"done";
+    if(!wcat||!k){if(idx===0&&!r.kv&&!WST[(c[1]||"").toLowerCase()])return;errs.push(`${r.lab}: หมวดหรือสถานะไม่ถูกต้อง (${c[0]||"ว่าง"} / ${c[1]||"ว่าง"})`);return;}
+    if(!c[2]){errs.push(`${r.lab}: ไม่มีชื่อผลงาน`);return;}
+    const tr=(c[5]||"").trim();
+    if(tr&&!YT_RE.test(tr)){errs.push(`${r.lab}: ลิงก์ YouTube ไม่ถูกต้อง`);return;}
+    items.push({wcat,k,th_t:c[2],en_t:c[3]||"",net:c[4]||"",tr:tr?(impUrl(tr)||tr):"",img:impUrl(c[6])});
+  });
+  return {items,errs};
+}
+function impVenues(rows){
+  const items=[],errs=[];
+  rows.forEach((r,idx)=>{
+    const c=r.c;
+    if(!c[0]){errs.push(`${r.lab}: ไม่มีชื่อสถานที่`);return;}
+    if(idx===0&&!r.kv&&/^(ชื่อ|name)/i.test(c[0]))return;
+    items.push({th_n:c[0],en_n:c[1]||"",th_a:c[2]||"",en_a:c[3]||"",th_bts:c[4]||"",th_bus:c[5]||"",th_boat:c[6]||"",th_self:c[7]||"",map_q:c[8]||"",zones:(c[9]||"").split(/[;,]/).map(s=>s.trim()).filter(Boolean),img:impUrl(c[10])});
+  });
+  return {items,errs};
+}
+function importHelp(){
+  const t=document.getElementById("impType").value;
+  document.getElementById("impHelpBox").textContent=IMP_HELP2[t];
+  document.getElementById("impMkWrap").style.display=t==="events"?"flex":"none";
+  document.getElementById("impPrev").innerHTML="";setImpBtn(false);
+}
+function impAddTpl(){
+  const t=document.getElementById("impType").value,ta=document.getElementById("impText");
+  ta.value=(ta.value.trim()?ta.value.replace(/\s+$/,"")+"\n\n":"")+IMP_TPL[t];
+  ta.focus();ta.scrollTop=ta.scrollHeight;
+}
+function importPreview(){
+  const type=document.getElementById("impType").value,rows=impParseText(document.getElementById("impText").value,type);
+  const box=document.getElementById("impPrev");
+  IMP={type,items:[],mk:[]};
+  if(!rows.length){box.innerHTML="⚠️ ยังไม่ได้วางข้อมูล";setImpBtn(false);return;}
+  const res=type==="events"?impEvents(rows):type==="works"?impWorks(rows):impVenues(rows);
+  IMP.items=res.items;
+  let nNew=0,nUp=0;const lines=[];
+  res.items.forEach(p=>{
+    const ex=type==="events"?impFindEvent(p):type==="works"?impFindWork(p):impFindVenue(p);
+    ex?nUp++:nNew++;
+    const lab=type==="events"?`${p.d}${p.time?" "+p.time:""} · ${p.th_t}${p.th_v?" @ "+p.th_v:""}`:type==="works"?`[${p.wcat}·${p.k}] ${p.th_t}${p.tr?" ▶":""}`:p.th_n;
+    lines.push(`${ex?"🔄":"✅"} ${impEsc(lab)}`);
+  });
+  if(type==="events"){
+    const seen={};
+    res.items.forEach(p=>{
+      const n=impNorm(p.th_v);
+      if(!n||seen[n]||ONLINE_RE.test(p.th_v))return;seen[n]=1;
+      if(!TRAVEL.some(v=>impNorm(v.th_n)===n||impNorm(v.en_n)===n||impNorm(v.map_q)===n))IMP.mk.push(p.th_v);
+    });
+  }
+  let h=`<div style="margin-bottom:6px;"><b>✅ ใหม่ ${nNew}</b> · <b>🔄 อัปเดต ${nUp}</b> · <b>⚠️ ข้าม ${res.errs.length}</b></div>`;
+  if(res.errs.length)h+=`<div style="color:#b91c1c;margin-bottom:6px;">${res.errs.map(impEsc).join("<br>")}</div>`;
+  if(IMP.mk.length)h+=`<div style="margin-bottom:6px;">🚆 จะสร้างการ์ดสถานที่ใหม่: ${IMP.mk.map(impEsc).join(", ")}</div>`;
+  h+=lines.slice(0,60).join("<br>")+(lines.length>60?`<br>… อีก ${lines.length-60} รายการ`:"");
+  box.innerHTML=h;setImpBtn(res.items.length>0);
+}
+async function importSave(){
+  if(!(cRole==="admin"||cRole==="head_admin")||!IMP.items.length)return;
+  const payload={};
+  if(IMP.type==="events"){
+    IMP.items.forEach(p=>{
+      const ex=impFindEvent(p);
+      if(ex){["time","th_t","en_t","th_c","th_v","artist","img","map_q","link","note"].forEach(k=>{if(p[k])ex[k]=p[k];});}
+      else{let id="ev_i"+impHash(p.d+"|"+impNorm(p.th_t));while(EVENTS.some(e=>e.id===id))id+="x";EVENTS.push({id,d:p.d,time:p.time,th_t:p.th_t,en_t:p.en_t,th_c:p.th_c,th_v:p.th_v,artist:p.artist||"duo",img:p.img||DEF_EV_IMG,map_q:p.map_q,link:p.link,note:p.note});}
+    });
+    payload.EVENTS=EVENTS;
+    if(document.getElementById("impMk").checked&&IMP.mk.length){
+      IMP.mk.forEach(n=>{let id="tr_i"+impHash(impNorm(n));while(TRAVEL.some(v=>v.id===id))id+="x";TRAVEL.push({id,th_n:n,map_q:n,zones:[],img:DEF_TR_IMG});});
+      payload.TRAVEL=TRAVEL;
+    }
+  }else if(IMP.type==="works"){
+    IMP.items.forEach(p=>{
+      const ex=impFindWork(p);
+      if(ex){["k","en_t","net","tr","img"].forEach(k=>{if(p[k])ex[k]=p[k];});}
+      else{let id="s_i"+impHash(p.wcat+"|"+impNorm(p.th_t));while(SERIES.some(s=>s.id===id))id+="x";SERIES.push({id,wcat:p.wcat,k:p.k,th_t:p.th_t,en_t:p.en_t,net:p.net,tr:p.tr,img:p.img||DEF_SR_IMG});}
+    });
+    payload.SERIES=SERIES;
+  }else{
+    IMP.items.forEach(p=>{
+      const ex=impFindVenue(p);
+      if(ex){["en_n","th_a","en_a","th_bts","th_bus","th_boat","th_self","map_q","img"].forEach(k=>{if(p[k])ex[k]=p[k];});if(p.zones.length)ex.zones=p.zones;}
+      else{let id="tr_i"+impHash(impNorm(p.th_n));while(TRAVEL.some(v=>v.id===id))id+="x";TRAVEL.push({id,...p,map_q:p.map_q||p.th_n,img:p.img||DEF_TR_IMG});}
+    });
+    payload.TRAVEL=TRAVEL;
+  }
+  const ok=await saveToDB(payload);
+  if(ok){closeModal("importModal");updateUIRole();alert(T(`นำเข้าสำเร็จ ${IMP.items.length} รายการ 🎉`,`Imported ${IMP.items.length} items`));}
+}
+try{
+  const row=document.querySelector("#importModal .modal-box > div:last-child");
+  const b=document.createElement("button");b.className="chip";b.textContent="📝 แบบฟอร์มว่าง";b.onclick=impAddTpl;
+  row.insertBefore(b,row.firstChild);
+  const ta=document.getElementById("impText");
+  ta.style.whiteSpace="pre-wrap";ta.style.fontFamily="inherit";ta.rows=12;
+  ta.placeholder="พิมพ์แบบ  หัวข้อ : ข้อมูล  ทีละบรรทัด (กดปุ่ม 📝 แบบฟอร์มว่าง เพื่อเริ่มได้เลย)";
+  importHelp();
+}catch(e){console.error(e);}
+
+/* ---------- ปกผลงานจาก YouTube (เฉพาะการแสดงผล ไม่แก้ข้อมูล) ---------- */
+function serCover(s){
+  const m=YT_RE.exec(s.tr||"");
+  return m&&(!s.img||/images\.unsplash\.com/.test(s.img))?`https://img.youtube.com/vi/${m[1]}/hqdefault.jpg`:"";
+}
+function applySeriesCovers(){
+  const ls=SERIES.filter(s=>(s.wcat||"acting")===cWC&&(ssf==="all"||s.k===ssf));
+  document.querySelectorAll("#seriesList .series-card").forEach((card,i)=>{
+    const s=ls[i],im=card.querySelector("img"),u=s&&serCover(s);
+    if(u&&im)im.src=u;
+  });
+}
+try{
+  const fr=window.renderSeries;
+  window.renderSeries=function(){const r=fr.apply(this,arguments);try{applySeriesCovers();}catch(e){console.error(e);}return r;};
+  const fd=window.openSeriesDetail;
+  window.openSeriesDetail=function(id){
+    fd.apply(this,arguments);
+    const s=SERIES.find(x=>x.id===id);if(!s)return;
+    const c=serCover(s);if(c)document.getElementById("detCover").src=c;
+  };
+  const ph=document.getElementById("serImgUrl");
+  if(ph)ph.placeholder="เว้นว่างได้ — ถ้าใส่ลิงก์ YouTube ด้านล่าง ระบบใช้หน้าปกคลิปให้อัตโนมัติ";
+}catch(e){console.error(e);}
+
+/* ---------- ปุ่มล้างข้อมูลเก่า (Head Admin) ---------- */
+async function runCleanup(){
+  if(cRole!=="head_admin"||!AUTH_TOKEN)return alert("เฉพาะ Head Admin");
+  const call=async dry=>{
+    const r=await fetch('/api/cleanup'+(dry?'?dry=1':''),{headers:{Authorization:'Bearer '+AUTH_TOKEN}});
+    const d=await r.json().catch(()=>({}));
+    if(!r.ok)throw new Error(d.error||("HTTP "+r.status));
+    return d;
+  };
+  try{
+    const d=await call(true),tot=d.events+d.tickets+d.seatmaps+d.commu;
+    const msg=`ข้อมูลเก่ากว่า 1 ปี (งานที่จัดก่อน ${d.cutoff})\n• ตารางงาน ${d.events}\n• รายการกดบัตร ${d.tickets}\n• ผังที่นั่ง ${d.seatmaps}\n• โพสต์คอมมู ${d.commu}`;
+    if(!tot)return alert(msg+"\n\nไม่มีอะไรต้องลบ ✅");
+    if(!confirm(msg+"\n\nลบจริงตอนนี้ไหม? (ย้อนกลับไม่ได้)"))return;
+    await call(false);
+    await loadDataFromDB();
+    alert("ลบข้อมูลเก่าเรียบร้อย ✅");
+  }catch(e){alert("❌ "+e.message);}
+}
+try{
+  const ha=document.querySelector(".header-actions"),b=document.createElement("button");
+  b.className="login-btn head-only";b.style.background="#0ea5e9";
+  b.innerHTML='<span class="material-symbols-rounded" style="font-size:1.1em">cleaning_services</span> <span>ล้างข้อมูลเก่า</span>';
+  b.onclick=runCleanup;ha.appendChild(b);
+}catch(e){console.error(e);}
+
   loadMyPlan();
 loadDataFromDB();
 </script>
