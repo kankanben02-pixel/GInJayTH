@@ -1,3 +1,4 @@
+const crypto = require('crypto');
 const { getSession } = require('./_lib');
 
 const MAX_ADMIN = 4 * 1024 * 1024; // แอดมิน/Head Admin 4MB
@@ -21,10 +22,13 @@ module.exports = async (req, res) => {
     try { sameSite = new URL(req.headers.origin || '').host === req.headers.host; } catch (e) {}
     if (!sameSite) return fail(res, 403, 'Origin not allowed');
 
-    if (!process.env.IMGBB_KEY) return fail(res, 500, 'IMGBB_KEY is not set on the server');
+    const CLOUD = process.env.CLOUDINARY_CLOUD_NAME;
+    const KEY = process.env.CLOUDINARY_API_KEY;
+    const SECRET = process.env.CLOUDINARY_API_SECRET;
+    if (!CLOUD || !KEY || !SECRET) return fail(res, 500, 'Cloudinary is not configured on the server');
 
     const sess = getSession(req);
-    if (!sess) return fail(res, 401, 'Please log in first'); // ต้องล็อกอินจริงเท่านั้น
+    if (!sess) return fail(res, 401, 'Please log in first');
     const isAdmin = sess.role === 'admin' || sess.role === 'head_admin';
     const limit = isAdmin ? MAX_ADMIN : MAX_USER;
 
@@ -37,17 +41,30 @@ module.exports = async (req, res) => {
     }
     const buf = Buffer.concat(chunks);
 
-    const type = detectType(buf);
+    const type = detectType(buf); // ตรวจจากเนื้อไฟล์จริง
     if (!type) return fail(res, 415, 'Only JPG, PNG, WEBP, GIF allowed');
 
-    const form = new FormData();
-    form.append('image', new Blob([buf], { type }), 'upload');
-    const r = await fetch('https://api.imgbb.com/1/upload?key=' + process.env.IMGBB_KEY, { method: 'POST', body: form });
-    const data = await r.json().catch(() => null);
-    if (!r.ok || !data || !data.success)
-      return fail(res, 502, (data && data.error && data.error.message) || 'ImgBB upload failed');
+    // อัปโหลดแบบเซ็นลายเซ็นฝั่งเซิร์ฟเวอร์ (ความลับไม่ออกไปที่เบราว์เซอร์)
+    const ts = Math.floor(Date.now() / 1000);
+    const folder = 'ginjay';
+    const signature = crypto.createHash('sha1')
+      .update('folder=' + folder + '&timestamp=' + ts + SECRET).digest('hex');
 
-    return res.status(200).json({ success: true, data: { url: data.data.url } });
+    const form = new FormData();
+    form.append('file', new Blob([buf], { type }), 'upload');
+    form.append('api_key', KEY);
+    form.append('timestamp', String(ts));
+    form.append('folder', folder);
+    form.append('signature', signature);
+
+    const r = await fetch('https://api.cloudinary.com/v1_1/' + CLOUD + '/image/upload', { method: 'POST', body: form });
+    const data = await r.json().catch(() => null);
+    if (!r.ok || !data || !data.secure_url)
+      return fail(res, 502, (data && data.error && data.error.message) || 'Cloudinary upload failed');
+
+    // ย่อและบีบรูปอัตโนมัติตอนแสดงผล (ประหยัดโควตาแบนด์วิดท์ และโหลดเร็วบนมือถือ)
+    const url = data.secure_url.replace('/image/upload/', '/image/upload/f_auto,q_auto,w_1600,c_limit/');
+    return res.status(200).json({ success: true, data: { url } });
   } catch (e) {
     console.error(e);
     return fail(res, 500, 'Server error');
