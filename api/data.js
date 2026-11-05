@@ -91,6 +91,7 @@ module.exports = async (req, res) => {
       for (const d of docs) {
         if (!KNOWN.includes(d._id)) continue;                 // ไม่ปล่อยข้อมูลส่วนตัว เช่น แพลนของสมาชิก
         if (d._id === 'CUSTOM_ADMINS' && !isHead) continue;  // รหัสแอดมินเสริม เห็นเฉพาะ Head Admin
+                if (d._id === 'SEATMAPS' && !sess) continue;          // ผังที่นั่งเห็นเฉพาะคนที่ล็อกอิน
         out[d._id] = d.value;
       }
       res.setHeader('Cache-Control', 'no-store');
