@@ -1,4 +1,9 @@
 <!DOCTYPE html>
+<!--
+  🦙🐒 ขโมยดูอะไรจ๊ะ?
+  ติดต่อคนทำสิ… ไม่งั้นจะฟ้องจินนี่ 😤💜
+  (ข้อความนี้ไม่ขึ้นบนหน้าเว็บ เห็นเฉพาะคนที่แอบเปิดดูซอร์สโค้ดเท่านั้น)
+-->
 <html lang="th" data-theme="light">
 <head>
 <meta charset="utf-8">
@@ -954,7 +959,7 @@ function openLoginModal(){
       cRole="guest";cUser="Guest";AUTH_TOKEN="";CUSTOM_ADMINS=[];
       try{localStorage.removeItem("gj_member");}catch(e){}
       try{if(window.google&&google.accounts&&google.accounts.id)google.accounts.id.disableAutoSelect();}catch(e){}
-      loadMyPlan();
+      
       updateUIRole();switchTab("schedule");
     }
     return;
@@ -1674,7 +1679,82 @@ try{
   b.innerHTML='<span class="material-symbols-rounded" style="font-size:1.1em">cleaning_services</span> <span>ล้างข้อมูลเก่า</span>';
   b.onclick=runCleanup;ha.appendChild(b);
 }catch(e){console.error(e);}
+/* ===== กิมมิก: ข้อความลับใน Console / ผังที่นั่งเฉพาะสมาชิก / แถบเลื่อนเมนู ===== */
+const OWNER_CONTACT=""; // ใส่ช่องทางติดต่อของคุณได้ เช่น "X:@GinJay171202" (เว้นว่างได้)
+try{
+  console.log("%c🦙🐒 ขโมยดูอะไรจ๊ะ?","font-size:34px;font-weight:800;color:#7e22ce;text-shadow:2px 2px 0 #ffd23f;");
+  console.log("%cติดต่อคนทำสิ… ไม่งั้นจะฟ้องจินนี่ 😤💜","font-size:20px;font-weight:700;color:#f59e0b;");
+  if(OWNER_CONTACT)console.log("%c📮 "+OWNER_CONTACT,"font-size:16px;color:#7e22ce;");
+  console.log("%cทักมาคุยกันดีๆ ได้นะ 💜","font-size:12px;color:#888;");
+}catch(e){}
 
+/* ---------- ผังที่นั่งหรรษา: เฉพาะคนที่ล็อกอิน ---------- */
+try{
+  const tab=document.querySelector('nav button[data-t="seatmap"]');
+  if(tab)tab.classList.add("auth-only");
+  const sw=window.switchTab;
+  window.switchTab=function(id){
+    if(id==="seatmap"&&cRole==="guest"){
+      alert(T("ผังที่นั่งหรรษาสำหรับสมาชิก กรุณาเข้าสู่ระบบก่อนนะครับ","The seat map is for members. Please log in first."));
+      openLoginModal();return;
+    }
+    return sw.apply(this,arguments);
+  };
+  const fu=window.updateUIRole;
+  window.updateUIRole=function(){
+    const r=fu.apply(this,arguments);
+    try{const sp=document.getElementById("seatmap");if(cRole==="guest"&&sp&&sp.classList.contains("on"))window.switchTab("schedule");}catch(e){}
+    return r;
+  };
+  const fe=window.openEventDetailModal;
+  window.openEventDetailModal=function(id){
+    fe.apply(this,arguments);
+    if(cRole==="guest"){const sb=document.getElementById("evDetSeatBtn");if(sb)sb.style.display="none";}
+  };
+}catch(e){console.error(e);}
+
+/* ---------- แถบเลื่อนใต้เมนู (โผล่เฉพาะตอนจอแคบจนเมนูแสดงไม่หมด) ---------- */
+try{
+  const st=document.createElement("style");
+  st.textContent=`
+  .nav-wrap{flex-direction:column;align-items:center;gap:4px}
+  #navScroll{display:none;width:100%;height:14px;position:relative;touch-action:none;cursor:pointer}
+  #navScroll .trk{position:absolute;left:4px;right:4px;top:5px;height:4px;border-radius:99px;background:rgba(126,34,206,.18)}
+  #navScroll .thb{position:absolute;top:3px;height:8px;border-radius:99px;background:var(--primary);min-width:28px}
+  `;
+  document.head.appendChild(st);
+  const nav=document.querySelector("nav[role=tablist]"),wrap=nav.parentElement;
+  const bar=document.createElement("div");bar.id="navScroll";bar.innerHTML='<div class="trk"></div><div class="thb"></div>';
+  wrap.appendChild(bar);
+  const thb=bar.querySelector(".thb"),trk=bar.querySelector(".trk");
+  const sync=()=>{
+    const over=nav.scrollWidth>nav.clientWidth+2;
+    bar.style.display=over?"block":"none";
+    if(!over)return;
+    const tw=trk.clientWidth,w=Math.max(28,tw*nav.clientWidth/nav.scrollWidth),max=nav.scrollWidth-nav.clientWidth;
+    thb.style.width=w+"px";thb.style.left=(4+(max>0?nav.scrollLeft/max*(tw-w):0))+"px";
+  };
+  nav.addEventListener("scroll",sync,{passive:true});
+  addEventListener("resize",sync);
+  const setFrom=x=>{
+    const r=trk.getBoundingClientRect(),w=parseFloat(thb.style.width)||28;
+    nav.scrollLeft=Math.min(1,Math.max(0,(x-r.left-w/2)/Math.max(1,r.width-w)))*(nav.scrollWidth-nav.clientWidth);
+  };
+  let drag=false;
+  bar.addEventListener("pointerdown",e=>{drag=true;bar.setPointerCapture(e.pointerId);setFrom(e.clientX);});
+  bar.addEventListener("pointermove",e=>{if(drag)setFrom(e.clientX);});
+  bar.addEventListener("pointerup",()=>{drag=false;});
+  bar.addEventListener("pointercancel",()=>{drag=false;});
+  nav.addEventListener("click",e=>{
+    const b=e.target.closest("button");
+    if(b)setTimeout(()=>{try{b.scrollIntoView({inline:"center",block:"nearest",behavior:"smooth"});}catch(_){}},30);
+  });
+  if(window.ResizeObserver)new ResizeObserver(sync).observe(nav);
+  new MutationObserver(sync).observe(nav,{childList:true,subtree:true,attributes:true,attributeFilter:["class","style"]});
+  new MutationObserver(sync).observe(document.body,{attributes:true,attributeFilter:["data-role"]});
+  sync();setTimeout(sync,300);
+}catch(e){console.error(e);}
+  
   loadMyPlan();
 loadDataFromDB();
 </script>
