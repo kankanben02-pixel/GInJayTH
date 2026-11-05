@@ -1753,6 +1753,155 @@ try{
   new MutationObserver(sync).observe(document.body,{attributes:true,attributeFilter:["data-role"]});
   sync();setTimeout(sync,300);
 }catch(e){console.error(e);}
+  /* ===== ผลงาน: ลากจัดลำดับ + ปักหมุด + เรียงตามวันที่เผยแพร่ใน YouTube ===== */
+let ssort="pin",srDrag=false;
+try{
+  const st=document.createElement("style");
+  st.textContent=`
+  .series-card.placeholder{opacity:.35;border-style:dashed}
+  .series-card.ghost{position:fixed;left:0;top:0;z-index:300;pointer-events:none;opacity:.92;margin:0;transform:rotate(2deg);box-shadow:0 24px 48px rgba(60,20,140,.35)}
+  .chip.grip,.series-grip{touch-action:none;cursor:grab}
+  `;
+  document.head.appendChild(st);
+}catch(e){console.error(e);}
+
+const idTime=s=>{const m=/^s_(\d{12,})$/.exec(s.id||"");return m?Number(m[1]):0;};
+const tOf=s=>s.pub?(Date.parse(s.pub)||0):idTime(s);
+
+function seriesOrder(list){
+  const n=list.length,out=new Array(n).fill(null);
+  const isPin=s=>Number.isInteger(s.pin);
+  const pins=list.filter(isPin).sort((a,b)=>a.pin-b.pin||tOf(b)-tOf(a));
+  const free=list.filter(s=>!isPin(s)).sort((a,b)=>tOf(b)-tOf(a));
+  pins.forEach(s=>{
+    let p=Math.min(Math.max(0,s.pin),n-1);
+    while(p<n&&out[p])p++;
+    if(p>=n)p=out.indexOf(null);
+    out[p]=s;
+  });
+  let fi=0;
+  for(let i=0;i<n;i++)if(!out[i])out[i]=free[fi++];
+  return out;
+}
+function seriesView(){
+  const cat=SERIES.filter(s=>(s.wcat||"acting")===cWC);
+  let ordered;
+  if(ssort==="new")ordered=cat.slice().sort((a,b)=>tOf(b)-tOf(a));
+  else if(ssort==="old")ordered=cat.slice().sort((a,b)=>{const x=tOf(a),y=tOf(b);if(!x&&!y)return 0;if(!x)return 1;if(!y)return -1;return x-y;});
+  else ordered=seriesOrder(cat);
+  return ordered.filter(s=>ssf==="all"||s.k===ssf);
+}
+function pinSeries(id,p){const s=SERIES.find(x=>x.id===id);if(!s)return;s.pin=p;saveToDB({SERIES});renderSeries();}
+function unpinSeries(id){const s=SERIES.find(x=>x.id===id);if(!s)return;delete s.pin;saveToDB({SERIES});renderSeries();}
+function clearSeriesPins(){
+  const cat=SERIES.filter(s=>(s.wcat||"acting")===cWC&&Number.isInteger(s.pin));
+  if(!cat.length)return alert(T("หมวดนี้ไม่มีรายการที่ปักหมุด","No pinned items in this category"));
+  if(!confirm(T(`เลิกปักหมุด ${cat.length} รายการ แล้วกลับไปเรียงใหม่ → เก่าอัตโนมัติ?`,`Unpin ${cat.length} items?`)))return;
+  cat.forEach(s=>{delete s.pin;});saveToDB({SERIES});renderSeries();
+}
+
+function startDragSR(ev,card){
+  if(ev.button>0)return;
+  ev.preventDefault();
+  const grid=document.getElementById("seriesList"),r=card.getBoundingClientRect(),ox=ev.clientX-r.left,oy=ev.clientY-r.top;
+  let x=ev.clientX,y=ev.clientY,raf=0;
+  const ids=()=>[].map.call(grid.children,c=>c.dataset.id);
+  const start=ids().join();
+  const ghost=card.cloneNode(true);ghost.classList.add("ghost");ghost.style.width=r.width+"px";
+  card.classList.add("placeholder");document.body.append(ghost);document.body.classList.add("dragging");
+  srDrag=true;
+  function frame(){
+    ghost.style.left=(x-ox)+"px";ghost.style.top=(y-oy)+"px";
+    if(y<150)scrollBy(0,-16);else if(y>innerHeight-90)scrollBy(0,16);
+    const elAt=document.elementFromPoint(x,y),over=elAt&&elAt.closest?elAt.closest(".series-card"):null;
+    if(over&&over!==card&&over.parentNode===grid){
+      const b=over.getBoundingClientRect();
+      if(x>b.left+b.width*.2&&x<b.right-b.width*.2&&y>b.top+b.height*.2&&y<b.bottom-b.height*.2){
+        const after=!!(card.compareDocumentPosition(over)&Node.DOCUMENT_POSITION_FOLLOWING);
+        if(after){let n=card.nextSibling;while(n){let tmp=n.nextSibling;grid.insertBefore(n,card);if(n===over)break;n=tmp;}}
+        else{let n=card.previousSibling;while(n){let tmp=n.previousSibling;grid.insertBefore(n,card.nextSibling);if(n===over)break;n=tmp;}}
+      }
+    }
+    raf=requestAnimationFrame(frame);
+  }
+  function onMove(e){x=e.clientX;y=e.clientY;}
+  function end(){
+    cancelAnimationFrame(raf);removeEventListener("pointermove",onMove);removeEventListener("pointerup",end);removeEventListener("pointercancel",end);
+    ghost.remove();card.classList.remove("placeholder");document.body.classList.remove("dragging");srDrag=false;
+    const now=ids();
+    if(now.join()!==start){
+      const id=card.dataset.id,s=SERIES.find(z=>z.id===id);
+      if(s){s.pin=now.indexOf(id);saveToDB({SERIES});}
+    }
+    renderSeries();
+  }
+  addEventListener("pointermove",onMove);addEventListener("pointerup",end);addEventListener("pointercancel",end);
+  frame();
+}
+
+function renderSeries(){
+  if(srDrag)return;
+  ["acting","music","fashion","other"].forEach(c=>{const el=document.getElementById(`cnt-${c}`);if(el)el.textContent=SERIES.filter(s=>(s.wcat||"acting")===c).length;});
+  const bx=document.getElementById("seriesList");bx.innerHTML="";
+  document.querySelectorAll("#sSeries .chip").forEach(c=>c.setAttribute("aria-pressed",c.dataset.s===ssort));
+  const ls=seriesView();
+  const isA=(cRole==="admin"||cRole==="head_admin"),canDrag=isA&&ssort==="pin"&&ssf==="all";
+  const hint=document.getElementById("srHint");
+  if(hint)hint.textContent=isA?(canDrag?T("📌 ลาก ⠿ ไปวางตำแหน่งที่ต้องการ การ์ดนั้นจะถูกปักหมุดไว้ ส่วนที่เหลือเรียงใหม่ → เก่าอัตโนมัติ","Drag ⠿ to place a card; it gets pinned. The rest sort newest → oldest."):T("ลากจัดลำดับได้เมื่อเลือก ⭐ ลำดับแนะนำ และสถานะ “ทั้งหมด”","Dragging works with ⭐ Recommended and status All")):"";
+  if(!ls.length){bx.innerHTML=`<div class="empty">${T('ไม่มีผลงานในหมวดนี้','No works in this category')}</div>`;return;}
+  const fmtD=iso=>{try{return new Date(iso).toLocaleString(currLang==="th"?"th-TH":"en-GB",{day:"numeric",month:"short",year:"numeric",hour:"2-digit",minute:"2-digit"});}catch(e){return "";}};
+  ls.forEach(s=>{
+    const pinned=Number.isInteger(s.pin);
+    const aB=isA?`<div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;">${canDrag?`<button class="chip grip series-grip mv-btn" onpointerdown="startDragSR(event,this.closest('.series-card'))">⠿ ${T('ลาก','Move')}</button><button class="chip mv-btn" onclick="pinSeries('${s.id}',0)" title="${T('ปักไว้บนสุด','Pin to top')}">⤒</button>`:""}${pinned?`<button class="chip mv-btn" onclick="unpinSeries('${s.id}')">✕ ${T('เลิกปัก','Unpin')}</button>`:""}<button style="font-size:14px;font-weight:700;color:var(--primary);" onclick="openSeriesAdminModal('${s.id}')">✏️</button><button style="font-size:14px;font-weight:700;color:#ef4444;" onclick="deleteSeries('${s.id}')">🗑️</button></div>`:"";
+    const kTxt=s.k==='air'?T('On Air','On Air'):(s.k==='soon'?T('เร็วๆ นี้','Soon'):T('จบแล้ว','Ended'));
+    bx.appendChild(el(`<div class="series-card glass-panel" data-id="${s.id}"><img src="${s.img||DEF_SR_IMG}" style="width:100%;height:180px;object-fit:cover;border-bottom:1px solid rgba(126,34,206,0.1);"><div class="series-content" style="padding:20px;flex-grow:1;display:flex;flex-direction:column;position:relative;"><div class="series-badge">${kTxt}</div>${pinned?`<span class="tag" style="background:var(--accent-soft);color:var(--accent);margin:0 0 6px;align-self:flex-start;">📌 ${T('ปักหมุด','Pinned')}</span>`:""}<div style="font-size:19px;font-weight:700;margin-bottom:4px;">${P(s,'t')}</div><div style="font-size:14px;color:var(--primary);font-weight:700;margin:4px 0 14px;display:flex;align-items:center;gap:4px;"><span class="material-symbols-rounded" style="font-size:1.1em">live_tv</span> ${s.net||""}</div>${s.pub?`<div style="font-size:12px;color:var(--muted);margin:-8px 0 12px;">📅 ${fmtD(s.pub)}</div>`:""}<div style="margin-top:auto;padding-top:16px;border-top:1px solid rgba(126,34,206,.1);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;"><button style="color:var(--primary);font-weight:700;font-size:14px;display:flex;align-items:center;gap:4px;" onclick="openSeriesDetail('${s.id}')">${T('ดูรายละเอียด','Details')} <span class="material-symbols-rounded" style="font-size:1.2em">arrow_forward</span></button>${aB}</div></div></div>`));
+  });
+}
+function applySeriesCovers(){
+  document.querySelectorAll("#seriesList .series-card").forEach(card=>{
+    const s=SERIES.find(x=>x.id===card.dataset.id),im=card.querySelector("img"),u=s&&serCover(s);
+    if(u&&im)im.src=u;
+  });
+}
+
+/* ---------- ดึงวันเวลาที่เผยแพร่จาก YouTube ---------- */
+async function fillYtDates(silent){
+  if(!(cRole==="admin"||cRole==="head_admin")||!AUTH_TOKEN)return;
+  const want=SERIES.filter(s=>!s.pub&&YT_RE.test(s.tr||""));
+  if(!want.length){if(!silent)alert(T("ทุกคลิป YouTube มีวันที่แล้ว ✅","All YouTube clips already have dates ✅"));return;}
+  const ids=[...new Set(want.map(s=>YT_RE.exec(s.tr)[1]))];
+  try{
+    const r=await fetch('/api/yt-dates',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+AUTH_TOKEN},body:JSON.stringify({ids})});
+    const d=await r.json().catch(()=>({}));
+    if(!r.ok)throw new Error(d.error||("HTTP "+r.status));
+    let ok=0;
+    want.forEach(s=>{const p=d.dates&&d.dates[YT_RE.exec(s.tr)[1]];if(p){s.pub=p;ok++;}});
+    if(ok){await saveToDB({SERIES});renderSeries();}
+    if(!silent)alert(T(`ดึงวันที่สำเร็จ ${ok} จาก ${want.length} รายการ`+(ok<want.length?" (ที่เหลืออาจเป็นคลิปส่วนตัว ถูกลบ หรือลิงก์ไม่ถูกต้อง)":""),`Dates fetched: ${ok}/${want.length}`));
+  }catch(e){if(!silent)alert("❌ "+e.message);}
+}
+try{
+  const fs=window.saveSeries;
+  window.saveSeries=function(){fs.apply(this,arguments);setTimeout(()=>fillYtDates(true),500);};
+  const fi=window.importSave;
+  window.importSave=async function(){const r=await fi.apply(this,arguments);fillYtDates(true);return r;};
+}catch(e){console.error(e);}
+
+/* ---------- ปุ่มเรียง + ปุ่มของแอดมิน ---------- */
+try{
+  const grid=document.getElementById("seriesList");
+  const bar=document.createElement("div");bar.className="bar";bar.id="sSeries";bar.style.margin="-6px 0 8px";
+  bar.innerHTML=`<button class="chip" data-s="pin" aria-pressed="true" data-th="⭐ ลำดับแนะนำ" data-en="⭐ Recommended">⭐ ลำดับแนะนำ</button><button class="chip" data-s="new" aria-pressed="false" data-th="🆕 ใหม่ → เก่า" data-en="🆕 Newest → Oldest">🆕 ใหม่ → เก่า</button><button class="chip" data-s="old" aria-pressed="false" data-th="🕰️ เก่า → ใหม่" data-en="🕰️ Oldest → Newest">🕰️ เก่า → ใหม่</button>`;
+  const hint=document.createElement("div");hint.id="srHint";hint.style.cssText="font-size:12px;color:var(--muted);margin:0 0 14px;";
+  grid.parentNode.insertBefore(bar,grid);grid.parentNode.insertBefore(hint,grid);
+  bar.addEventListener("click",e=>{const b=e.target.closest(".chip");if(!b)return;ssort=b.dataset.s;renderSeries();});
+  const box=document.querySelector(".works-sidebar .admin-only");
+  if(box){
+    const mk=(t,fn)=>{const b=document.createElement("button");b.className="chip";b.style.cssText="width:100%;margin-top:10px;justify-content:center;";b.textContent=t;b.onclick=fn;box.appendChild(b);};
+    mk("📅 ดึงวันที่จาก YouTube",()=>fillYtDates(false));
+    mk("🔄 เลิกปักหมุดทั้งหมวด",clearSeriesPins);
+  }
+}catch(e){console.error(e);}
   
   loadMyPlan();
 loadDataFromDB();
