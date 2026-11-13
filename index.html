@@ -1902,6 +1902,81 @@ try{
     mk("🔄 เลิกปักหมุดทั้งหมวด",clearSeriesPins);
   }
 }catch(e){console.error(e);}
+/* ===== มุมมอง "รายการ" ของตารางงาน (เดิมเป็นแค่ข้อความเปล่า) ===== */
+let listQ="",listPastLimit=40;
+try{
+  const st=document.createElement("style");
+  st.textContent=`
+  .lv-tools{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:6px 0 14px}
+  .lv-tools input{flex:1;min-width:180px;padding:10px 16px;border-radius:999px;border:1px solid rgba(126,34,206,.3);background:var(--surface-alt);color:var(--ink);backdrop-filter:blur(8px)}
+  .lv-tools input:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 4px rgba(126,34,206,.1)}
+  .lv-sec{font-size:13px;font-weight:700;color:var(--muted);margin:22px 0 4px;letter-spacing:.3px}
+  .lv-month{font-size:18px;font-weight:700;color:var(--primary);margin:16px 0 10px;padding-bottom:6px;border-bottom:2px solid var(--line)}
+  .ev-row{display:flex;gap:14px;align-items:center;padding:12px 16px;border-radius:18px;margin-bottom:10px;cursor:pointer;transition:all .25s ease;border-left:5px solid var(--primary)!important}
+  .ev-row:hover{transform:translateY(-2px);box-shadow:0 10px 26px rgba(126,34,206,.18)}
+  .ev-row.past{opacity:.7;border-left-color:var(--muted)!important}
+  .ev-row.today{border-left-color:var(--accent)!important;box-shadow:0 0 0 2px var(--accent-soft),var(--shadow)}
+  .ev-date{min-width:58px;text-align:center;background:var(--surface-alt);border-radius:14px;padding:6px 8px;line-height:1.2}
+  .ev-date b{display:block;font-size:24px;color:var(--primary)}
+  .ev-date span{font-size:12px;color:var(--muted);font-weight:700}
+  .ev-main{flex:1;min-width:0}
+  .ev-title{font-size:16px;font-weight:700;overflow-wrap:anywhere}
+  .ev-meta{font-size:13px;color:var(--muted);margin-top:2px;overflow-wrap:anywhere}
+  .ev-act{display:flex;gap:6px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
+  @media(max-width:640px){.ev-row{flex-wrap:wrap;padding:10px 12px}.ev-act{width:100%;justify-content:flex-end}.ev-date{min-width:50px}.ev-date b{font-size:20px}}
+  `;
+  document.head.appendChild(st);
+}catch(e){console.error(e);}
+
+function renderList(){
+  const box=document.getElementById("schedList");if(!box)return;
+  if(!document.getElementById("lvBody")){
+    box.innerHTML=`<div class="lv-tools"><input type="search" id="lvSearch" autocomplete="off"></div><div id="lvBody"></div>`;
+    const inp0=document.getElementById("lvSearch");
+    inp0.addEventListener("input",()=>{listQ=inp0.value.trim().toLowerCase();listPastLimit=40;renderList();});
+  }
+  document.getElementById("lvSearch").placeholder=T("🔍 ค้นหาชื่องาน / สถานที่ / ประเภท","🔍 Search title / venue / type");
+  const body=document.getElementById("lvBody"),q=listQ;
+  const WD=currLang==="th"?["อา.","จ.","อ.","พ.","พฤ.","ศ.","ส."]:["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+  const isA=(cRole==="admin"||cRole==="head_admin");
+  const gap=d=>{const a=TODAY.split("-").map(Number),b=d.split("-").map(Number);return Math.round((Date.UTC(b[0],b[1]-1,b[2])-Date.UTC(a[0],a[1]-1,a[2]))/86400000);};
+  const match=e=>!q||[e.th_t,e.en_t,e.th_v,e.en_v,e.th_c,e.en_c,e.note].some(x=>x&&String(x).toLowerCase().includes(q));
+  const key=e=>e.d+(e.time||"");
+  const all=EVENTS.filter(e=>fltEv(e)&&match(e));
+  const up=all.filter(e=>e.d>=TODAY).sort((a,b)=>key(a).localeCompare(key(b)));
+  const past=all.filter(e=>e.d<TODAY).sort((a,b)=>key(b).localeCompare(key(a)));
+
+  const row=e=>{
+    const p=e.d.split("-").map(Number),wd=WD[new Date(p[0],p[1]-1,p[2]).getDay()];
+    const g=gap(e.d),isPast=g<0;
+    const rel=g===0?T("วันนี้","Today"):g===1?T("พรุ่งนี้","Tomorrow"):(g>1&&g<=30?T(`อีก ${g} วัน`,`in ${g} days`):"");
+    const cat=P(e,"c"),ven=P(e,"v");
+    const meta=[e.time?`🕒 ${e.time}`:"",ven?`📍 ${ven}`:""].filter(Boolean).join(" · ");
+    const star=`<button class="chip mv-btn" style="color:${MY_PLAN[e.id]?'var(--accent)':'var(--muted)'};" onclick="event.stopPropagation();togglePlan('${e.id}')"><span class="material-symbols-rounded" style="font-size:1.2em;margin:0">${MY_PLAN[e.id]?'star':'star_border'}</span></button>`;
+    const adm=isA?`<button class="chip mv-btn" onclick="event.stopPropagation();openEventModal('${e.id}')">✏️</button><button class="chip mv-btn" style="color:#ef4444;" onclick="event.stopPropagation();deleteEvent('${e.id}')">🗑️</button>`:"";
+    return `<div class="ev-row glass-panel ${isPast?'past':''} ${g===0?'today':''}" onclick="openEventDetailModal('${e.id}')"><div class="ev-date"><b>${p[2]}</b><span>${wd}</span></div><div class="ev-main"><div class="ev-title">${P(e,'t')}</div><div class="ev-meta">${meta||"&nbsp;"}</div><div style="margin-top:6px;">${cat?`<span class="tag" style="background:var(--surface-alt);color:var(--primary);margin:0 6px 0 0;">${cat}</span>`:""}${rel?`<span class="tag" style="background:#dcfce7;color:#15803d;margin:0 6px 0 0;">${rel}</span>`:""}${isPast?`<span class="tag" style="background:#e2e8f0;color:#475569;margin:0;">${T('จบแล้ว','Ended')}</span>`:""}</div></div><div class="ev-act">${star}${adm}</div></div>`;
+  };
+  const group=list=>{
+    let h="",cur="";
+    list.forEach(e=>{
+      const k=e.d.slice(0,7);
+      if(k!==cur){cur=k;const ym=k.split("-").map(Number);h+=`<div class="lv-month">${currLang==="th"?TH_FM[ym[1]-1]+" "+(ym[0]+543):EN_FM[ym[1]-1]+" "+ym[0]}</div>`;}
+      h+=row(e);
+    });
+    return h;
+  };
+
+  let html="";
+  if(sf!=="past"&&up.length)html+=`<div class="lv-sec">⏳ ${T("กำลังจะถึง","Upcoming")} · ${up.length}</div>`+group(up);
+  if(sf!=="up"&&past.length){
+    const shown=past.slice(0,listPastLimit);
+    html+=`<div class="lv-sec">🕘 ${T("ผ่านไปแล้ว","Past")} · ${past.length}</div>`+group(shown);
+    if(past.length>shown.length)html+=`<div style="text-align:center;margin:10px 0 20px;"><button class="chip" onclick="listPastLimit+=40;renderList()">${T("แสดงเพิ่ม","Show more")} (${past.length-shown.length})</button></div>`;
+  }
+  if(!html)html=`<div class="empty">${q?T("ไม่พบงานที่ตรงกับคำค้นหา","No events match your search"):(sf==="mine"?T("ยังไม่มีงานในแพลนของคุณ กดดาวที่งานเพื่อเพิ่ม","Your plan is empty. Tap the star on an event to add it"):T("ยังไม่มีงานในรายการ","No events yet"))}</div>`;
+  body.innerHTML=html;
+}
+  
   loadMyPlan();
 loadDataFromDB();
 </script>
