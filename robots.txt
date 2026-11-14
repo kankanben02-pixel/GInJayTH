@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://ginjayfanguide.vercel.app/sitemap.xml
