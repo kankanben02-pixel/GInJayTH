@@ -2059,7 +2059,7 @@ function renderList(){
     let on=FX.float&&!reduce;
     try{if(localStorage.getItem("gj_fx_float")==="off")on=false;}catch(e){}
     const box=document.createElement("div");box.id="fxFloat";document.body.insertBefore(box,document.body.firstChild);
-    const sy=["🔑","💜","💛","✨","🌸","🦙","🐒"],n=innerWidth<640?8:14;
+    const sy=["🔑","💜","💛","✨","🦙","🐒"],n=innerWidth<640?8:14;
     for(let i=0;i<n;i++){const e=document.createElement("i");e.textContent=sy[i%sy.length];e.style.left=Math.random()*96+"vw";e.style.fontSize=14+Math.random()*14+"px";e.style.animationDuration=12+Math.random()*15+"s";e.style.animationDelay=Math.random()*8+"s";box.appendChild(e);}
     box.style.display=on?"block":"none";
     if(FX.float){
