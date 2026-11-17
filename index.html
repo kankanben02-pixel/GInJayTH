@@ -2106,7 +2106,106 @@ function renderList(){
     }
   }catch(e){console.error(e);}
 })();
-  
+  /* ===== อัปเดต: แก้หัวเว็บ + หัวใจนับรวมทุกคน + ลบประกาศคอมมู ===== */
+
+/* 1) แก้ชื่อหัวเว็บที่กลายเป็นแถบสี */
+try{
+  const st=document.createElement("style");
+  st.textContent=".brand{-webkit-background-clip:text!important;background-clip:text!important;-webkit-text-fill-color:transparent!important}";
+  document.head.appendChild(st);
+}catch(e){console.error(e);}
+
+/* 2) ตัวเลขหัวใจนับรวมทุกคน (ใช้ปุ่มเดิม แค่เปลี่ยนวิธีนับ) */
+(function(){
+  try{
+    if(!document.querySelector(".fxLoveN"))return;
+    let total=null,pending=0,mine=0,timer=0,fails=0,pt={x:innerWidth/2,y:innerHeight/2};
+    try{mine=+localStorage.getItem("gj_love")||0;}catch(e){}
+    addEventListener("pointerdown",e=>{pt={x:e.clientX,y:e.clientY};},true);
+    const show=()=>{
+      const v=total==null?mine:total+pending;
+      document.querySelectorAll(".fxLoveN").forEach(x=>x.textContent=v.toLocaleString());
+      document.querySelectorAll(".fxLove,#fxFab").forEach(p=>p.title=T("คุณส่งแล้ว ","You sent ")+mine.toLocaleString());
+    };
+    const burst=(x,y,n)=>{
+      const ic=["💜","💛","✨","🦙","🐒","🔑"];
+      for(let i=0;i<n;i++){
+        const s=document.createElement("span");s.className="fxB";s.textContent=ic[Math.random()*ic.length|0];
+        s.style.left=x+"px";s.style.top=y+"px";
+        const a=Math.random()*6.28,d=40+Math.random()*100;
+        s.style.setProperty("--tx",Math.cos(a)*d+"px");s.style.setProperty("--ty",Math.sin(a)*d-45+"px");s.style.setProperty("--r",(Math.random()-.5)*110+"deg");
+        document.body.appendChild(s);setTimeout(()=>s.remove(),950);
+      }
+    };
+    const flush=async()=>{
+      timer=0;if(!pending||fails>=3)return;
+      const n=Math.min(pending,30);pending-=n;
+      try{
+        const r=await fetch("/api/love",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({n})});
+        const d=await r.json();
+        if(!r.ok||typeof d.total!=="number")throw 0;
+        total=Math.max(total||0,d.total);fails=0;
+      }catch(e){pending+=n;fails++;}
+      show();
+      if(pending>0&&fails<3)timer=setTimeout(flush,fails?4000:1500);
+    };
+    const send=()=>{
+      mine++;pending++;
+      try{localStorage.setItem("gj_love",mine);}catch(e){}
+      show();burst(pt.x,pt.y,14);if(navigator.vibrate)navigator.vibrate(10);
+      if(!timer&&fails<3)timer=setTimeout(flush,1500);
+    };
+    document.querySelectorAll(".fxLove,#fxFab").forEach(b=>{b.onclick=send;});
+    const load=()=>fetch("/api/love").then(r=>r.json()).then(d=>{if(typeof d.total==="number"){total=Math.max(total||0,d.total);show();}}).catch(()=>{});
+    load();setInterval(()=>{if(document.visibilityState==="visible")load();},30000);
+    addEventListener("visibilitychange",()=>{
+      if(document.visibilityState==="hidden"&&pending>0&&fails<3){
+        const n=Math.min(pending,30);
+        try{if(navigator.sendBeacon("/api/love",new Blob([JSON.stringify({n})],{type:"application/json"})))pending-=n;}catch(e){}
+      }
+    });
+    show();
+  }catch(e){console.error(e);}
+})();
+
+/* 3) Admin / Head Admin ลบประกาศช่วยเหลือกันได้ (ประกาศเกิน 6 เดือนถูกลบอัตโนมัติ) */
+function renderCommu(){
+  const isA=(cRole==="admin"||cRole==="head_admin");
+  const tkL=COMMU.filter(c=>c.type==="ticket"),rdL=COMMU.filter(c=>c.type==="ride");
+  document.getElementById("commuTicketCount").textContent=`${tkL.length} ${T('ประกาศ','Posts')}`;
+  document.getElementById("commuRideCount").textContent=`${rdL.length} ${T('ประกาศ','Posts')}`;
+  const when=c=>{
+    const m=/^cm_(\d{12,})$/.exec(c.id||"");if(!m)return "";
+    try{return new Date(+m[1]).toLocaleDateString(currLang==="th"?"th-TH":"en-GB",{day:"numeric",month:"short",year:"numeric"});}catch(e){return "";}
+  };
+  const item=(c,tagStyle,icon)=>`<div style="padding:16px 0;border-bottom:1px solid rgba(126,34,206,.1);font-size:14px;"><div style="display:flex;justify-content:space-between;align-items:center;gap:8px;"><span class="tag" style="${tagStyle}margin-bottom:6px;">${P(c,'b')}</span>${isA?`<button class="chip" style="font-size:12px;padding:3px 10px;color:#ef4444;" onclick="deleteCommu('${c.id}')">🗑️ ${T('ลบ','Del')}</button>`:""}</div><b style="display:block;font-size:16px;margin-bottom:4px;">${P(c,'t')}</b><div style="color:var(--muted);display:flex;align-items:center;gap:4px;"><span class="material-symbols-rounded" style="font-size:1.1em">${icon}</span> ${P(c,'d')}</div>${when(c)?`<div style="font-size:11px;color:var(--muted);margin-top:4px;">🗓️ ${when(c)}</div>`:""}</div>`;
+  const empty=`<div class="empty">${T('ไม่มีประกาศ','No Posts')}</div>`;
+  document.getElementById("commuTicketList").innerHTML=tkL.length?tkL.map(c=>item(c,"background:#fce7f3;color:#be185d;","confirmation_number")).join(""):empty;
+  document.getElementById("commuRideList").innerHTML=rdL.length?rdL.map(c=>item(c,"background:var(--surface-alt);color:var(--primary);","directions_car")).join(""):empty;
+}
+function deleteCommu(id){
+  if(!(cRole==="admin"||cRole==="head_admin"))return;
+  if(!confirm(T("ลบประกาศนี้?","Delete this post?")))return;
+  COMMU=COMMU.filter(c=>c.id!==id);saveToDB({COMMU});renderCommu();
+}
+
+/* 4) ปุ่ม "ล้างข้อมูลเก่า" ของ Head Admin: ข้อความตรงกับกฎใหม่ (คอมมู 6 เดือน) */
+async function runCleanup(){
+  if(cRole!=="head_admin"||!AUTH_TOKEN)return alert("เฉพาะ Head Admin");
+  const call=async dry=>{
+    const r=await fetch('/api/cleanup'+(dry?'?dry=1':''),{headers:{Authorization:'Bearer '+AUTH_TOKEN}});
+    const d=await r.json().catch(()=>({}));
+    if(!r.ok)throw new Error(d.error||("HTTP "+r.status));
+    return d;
+  };
+  try{
+    const d=await call(true),tot=d.events+d.tickets+d.seatmaps+d.commu;
+    const msg=`ข้อมูลเก่าที่จะลบ\n• ตารางงานที่จัดก่อน ${d.cutoff} (เกิน 1 ปี): ${d.events}\n• รายการกดบัตร: ${d.tickets}\n• ผังที่นั่ง: ${d.seatmaps}\n• ประกาศช่วยเหลือกันที่โพสต์ก่อน ${d.commuCutoff||""} (เกิน 6 เดือน): ${d.commu}`;
+    if(!tot)return alert(msg+"\n\nไม่มีอะไรต้องลบ ✅");
+    if(!confirm(msg+"\n\nลบจริงตอนนี้ไหม? (ย้อนกลับไม่ได้)"))return;
+    await call(false);await loadDataFromDB();alert("ลบข้อมูลเก่าเรียบร้อย ✅");
+  }catch(e){alert("❌ "+e.message);}
+}
   loadMyPlan();
 loadDataFromDB();
 </script>
