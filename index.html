@@ -2206,6 +2206,173 @@ async function runCleanup(){
     await call(false);await loadDataFromDB();alert("ลบข้อมูลเก่าเรียบร้อย ✅");
   }catch(e){alert("❌ "+e.message);}
 }
+/* ===== เมนูเรียงใหม่ + ลูกเล่นหน้าเกี่ยวกับ ===== */
+
+/* --- 1) เรียงเมนูตามที่ต้องการ --- */
+(function(){
+  // ลำดับ: จากอัลกี้ถึงจินเจ, ตารางงาน, ผลงาน, (สินค้า), การเดินทาง, กดบัตร, ช่วยเหลือกัน, ผังที่นั่งหรรษา, เกี่ยวกับ
+  const ORDER=["blessing","schedule","series","merch","travel","tickets","commu","seatmap","about"];
+  const START_TAB="schedule"; // อยากให้เปิดเว็บมาที่หน้าไหนก่อน เช่น "blessing"
+  try{
+    const nav=document.querySelector("nav[role=tablist]");
+    ORDER.forEach(t=>{const b=nav.querySelector('button[data-t="'+t+'"]');if(b)nav.appendChild(b);});
+    if(START_TAB!=="schedule")switchTab(START_TAB);
+  }catch(e){console.error(e);}
+})();
+
+/* --- 2) หน้าเกี่ยวกับ: ข้อมูลที่แก้ได้ (วันเกิดมาจากการ์ดเดิมในหน้าเกี่ยวกับของเว็บคุณ ตรวจให้ตรงความจริงด้วย) --- */
+const GJ={
+  ginny:{n:"จินนี่",e:"Ginny",i:"🦙",c:"#a855f7",b:"2000-12-17"},
+  jayna:{n:"เจน่า",e:"Jayna",i:"🐒",c:"#f59e0b",b:"2006-02-17"}
+};
+const GJ_TAGS=["#GinJay","#NorthStarEntertainment","#EveryMomentwithGinnyJayna"];
+const GJ_TL=[
+  {d:"2025-09-20",i:"📺",t:"เริ่มออกอากาศซีรีส์ พิษรัก (Poisonous Love)"},
+  {d:"2025-12-06",i:"🎤",t:"GINJAY 1ST FAN MEETING {THE TEMPTING VENOM} ที่มะนิลา"},
+  {d:"2026-02-14",i:"💜",t:"แฟนคอน GINNYJAYNA [HEART TO HEART] ที่ IDEA LIVE, BRAVO BKK"},
+  {d:"2026-06-28",i:"📖",t:"Fansign “Every Moment with GINNY JAYNA” จาก Photobook เล่มแรก"},
+  {d:"2026-10-22",i:"🎬",t:"รับจ้างเลิกรัก (Love on Hire) เริ่มฉายทาง WeTV"}
+];
+const GJ_CHEER=[
+  "ขอบคุณ{n}ที่เป็นแรงใจให้ชาวอัลกี้เสมอ 💜💛",
+  "{n}สู้ๆ นะ อัลกี้อยู่ตรงนี้เสมอ!",
+  "วันนี้ก็ภูมิใจใน{n}มากๆ เลย",
+  "ขอให้{n}สุขภาพแข็งแรง ยิ้มเยอะๆ นะ",
+  "รอดูผลงานใหม่ของ{n}อยู่เสมอ ปังๆ เลย!",
+  "ขอบคุณที่ตั้งใจทำงานทุกอย่างนะ {n} 💜",
+  "พักผ่อนเยอะๆ นะ {n} เป็นห่วงเสมอ"
+];
+let gjCheerTo="ginjay",gjCheerTxt="";
+const gjLove={ginny:{total:null,pending:0,mine:0,timer:0,fails:0},jayna:{total:null,pending:0,mine:0,timer:0,fails:0}};
+try{["ginny","jayna"].forEach(k=>{gjLove[k].mine=+localStorage.getItem("gj_love_"+k)||0;});}catch(e){}
+
+function gjBday(b){
+  const p=b.split("-").map(Number),now=new Date(),t0=new Date(now.getFullYear(),now.getMonth(),now.getDate());
+  let n=new Date(t0.getFullYear(),p[1]-1,p[2]);if(n<t0)n=new Date(t0.getFullYear()+1,p[1]-1,p[2]);
+  return {days:Math.round((n-t0)/864e5),age:n.getFullYear()-p[0],date:n};
+}
+function gjBurst(x,y,n,ic){
+  for(let i=0;i<n;i++){
+    const s=document.createElement("span");s.className="abB";s.textContent=ic[Math.random()*ic.length|0];
+    s.style.left=x+"px";s.style.top=y+"px";
+    const a=Math.random()*6.28,d=40+Math.random()*100;
+    s.style.setProperty("--tx",Math.cos(a)*d+"px");s.style.setProperty("--ty",Math.sin(a)*d-45+"px");s.style.setProperty("--r",(Math.random()-.5)*110+"deg");
+    document.body.appendChild(s);setTimeout(()=>s.remove(),950);
+  }
+}
+function gjLoveShow(k){
+  const s=gjLove[k],el=document.getElementById("gjL_"+k);
+  if(el)el.textContent=(s.total==null?s.mine:s.total+s.pending).toLocaleString();
+  const g=gjLove.ginny,j=gjLove.jayna,a=g.total==null?0:g.total+g.pending,b=j.total==null?0:j.total+j.pending,t=a+b;
+  const bar=document.getElementById("gjBar"),lab=document.getElementById("gjBarTxt");
+  const pc=t?Math.round(a/t*100):50;
+  if(bar)bar.style.width=pc+"%";
+  if(lab)lab.textContent=t?`${GJ.ginny.i} ${pc}% : ${100-pc}% ${GJ.jayna.i}`:"—";
+}
+async function gjFlush(k){
+  const s=gjLove[k];s.timer=0;
+  if(!s.pending||s.fails>=3)return;
+  const n=Math.min(s.pending,30);s.pending-=n;
+  try{
+    const r=await fetch("/api/love",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({n,k})});
+    const d=await r.json();
+    if(!r.ok||typeof d.total!=="number")throw 0;
+    s.total=Math.max(s.total||0,d.total);s.fails=0;
+  }catch(e){s.pending+=n;s.fails++;}
+  gjLoveShow(k);
+  if(s.pending>0&&s.fails<3)s.timer=setTimeout(()=>gjFlush(k),s.fails?4000:1500);
+}
+function gjSendLove(k,ev){
+  const s=gjLove[k];s.mine++;s.pending++;
+  try{localStorage.setItem("gj_love_"+k,s.mine);}catch(e){}
+  gjLoveShow(k);
+  gjBurst(ev?ev.clientX:innerWidth/2,ev?ev.clientY:innerHeight/2,12,k==="ginny"?["💜","🦙","✨"]:["💛","🐒","✨"]);
+  if(navigator.vibrate)navigator.vibrate(10);
+  if(!s.timer&&s.fails<3)s.timer=setTimeout(()=>gjFlush(k),1500);
+}
+function gjLoadLove(){
+  ["ginny","jayna"].forEach(k=>{
+    fetch("/api/love?k="+k).then(r=>r.json()).then(d=>{if(typeof d.total==="number"){gjLove[k].total=Math.max(gjLove[k].total||0,d.total);gjLoveShow(k);}}).catch(()=>{});
+  });
+}
+function gjCopy(text,btn){
+  const done=()=>{if(!btn)return;const o=btn.textContent;btn.textContent="✓ "+T("คัดลอกแล้ว","Copied");setTimeout(()=>{btn.textContent=o;},1500);};
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(text).then(done).catch(()=>{});return;}
+  const ta=document.createElement("textarea");ta.value=text;document.body.appendChild(ta);ta.select();
+  try{document.execCommand("copy");done();}catch(e){}ta.remove();
+}
+function gjCheer(){
+  const sel=document.getElementById("gjCheerTo");if(sel)gjCheerTo=sel.value;
+  const n=gjCheerTo==="ginny"?GJ.ginny.n:gjCheerTo==="jayna"?GJ.jayna.n:"จินนี่และเจน่า";
+  gjCheerTxt=GJ_CHEER[Math.random()*GJ_CHEER.length|0].replace("{n}",n);
+  const o=document.getElementById("gjCheerOut");if(o)o.textContent=gjCheerTxt;
+}
+function renderAboutFx(){
+  const host=document.getElementById("aboutFx");if(!host)return;
+  const th=currLang==="th",loc=th?"th-TH":"en-GB";
+  const fmt=d=>new Date(d).toLocaleDateString(loc,{day:"numeric",month:"short",year:"numeric"});
+  const bd=k=>{
+    const g=GJ[k],x=gjBday(g.b);
+    return `<div class="gjb" style="border-color:${g.c}"><div style="font-size:30px">${g.i}</div><b>${th?g.n:g.e}</b><div class="gjs">${x.days===0?"🎉 "+T("วันนี้วันเกิด!","Birthday today!"):T(`อีก ${x.days} วัน`,`in ${x.days} days`)}</div><small>${T("ครบ","turns")} ${x.age} ${T("ปี","")} · ${fmt(x.date)}</small></div>`;
+  };
+  const today=new Date().toISOString().slice(0,10);
+  const tl=GJ_TL.slice().sort((a,b)=>a.d.localeCompare(b.d)).map(x=>`<div class="gjt ${x.d<=today?"":"fut"}"><span style="font-size:20px">${x.i}</span><div><b>${fmt(x.d)}</b> ${x.d<=today?"":"⏳"}<div>${x.t}</div></div></div>`).join("");
+  const tags=GJ_TAGS.map(t=>`<button class="chip" onclick="gjCopy('${t}',this)">${t}</button>`).join("");
+  host.innerHTML=`
+  <div class="gjc glass-panel"><h3>🎂 ${T("นับถอยหลังวันเกิด","Birthday countdown")}</h3><div class="gjrow">${bd("ginny")}${bd("jayna")}</div></div>
+  <div class="gjc glass-panel"><h3>💜💛 ${T("ส่งเลิฟให้จินนี่ & เจน่า","Send love to Ginny & Jayna")}</h3>
+    <div class="gjrow">
+      <button class="gjlv" style="background:linear-gradient(135deg,#e9d5ff,#ddd6fe)" onclick="gjSendLove('ginny',event)"><span style="font-size:26px">🦙</span><span>${th?"จินนี่":"Ginny"}</span><span style="font-size:20px" id="gjL_ginny">0</span></button>
+      <button class="gjlv" style="background:linear-gradient(135deg,#fef3c7,#fde68a)" onclick="gjSendLove('jayna',event)"><span style="font-size:26px">🐒</span><span>${th?"เจน่า":"Jayna"}</span><span style="font-size:20px" id="gjL_jayna">0</span></button>
+    </div>
+    <div style="margin-top:12px;height:10px;border-radius:99px;background:#fde68a;overflow:hidden"><div id="gjBar" style="height:100%;width:50%;background:#c4b5fd;transition:width .4s"></div></div>
+    <div id="gjBarTxt" style="text-align:center;font-size:13px;color:var(--muted);margin-top:4px">—</div>
+    <small style="color:var(--muted)">${T("ยอดรวมของทุกคน","Total from everyone")}</small></div>
+  <div class="gjc glass-panel"><h3>🗓️ ${T("เส้นทางจินเจ","GinJay timeline")}</h3>${tl}</div>
+  <div class="gjc glass-panel"><h3>🎲 ${T("สุ่มข้อความให้กำลังใจ","Random cheer message")}</h3>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">
+      <select id="gjCheerTo" onchange="gjCheer()" style="padding:8px 12px;border-radius:12px;border:1px solid rgba(126,34,206,.3);background:var(--surface-alt);color:var(--ink)"><option value="ginjay"${gjCheerTo==="ginjay"?" selected":""}>${T("ถึงจินเจ","To GinJay")}</option><option value="ginny"${gjCheerTo==="ginny"?" selected":""}>${T("ถึงจินนี่","To Ginny")}</option><option value="jayna"${gjCheerTo==="jayna"?" selected":""}>${T("ถึงเจน่า","To Jayna")}</option></select>
+      <button class="chip" onclick="gjCheer()">🎲 ${T("สุ่มข้อความ","Shuffle")}</button>
+      <button class="chip" onclick="gjCopy(gjCheerTxt,this)">📋 ${T("คัดลอก","Copy")}</button>
+    </div>
+    <div id="gjCheerOut" style="padding:12px 14px;border-radius:14px;background:var(--surface-alt);min-height:48px">${gjCheerTxt||T("กด “สุ่มข้อความ” เพื่อเริ่ม","Tap “Shuffle” to start")}</div></div>
+  <div class="gjc glass-panel"><h3>#️⃣ ${T("แฮชแท็ก (แตะเพื่อคัดลอก)","Hashtags (tap to copy)")}</h3><div class="gjrow">${tags}<button class="chip" onclick="gjCopy('${GJ_TAGS.join(" ")}',this)">📋 ${T("คัดลอกทั้งหมด","Copy all")}</button></div></div>`;
+  gjLoveShow("ginny");gjLoveShow("jayna");
+}
+try{
+  const st=document.createElement("style");
+  st.textContent=`
+  #aboutFx{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:20px;margin-top:24px}
+  .gjc{border-radius:20px;padding:20px}
+  .gjc h3{font-size:18px;color:var(--primary);margin-bottom:12px}
+  .gjrow{display:flex;gap:12px;flex-wrap:wrap}
+  .gjb{flex:1;min-width:120px;text-align:center;padding:12px;border-radius:16px;background:var(--surface-alt);border:2px solid}
+  .gjs{font-weight:700;font-size:18px;color:var(--primary);margin:2px 0}
+  .gjt{display:flex;gap:10px;padding:8px 0;border-bottom:1px dashed var(--line);font-size:14px}
+  .gjt.fut{opacity:.6}
+  .gjlv{flex:1;min-width:130px;padding:12px;border-radius:16px;font-weight:700;color:#4c1d95;display:flex;flex-direction:column;align-items:center;gap:2px;transition:transform .15s}
+  .gjlv:active{transform:scale(.95)}
+  .abB{position:fixed;pointer-events:none;z-index:9999;font-size:20px;animation:abBurst .95s cubic-bezier(.16,1,.3,1) forwards}
+  @keyframes abBurst{0%{transform:translate(0,0) scale(.5);opacity:1}100%{transform:translate(var(--tx),var(--ty)) scale(1.35) rotate(var(--r));opacity:0}}`;
+  document.head.appendChild(st);
+  const ac=document.getElementById("aboutContainer");
+  if(ac){
+    const h=document.createElement("div");h.id="aboutFx";ac.insertAdjacentElement("afterend",h);
+    const fu=window.updateUIRole;
+    window.updateUIRole=function(){const r=fu.apply(this,arguments);try{renderAboutFx();}catch(e){}return r;};
+    renderAboutFx();gjLoadLove();
+    setInterval(()=>{if(document.visibilityState==="visible")gjLoadLove();},30000);
+    addEventListener("visibilitychange",()=>{
+      if(document.visibilityState!=="hidden")return;
+      ["ginny","jayna"].forEach(k=>{
+        const s=gjLove[k];
+        if(s.pending>0&&s.fails<3){const n=Math.min(s.pending,30);
+          try{if(navigator.sendBeacon("/api/love",new Blob([JSON.stringify({n,k})],{type:"application/json"})))s.pending-=n;}catch(e){}}
+      });
+    });
+  }
+}catch(e){console.error(e);}
+  
   loadMyPlan();
 loadDataFromDB();
 </script>
