@@ -2373,6 +2373,38 @@ try{
     });
   }
 }catch(e){console.error(e);}
+  /* ===== เปิดมาหน้าอัลกี้ถึงจินเจ / แก้ปุ่มทับกันบนมือถือ / ปิดลูกเล่นหน้าเกี่ยวกับ ===== */
+
+/* ปิดลูกเล่นหน้าเกี่ยวกับที่เคยวางไว้ (ถ้าไม่เคยวาง ส่วนนี้ไม่ทำอะไร) */
+function renderAboutFx(){const h=document.getElementById("aboutFx");if(h)h.remove();}
+function gjLoadLove(){}
+
+(function(){
+  try{
+    /* ลำดับเมนู: จากอัลกี้ถึงจินเจ, ตารางงาน, ผลงาน, สินค้า, การเดินทาง, กดบัตร, ช่วยเหลือกัน, ผังที่นั่ง, เกี่ยวกับ */
+    const ORDER=["blessing","schedule","series","merch","travel","tickets","commu","seatmap","about"];
+    const nav=document.querySelector("nav[role=tablist]");
+    ORDER.forEach(t=>{const b=nav.querySelector('button[data-t="'+t+'"]');if(b)nav.appendChild(b);});
+
+    /* ปุ่มส่งคำอวยพรไม่ทับกับปุ่มหัวใจ/เนื้อหาบนมือถือ */
+    const st=document.createElement("style");
+    st.textContent=`body.onBless #fxFab{display:none!important}
+    @media(max-width:640px){
+      .w-fab{padding:11px 22px!important;font-size:1rem!important;bottom:calc(22px + env(safe-area-inset-bottom,0px))!important;max-width:calc(100vw - 32px);white-space:nowrap}
+      .bday-box{padding-bottom:110px!important}
+    }`;
+    document.head.appendChild(st);
+    const sw=window.switchTab;
+    window.switchTab=function(id){
+      const r=sw.apply(this,arguments);
+      document.body.classList.toggle("onBless",id==="blessing");
+      return r;
+    };
+
+    /* เปิดเว็บมาที่หน้า "จากอัลกี้ถึงจินเจ" ก่อน */
+    switchTab("blessing");
+  }catch(e){console.error(e);}
+})();
   
   loadMyPlan();
 loadDataFromDB();
