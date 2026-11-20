@@ -2405,6 +2405,168 @@ function gjLoadLove(){}
     switchTab("blessing");
   }catch(e){console.error(e);}
 })();
+  /* ===== หนังสือคำอวยพร (E-book + PDF) สร้างจากกำแพงคำอวยพรอัตโนมัติ ===== */
+const BOOK={
+  title:"จากอัลกี้ถึงจินเจ",
+  sub:"สมุดคำอวยพรวันเกิด จินนี่ & เจน่า",
+  cut:"", // วันสุดท้ายที่นับคำอวยพรเข้าเล่ม เช่น "2026-12-10" (เว้นว่าง = นับทั้งหมด)
+  note:"📖 คำอวยพรที่เขียนไว้อาจถูกรวมเป็นหนังสือเล่มเล็กๆ มอบให้จินนี่และเจน่า (ใช้ชื่อเล่นได้นะ)",
+  dedic:"ถึง จินนี่ และ เจน่า\n\nทุกคำอวยพรในเล่มนี้เขียนโดยชาวอัลกี้\nด้วยความรักและความขอบคุณ\nขอบคุณที่เป็นแรงใจ รอยยิ้ม และความสุขให้พวกเราเสมอ 💜💛",
+  back:"ขอให้มีความสุขมากๆ นะ\nรักและเป็นกำลังใจให้เสมอ\n\n— ชาวอัลกี้ทุกคน —"
+};
+let bkSort="old",bkScope="all",bkPages=[],bkIdx=0;
+
+try{
+  const st=document.createElement("style");
+  st.textContent=`
+  #bookView{position:fixed;inset:0;z-index:200;background:rgba(30,10,50,.9);display:none;flex-direction:column;align-items:center;padding-top:env(safe-area-inset-top,0px)}
+  #bookView.on{display:flex}
+  .bk-bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:center;padding:10px 8px}
+  .bk-bar button,.bk-bar select,.bk-nav button{border:0;border-radius:999px;padding:8px 14px;font:inherit;font-weight:700;background:#ede9fe;color:#4c1d95;cursor:pointer}
+  #bkStage{flex:1;display:flex;align-items:center;justify-content:center;width:100%;overflow:hidden}
+  .bk-wrap{animation:bkIn .25s ease}
+  @keyframes bkIn{from{opacity:0;transform:translateX(18px)}to{opacity:1;transform:none}}
+  .bk-nav{display:flex;gap:16px;align-items:center;color:#fff;padding:10px 0 calc(14px + env(safe-area-inset-bottom,0px))}
+  .bk-nav button{font-size:20px;padding:6px 20px}
+  .bk-page{width:559px;height:794px;background:linear-gradient(135deg,#faf5ff,#fffbeb);color:#2b1b38;padding:44px 40px 56px;position:relative;box-shadow:0 12px 40px rgba(0,0,0,.35);border-radius:6px;overflow:hidden;display:flex;flex-direction:column;font-family:'Mali',sans-serif;box-sizing:border-box;text-align:left}
+  .bk-probe{position:fixed;left:-9999px;top:0;visibility:hidden}
+  .bk-in{flex:1;overflow:hidden}
+  .bk-no{position:absolute;bottom:22px;left:0;right:0;text-align:center;font-size:12px;color:#8b7aa0}
+  .bk-b{border-radius:14px;padding:10px 14px;margin-bottom:10px;border-left:5px solid #a78bfa;font-size:13px;line-height:1.55}
+  .bk-ginny{background:#f3e8ff;border-color:#a78bfa}.bk-jayna{background:#fef9c3;border-color:#fbbf24}.bk-ginjay{background:#fce7f3;border-color:#f9a8d4}
+  .bk-bh{display:flex;gap:8px;align-items:center}.bk-bh b{flex:1;color:#5b21b6;font-size:14px;overflow-wrap:anywhere}.bk-bh small{color:#8b7aa0;font-size:11px}
+  .bk-ic{font-size:18px}.bk-bt{white-space:pre-wrap;overflow-wrap:anywhere;margin:4px 0}.bk-bf{text-align:right;font-size:11px;color:#8b7aa0}
+  .bk-h{font-weight:700;font-size:18px;color:#5b21b6;margin:4px 0 12px}
+  .bk-cover,.bk-back{background:linear-gradient(160deg,#ddd6fe,#fbcfe8 50%,#fde68a);justify-content:center;text-align:center}
+  .bk-cover h1{font-size:34px;color:#4c1d95;margin:14px 0 6px}.bk-cover p{font-size:17px;margin:0 0 22px}.bk-meta{font-size:14px;color:#5b21b6;font-weight:700}
+  .bk-mid{display:flex;flex-direction:column;justify-content:center;height:100%;text-align:center;white-space:pre-line;font-size:16px;line-height:1.9}
+  .bk-g{display:inline-block;margin:4px 8px;font-size:18px}.bk-nm{display:inline-block;background:#fff;border-radius:99px;padding:2px 10px;margin:3px;font-size:12px}
+  #bookPrint{display:none}
+  @media print{
+    body.bk-printing>*:not(#bookPrint){display:none!important}
+    body.bk-printing #bookPrint{display:block!important}
+    #bookPrint .bk-page{width:148mm;height:210mm;page-break-after:always;break-after:page;box-shadow:none;border-radius:0;transform:none!important}
+    *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  }`;
+  document.head.appendChild(st);
+  const hd=document.querySelector("#blessing .bday-box header");
+  if(hd){
+    const b=document.createElement("button");b.className="chip";
+    b.style.cssText="margin-top:8px;background:linear-gradient(135deg,#ddd6fe,#fbcfe8 55%,#fef3c7);color:#5b21b6;font-weight:700";
+    b.textContent="📖 หนังสือคำอวยพร";b.onclick=bkOpen;hd.appendChild(b);
+    const n=document.createElement("div");n.style.cssText="font-size:13px;color:var(--muted);margin-top:6px";
+    n.textContent=BOOK.note+(BOOK.cut?" · ส่งได้ถึง "+new Date(BOOK.cut+"T12:00:00+07:00").toLocaleDateString("th-TH",{day:"numeric",month:"short",year:"numeric"}):"");
+    hd.appendChild(n);
+  }
+}catch(e){console.error(e);}
+
+const bkTo=t=>t==="ginny"?"Ginny":t==="jayna"?"Jayna":"GinJay";
+function bkWishes(){
+  const end=BOOK.cut?Date.parse(BOOK.cut+"T23:59:59+07:00"):Infinity;
+  let L=BW_WISH.filter(w=>!w.nb&&w.at<=end);
+  if(bkScope==="ginny")L=L.filter(w=>w.to==="ginny"||w.to==="ginjay");
+  if(bkScope==="jayna")L=L.filter(w=>w.to==="jayna"||w.to==="ginjay");
+  const o={ginjay:0,ginny:1,jayna:2};
+  if(bkSort==="new")L.sort((a,b)=>b.at-a.at);
+  else if(bkSort==="to")L.sort((a,b)=>(o[a.to]-o[b.to])||(a.at-b.at));
+  else L.sort((a,b)=>a.at-b.at);
+  return L;
+}
+function bkNote(w){
+  const g=BW_GIFTS.find(x=>x.id===w.gift)||BW_GIFTS[0],ic=typeof giftIcon==="function"?giftIcon(g):(g?g.e:"");
+  const d=new Date(w.at).toLocaleDateString("th-TH",{day:"numeric",month:"short",year:"numeric"});
+  return `<div class="bk-b bk-${w.to}"><div class="bk-bh"><span class="bk-ic">${ic}</span><b>${w.name||"Anonymous"}</b><small>${d}</small></div><div class="bk-bt">${w.text}</div><div class="bk-bf">ถึง ${bkTo(w.to)}</div></div>`;
+}
+function bkBuild(){
+  const L=bkWishes(),items=[];let lastTo=null;
+  L.forEach(w=>{
+    if(bkSort==="to"&&w.to!==lastTo){lastTo=w.to;items.push({k:"h",html:`<div class="bk-h">${w.to==="ginny"?"💜 ถึงจินนี่":w.to==="jayna"?"💛 ถึงเจน่า":"💜💛 ถึงจินนี่และเจน่า"}</div>`});}
+    items.push({k:"b",html:bkNote(w)});
+  });
+  /* วัดความสูงจริงทีละใบ แล้วขึ้นหน้าใหม่อัตโนมัติเมื่อล้น */
+  const probe=document.createElement("div");probe.className="bk-page bk-probe";probe.innerHTML='<div class="bk-in"></div>';
+  document.body.appendChild(probe);
+  const inn=probe.firstChild,fits=()=>inn.scrollHeight<=inn.clientHeight+1,groups=[];let cur=[];
+  const flush=()=>{groups.push(cur);cur=[];inn.innerHTML="";};
+  items.forEach(it=>{
+    inn.insertAdjacentHTML("beforeend",it.html);
+    if(fits()){cur.push(it);return;}
+    inn.lastElementChild.remove();
+    let carry=null;
+    if(cur.length&&cur[cur.length-1].k==="h"){carry=cur.pop();inn.lastElementChild.remove();}
+    flush();
+    if(carry){cur.push(carry);inn.insertAdjacentHTML("beforeend",carry.html);}
+    inn.insertAdjacentHTML("beforeend",it.html);cur.push(it);
+  });
+  if(cur.length)groups.push(cur);
+  probe.remove();
+  const names=[...new Set(L.map(w=>(w.name||"Anonymous").trim()))].sort((a,b)=>a.localeCompare(b,"th"));
+  const gifts={};L.forEach(w=>{gifts[w.gift]=(gifts[w.gift]||0)+1;});
+  const today=new Date().toLocaleDateString("th-TH",{day:"numeric",month:"long",year:"numeric"});
+  const P2=[];
+  P2.push({cls:"bk-cover",html:`<div style="font-size:54px">🦙 🐒</div><h1>${BOOK.title}</h1><p>${BOOK.sub}</p><div class="bk-meta">${L.length} คำอวยพร · จากชาวอัลกี้ ${names.length} คน</div><div style="margin-top:20px;font-size:13px;color:#7c6a99">รวบรวม ณ ${today}</div>`,nonum:true});
+  P2.push({cls:"",html:`<div class="bk-mid">${BOOK.dedic}</div>`,nonum:true});
+  if(!groups.length)P2.push({cls:"",html:`<div class="bk-mid">ยังไม่มีคำอวยพรในเล่มนี้ 💌</div>`});
+  groups.forEach(g=>P2.push({cls:"",html:g.map(x=>x.html).join("")}));
+  const gl=BW_GIFTS.filter(g=>gifts[g.id]).map(g=>`<span class="bk-g">${typeof giftIcon==="function"?giftIcon(g):g.e} × ${gifts[g.id]}</span>`).join("");
+  P2.push({cls:"",html:`<div class="bk-mid"><b style="font-size:20px;color:#5b21b6">🎁 สรุปความรักในเล่มนี้</b>\n\n${L.length} คำอวยพร\nจากชาวอัลกี้ ${names.length} คน\n\n<div>${gl}</div></div>`});
+  for(let i=0;i<names.length;i+=60){
+    P2.push({cls:"",html:`<div class="bk-h" style="text-align:center">✍️ ผู้เขียนคำอวยพร</div><div style="text-align:center">${names.slice(i,i+60).map(n=>`<span class="bk-nm">${n}</span>`).join("")}</div>`});
+  }
+  P2.push({cls:"bk-back",html:`<div class="bk-mid">${BOOK.back}</div>`,nonum:true});
+  bkPages=P2;
+}
+function bkPageEl(p,i){
+  return `<section class="bk-page ${p.cls}"><div class="bk-in">${p.html}</div>${p.nonum?"":`<div class="bk-no">${i}</div>`}</section>`;
+}
+function bkShow(i){
+  const st=document.getElementById("bkStage");if(!st||!bkPages.length)return;
+  bkIdx=Math.max(0,Math.min(bkPages.length-1,i));
+  const s=Math.min((innerWidth-20)/559,(innerHeight-150)/794,1.3);
+  st.innerHTML=`<div class="bk-wrap" style="width:${559*s}px;height:${794*s}px"><div style="transform:scale(${s});transform-origin:0 0;width:559px;height:794px">${bkPageEl(bkPages[bkIdx],bkIdx)}</div></div>`;
+  const no=document.getElementById("bkNo");if(no)no.textContent=`${bkIdx+1} / ${bkPages.length}`;
+}
+function bkRefresh(){bkBuild();bkShow(bkIdx);}
+function bkClose(){const ov=document.getElementById("bookView");if(ov)ov.classList.remove("on");document.body.style.overflow="";}
+function bkOpen(){
+  let ov=document.getElementById("bookView");
+  const isA=(cRole==="admin"||cRole==="head_admin");
+  if(!ov){
+    ov=document.createElement("div");ov.id="bookView";document.body.appendChild(ov);
+    addEventListener("keydown",e=>{if(!ov.classList.contains("on"))return;if(e.key==="ArrowRight")bkShow(bkIdx+1);if(e.key==="ArrowLeft")bkShow(bkIdx-1);if(e.key==="Escape")bkClose();});
+    let sx=0;
+    ov.addEventListener("touchstart",e=>{sx=e.touches[0].clientX;},{passive:true});
+    ov.addEventListener("touchend",e=>{const dx=e.changedTouches[0].clientX-sx;if(Math.abs(dx)>60)bkShow(bkIdx+(dx<0?1:-1));},{passive:true});
+    addEventListener("resize",()=>{if(ov.classList.contains("on"))bkShow(bkIdx);});
+  }
+  const opt=(v,t,c)=>`<option value="${v}"${c===v?" selected":""}>${t}</option>`;
+  ov.innerHTML=`<div class="bk-bar"><button onclick="bkClose()">✕ ปิด</button><select onchange="bkScope=this.value;bkIdx=0;bkRefresh()">${opt("all","ทั้งหมด",bkScope)}${opt("ginny","ถึงจินนี่ + จินเจ",bkScope)}${opt("jayna","ถึงเจน่า + จินเจ",bkScope)}</select><select onchange="bkSort=this.value;bkIdx=0;bkRefresh()">${opt("old","เก่า → ใหม่",bkSort)}${opt("new","ใหม่ → เก่า",bkSort)}${opt("to","แยกตามผู้รับ",bkSort)}</select>${isA?`<button onclick="bkSelect()">🛡️ คัดเลือก</button><button onclick="bkPrint()">⬇️ PDF</button>`:""}</div><div id="bkStage"></div><div class="bk-nav"><button onclick="bkShow(bkIdx-1)">‹</button><span id="bkNo"></span><button onclick="bkShow(bkIdx+1)">›</button></div>`;
+  ov.classList.add("on");document.body.style.overflow="hidden";
+  bkIdx=0;bkRefresh();
+}
+function bkSelect(){
+  const d=document.getElementById("dlg"),L=BW_WISH.slice().sort((a,b)=>a.at-b.at);
+  d.innerHTML=`<h3 style="color:var(--w-pt);margin-bottom:10px">🛡️ ติ๊กคำอวยพรที่จะใส่ในเล่ม</h3><div style="max-height:50vh;overflow:auto">${L.map(w=>`<label style="display:flex;gap:8px;padding:6px 0;border-bottom:1px dashed var(--line);font-size:13px"><input type="checkbox" data-id="${w.id}" ${w.nb?"":"checked"}><span><b>${w.name||"Anonymous"}</b> — ${String(w.text).slice(0,80)}</span></label>`).join("")}</div><div style="display:flex;justify-content:space-between;margin-top:14px"><button class="chip" onclick="document.getElementById('dlg').close()">ยกเลิก</button><button class="btn-submit" onclick="bkSelSave()">บันทึก</button></div>`;
+  d.showModal();
+}
+function bkSelSave(){
+  document.querySelectorAll("#dlg input[type=checkbox][data-id]").forEach(c=>{
+    const w=BW_WISH.find(x=>x.id===c.dataset.id);
+    if(w){if(c.checked)delete w.nb;else w.nb=1;}
+  });
+  saveBW();document.getElementById("dlg").close();bkRefresh();
+}
+function bkPrint(){
+  if(!(cRole==="admin"||cRole==="head_admin"))return;
+  bkBuild();
+  let pr=document.getElementById("bookPrint");if(pr)pr.remove();
+  pr=document.createElement("div");pr.id="bookPrint";pr.innerHTML=bkPages.map((p,i)=>bkPageEl(p,i)).join("");document.body.appendChild(pr);
+  const ps=document.createElement("style");ps.id="bkPrintCss";ps.textContent="@page{size:148mm 210mm;margin:0}";document.head.appendChild(ps);
+  document.body.classList.add("bk-printing");
+  const done=()=>{document.body.classList.remove("bk-printing");pr.remove();ps.remove();removeEventListener("afterprint",done);};
+  addEventListener("afterprint",done);
+  setTimeout(()=>window.print(),300);
+}
   
   loadMyPlan();
 loadDataFromDB();
