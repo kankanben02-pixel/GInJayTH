@@ -2567,6 +2567,173 @@ function bkPrint(){
   addEventListener("afterprint",done);
   setTimeout(()=>window.print(),300);
 }
+/* ===== A) หนังสือคำอวยพร: ฟีลสมุดเฟรนชิพกระดาษสา + รูปตกแต่ง ===== */
+BOOK.photos=BOOK.photos||[]; // ใส่รูปถาวรได้ เช่น [{u:"https://...",c:"Ginny 🦙"},"https://..."]
+(function(){
+  try{
+    const lk=document.createElement("link");lk.rel="stylesheet";
+    lk.href="https://fonts.googleapis.com/css2?family=Itim&family=Sriracha&display=swap";
+    document.head.appendChild(lk);
+    const NOISE="url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='260'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .55 0 0 0 0 .42 0 0 0 0 .25 0 0 0 .16 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")";
+    const FIBER="url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300'%3E%3Cfilter id='f'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.012 .4' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .6 0 0 0 0 .5 0 0 0 0 .3 0 0 0 .22 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23f)'/%3E%3C/svg%3E\")";
+    const st=document.createElement("style");
+    st.textContent=`
+    .bk-page{font-family:'Itim','Mali',sans-serif;padding:40px 34px 56px 62px;background-color:#fbf3df;background-image:linear-gradient(90deg,transparent 50px,rgba(236,110,160,.32) 50px 52px,transparent 52px),${NOISE},${FIBER};box-shadow:0 12px 40px rgba(0,0,0,.35),inset 0 0 50px rgba(150,110,50,.2)}
+    .bk-page:before{content:"";position:absolute;left:12px;top:0;bottom:0;width:22px;background:radial-gradient(circle at 11px 120px,#d9cdae 0 5px,#9c8b66 5px 7px,transparent 7.5px),radial-gradient(circle at 11px 397px,#d9cdae 0 5px,#9c8b66 5px 7px,transparent 7.5px),radial-gradient(circle at 11px 674px,#d9cdae 0 5px,#9c8b66 5px 7px,transparent 7.5px)}
+    .bk-page:after{content:"♡ ✿ ★";position:absolute;right:20px;top:12px;font-size:15px;letter-spacing:6px;color:rgba(168,85,247,.45)}
+    .bk-cover,.bk-back{background-image:linear-gradient(160deg,rgba(221,214,254,.6),rgba(252,231,243,.55) 50%,rgba(253,230,138,.55)),${NOISE},${FIBER}}
+    .bk-no{font-family:'Sriracha','Itim',cursive;bottom:20px}
+    .bk-b.bk-ginny,.bk-b.bk-jayna,.bk-b.bk-ginjay{background:rgba(255,255,255,.55);border:0;border-radius:6px;padding:14px 14px 8px;margin-bottom:16px;position:relative;box-shadow:0 1px 3px rgba(120,90,40,.18)}
+    .bk-b:nth-child(odd){transform:rotate(-.5deg)}.bk-b:nth-child(even){transform:rotate(.5deg)}
+    .bk-tp{position:absolute;top:-9px;left:20px;width:56px;height:17px;background:repeating-linear-gradient(45deg,var(--tc,rgba(167,139,250,.65)) 0 6px,rgba(255,255,255,.55) 6px 12px);transform:rotate(-4deg)}
+    .bk-jayna .bk-tp{--tc:rgba(251,191,36,.7)}.bk-ginjay .bk-tp{--tc:rgba(244,114,182,.65)}
+    .bk-bh{font-size:14px}.bk-bh span:nth-child(2){flex:1}
+    .bk-bh b{font-family:'Sriracha','Itim',cursive;font-weight:400;font-size:16px;color:#6d28d9}
+    .bk-bt{font-size:15px;line-height:24px;background-image:repeating-linear-gradient(transparent 0 23px,rgba(120,160,210,.45) 23px 24px);margin:4px 0 2px}
+    .bk-bf{font-family:'Sriracha','Itim',cursive;color:#be185d;font-size:13px}
+    .bk-h{font-family:'Sriracha','Itim',cursive;font-weight:400}
+    .bk-cover h1{font-family:'Sriracha','Itim',cursive;font-weight:400;font-size:38px}
+    .bk-st{display:inline-block;background:#fde68a;color:#7c3aed;border:2px dashed #a78bfa;border-radius:99px;padding:4px 16px;font-family:'Sriracha',cursive;transform:rotate(-2deg);margin:10px 0}
+    .bk-dt{margin-top:14px;font-size:13px;color:#7c6a99}
+    .bk-pol{background:#fff;padding:10px 10px 6px;box-shadow:0 5px 16px rgba(80,50,20,.28);transform:rotate(var(--r,-3deg));display:inline-block;position:relative;margin:12px}
+    .bk-pol img{display:block;width:220px;height:235px;object-fit:cover;background:#eee}
+    .bk-cap{font-family:'Sriracha','Itim',cursive;text-align:center;font-size:16px;padding-top:6px;color:#5b21b6;min-height:26px}
+    .bk-pol .bk-tape{position:absolute;top:-13px;left:50%;width:78px;height:24px;margin-left:-39px;background:repeating-linear-gradient(45deg,rgba(244,114,182,.65) 0 7px,rgba(255,255,255,.55) 7px 14px);transform:rotate(-3deg);box-shadow:0 1px 3px rgba(0,0,0,.15)}
+    .bk-pp{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%}
+    .bk-dd{text-align:center;color:#c084fc;letter-spacing:8px;font-size:18px}
+    .bk-col{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%}
+    .bk-dd2{text-align:center;white-space:pre-line;font-size:17px;line-height:1.9;margin-top:8px;font-family:'Sriracha','Itim',cursive}`;
+    document.head.appendChild(st);
+  }catch(e){console.error(e);}
+})();
+
+function bkEsc(s){return String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));}
+function bkSavedPhotos(){try{const a=JSON.parse(localStorage.getItem("gj_book_photos")||"[]");return Array.isArray(a)?a:[];}catch(e){return [];}}
+function bkPhotoList(){
+  return [...(BOOK.photos||[]),...bkSavedPhotos()].map(x=>typeof x==="string"?{u:x,c:""}:x).filter(x=>x&&/^https:\/\//i.test(x.u||""));
+}
+function bkAddPhoto(){
+  const inp=document.createElement("input");inp.type="file";inp.accept="image/*";
+  inp.onchange=async()=>{
+    const f=inp.files[0];if(!f)return;
+    try{
+      if(!AUTH_TOKEN)throw new Error("ต้องล็อกอินแอดมินก่อน");
+      const bmp=await createImageBitmap(f),sc=Math.min(1,1400/Math.max(bmp.width,bmp.height));
+      const c=document.createElement("canvas");c.width=Math.max(1,Math.round(bmp.width*sc));c.height=Math.max(1,Math.round(bmp.height*sc));
+      c.getContext("2d").drawImage(bmp,0,0,c.width,c.height);
+      const blob=await new Promise(r=>c.toBlob(r,"image/jpeg",.88));
+      const res=await fetch("/api/upload",{method:"POST",headers:{"Content-Type":"image/jpeg","Authorization":"Bearer "+AUTH_TOKEN},body:blob});
+      const d=await res.json().catch(()=>({}));
+      if(!res.ok||!d.success)throw new Error((d.error&&d.error.message)||("HTTP "+res.status));
+      const cap=prompt("คำบรรยายใต้รูป (เว้นว่างได้) เช่น Ginny 🦙","")||"";
+      const L=bkSavedPhotos();L.push({u:d.data.url,c:cap});
+      localStorage.setItem("gj_book_photos",JSON.stringify(L));
+      bkOpen();
+    }catch(e){alert("❌ "+e.message);}
+  };
+  inp.click();
+}
+function bkClearPhotos(){
+  if(!confirm("ล้างรูปประดับที่เพิ่มไว้ในเครื่องนี้ทั้งหมด? (รูปที่อัปโหลดไว้แล้วยังอยู่ที่ Cloudinary)"))return;
+  try{localStorage.removeItem("gj_book_photos");}catch(e){}
+  bkOpen();
+}
+function bkExportPhotos(){prompt("คัดลอกข้อความนี้ไปวางที่ BOOK.photos=... ใน index.html เพื่อให้รูปอยู่ถาวรทุกเครื่อง",JSON.stringify(bkSavedPhotos()));}
+
+function bkFonts(){
+  if(!(document.fonts&&document.fonts.load))return Promise.resolve();
+  const t="สวัสดี ABC ๑๒๓";
+  return Promise.race([Promise.all([document.fonts.load('15px "Itim"',t),document.fonts.load('20px "Sriracha"',t),document.fonts.load('15px "Mali"',t)]),new Promise(r=>setTimeout(r,3000))]);
+}
+function bkImgs(root){return Promise.all([...root.querySelectorAll("img")].map(i=>i.complete?0:new Promise(r=>{i.onload=i.onerror=r;})));}
+async function bkRefresh(){await bkFonts();bkBuild();bkShow(bkIdx);}
+
+function bkNote(w){
+  const g=BW_GIFTS.find(x=>x.id===w.gift)||BW_GIFTS[0],ic=typeof giftIcon==="function"?giftIcon(g):(g?g.e:"");
+  const d=new Date(w.at).toLocaleDateString("th-TH",{day:"numeric",month:"short",year:"numeric"});
+  return `<div class="bk-b bk-${w.to}"><i class="bk-tp"></i><div class="bk-bh"><span class="bk-ic">${ic}</span><span>ชื่อ: <b>${w.name||"Anonymous"}</b></span><small>${d}</small></div><div class="bk-bt">${w.text}</div><div class="bk-bf">ถึง: ${bkTo(w.to)} ♡</div></div>`;
+}
+
+function bkBuild(){
+  const L=bkWishes(),items=[];let lastTo=null;
+  L.forEach(w=>{
+    if(bkSort==="to"&&w.to!==lastTo){lastTo=w.to;items.push({k:"h",html:`<div class="bk-h">${w.to==="ginny"?"💜 ถึงจินนี่":w.to==="jayna"?"💛 ถึงเจน่า":"💜💛 ถึงจินนี่และเจน่า"}</div>`});}
+    items.push({k:"b",html:bkNote(w)});
+  });
+  const probe=document.createElement("div");probe.className="bk-page bk-probe";probe.innerHTML='<div class="bk-in"></div>';
+  document.body.appendChild(probe);
+  const inn=probe.firstChild,fits=()=>inn.scrollHeight<=inn.clientHeight+1,groups=[];let cur=[];
+  const flush=()=>{groups.push(cur);cur=[];inn.innerHTML="";};
+  items.forEach(it=>{
+    inn.insertAdjacentHTML("beforeend",it.html);
+    if(fits()){cur.push(it);return;}
+    inn.lastElementChild.remove();
+    let carry=null;
+    if(cur.length&&cur[cur.length-1].k==="h"){carry=cur.pop();inn.lastElementChild.remove();}
+    flush();
+    if(carry){cur.push(carry);inn.insertAdjacentHTML("beforeend",carry.html);}
+    inn.insertAdjacentHTML("beforeend",it.html);cur.push(it);
+  });
+  if(cur.length)groups.push(cur);
+  probe.remove();
+
+  const ph=bkPhotoList();
+  const pol=(p,r)=>`<div class="bk-pol" style="--r:${r}deg"><i class="bk-tape"></i><img src="${bkEsc(p.u)}" alt=""><div class="bk-cap">${bkEsc(p.c||"")}</div></div>`;
+  const names=[...new Set(L.map(w=>(w.name||"Anonymous").trim()))].sort((a,b)=>a.localeCompare(b,"th"));
+  const gifts={};L.forEach(w=>{gifts[w.gift]=(gifts[w.gift]||0)+1;});
+  const today=new Date().toLocaleDateString("th-TH",{day:"numeric",month:"long",year:"numeric"});
+  const P2=[];
+  P2.push({cls:"bk-cover",nonum:true,html:`<div class="bk-col">${ph[0]?pol(ph[0],-4):`<div style="font-size:60px">🦙 💌 🐒</div>`}<h1>${BOOK.title}</h1><p>${BOOK.sub}</p><div class="bk-st">✦ Friendship Notebook ✦</div><div class="bk-meta">${L.length} คำอวยพร · จากชาวอัลกี้ ${names.length} คน</div><div class="bk-dt">รวบรวม ณ ${today}</div></div>`});
+  P2.push({cls:"",nonum:true,html:`<div class="bk-col">${ph[1]?pol(ph[1],3):""}<div class="bk-dd2">${BOOK.dedic}</div></div>`});
+  if(!groups.length)P2.push({cls:"",html:`<div class="bk-mid">ยังไม่มีคำอวยพรในเล่มนี้ 💌</div>`});
+  let k=0;
+  groups.forEach((g,gi)=>{
+    P2.push({cls:"",html:g.map(x=>x.html).join("")});
+    if(ph.length&&(gi+1)%3===0&&gi<groups.length-1){
+      const a=ph[(k*2)%ph.length],b=ph.length>1?ph[(k*2+1)%ph.length]:null;k++;
+      P2.push({cls:"",html:`<div class="bk-pp">${pol(a,-3)}${b?pol(b,2.5):""}<div class="bk-dd">♡ ✿ ★ ♡ ✿</div></div>`});
+    }
+  });
+  const gl=BW_GIFTS.filter(g=>gifts[g.id]).map(g=>`<span class="bk-g">${typeof giftIcon==="function"?giftIcon(g):g.e} × ${gifts[g.id]}</span>`).join("");
+  P2.push({cls:"",html:`<div class="bk-mid"><b style="font-size:20px;color:#5b21b6">🎁 สรุปความรักในเล่มนี้</b>\n\n${L.length} คำอวยพร\nจากชาวอัลกี้ ${names.length} คน\n\n<div>${gl}</div></div>`});
+  for(let i=0;i<names.length;i+=60){
+    P2.push({cls:"",html:`<div class="bk-h" style="text-align:center">✍️ ผู้เขียนคำอวยพร</div><div style="text-align:center">${names.slice(i,i+60).map(n=>`<span class="bk-nm">${n}</span>`).join("")}</div>`});
+  }
+  P2.push({cls:"bk-back",nonum:true,html:`<div class="bk-col">${ph.length>1?pol(ph[ph.length-1],-2):""}<div class="bk-dd2">${BOOK.back}</div></div>`});
+  bkPages=P2;
+}
+
+function bkOpen(){
+  let ov=document.getElementById("bookView");
+  const isA=(cRole==="admin"||cRole==="head_admin");
+  if(!ov){
+    ov=document.createElement("div");ov.id="bookView";document.body.appendChild(ov);
+    addEventListener("keydown",e=>{if(!ov.classList.contains("on"))return;if(e.key==="ArrowRight")bkShow(bkIdx+1);if(e.key==="ArrowLeft")bkShow(bkIdx-1);if(e.key==="Escape")bkClose();});
+    let sx=0;
+    ov.addEventListener("touchstart",e=>{sx=e.touches[0].clientX;},{passive:true});
+    ov.addEventListener("touchend",e=>{const dx=e.changedTouches[0].clientX-sx;if(Math.abs(dx)>60)bkShow(bkIdx+(dx<0?1:-1));},{passive:true});
+    addEventListener("resize",()=>{if(ov.classList.contains("on"))bkShow(bkIdx);});
+  }
+  const opt=(v,t,c)=>`<option value="${v}"${c===v?" selected":""}>${t}</option>`;
+  const saved=bkSavedPhotos().length;
+  ov.innerHTML=`<div class="bk-bar"><button onclick="bkClose()">✕ ปิด</button><select onchange="bkScope=this.value;bkIdx=0;bkRefresh()">${opt("all","ทั้งหมด",bkScope)}${opt("ginny","ถึงจินนี่ + จินเจ",bkScope)}${opt("jayna","ถึงเจน่า + จินเจ",bkScope)}</select><select onchange="bkSort=this.value;bkIdx=0;bkRefresh()">${opt("old","เก่า → ใหม่",bkSort)}${opt("new","ใหม่ → เก่า",bkSort)}${opt("to","แยกตามผู้รับ",bkSort)}</select>${isA?`<button onclick="bkSelect()">🛡️ คัดเลือก</button><button onclick="bkAddPhoto()">🖼️ เพิ่มรูป (${bkPhotoList().length})</button>${saved?`<button onclick="bkExportPhotos()">📋 ลิงก์รูป</button><button onclick="bkClearPhotos()">🗑️ ล้างรูป</button>`:""}<button onclick="bkPrint()">⬇️ PDF</button>`:""}</div><div id="bkStage"></div><div class="bk-nav"><button onclick="bkShow(bkIdx-1)">‹</button><span id="bkNo"></span><button onclick="bkShow(bkIdx+1)">›</button></div>`;
+  ov.classList.add("on");document.body.style.overflow="hidden";
+  bkIdx=0;bkRefresh();
+}
+
+async function bkPrint(){
+  if(!(cRole==="admin"||cRole==="head_admin"))return;
+  await bkFonts();bkBuild();
+  let pr=document.getElementById("bookPrint");if(pr)pr.remove();
+  pr=document.createElement("div");pr.id="bookPrint";pr.innerHTML=bkPages.map((p,i)=>bkPageEl(p,i)).join("");document.body.appendChild(pr);
+  await bkImgs(pr);
+  const ps=document.createElement("style");ps.id="bkPrintCss";ps.textContent="@page{size:148mm 210mm;margin:0}";document.head.appendChild(ps);
+  document.body.classList.add("bk-printing");
+  const done=()=>{document.body.classList.remove("bk-printing");pr.remove();ps.remove();removeEventListener("afterprint",done);};
+  addEventListener("afterprint",done);
+  setTimeout(()=>window.print(),300);
+}
+  
   
   loadMyPlan();
 loadDataFromDB();
