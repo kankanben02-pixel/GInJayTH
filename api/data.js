@@ -1,7 +1,7 @@
 const { getCol, getSession } = require('./_lib');
 
 const ADMIN_KEYS  = ['TICKETS', 'SERIES', 'MERCH', 'TRAVEL', 'BW_ORD', 'CUSTOM_TPL'];
-const    = ['ABOUT', 'CUSTOM_ADMINS', 'BW_GIFTS', 'SITE_BG'];
+const HEAD_KEYS   = ['ABOUT', 'CUSTOM_ADMINS', 'BW_GIFTS', 'SITE_BG'];
 const OPEN_KEYS   = ['EVENTS', 'COMMU', 'BW_WISH', 'SEATMAPS'];
 const MEMBER_KEYS = ['EVENTS', 'COMMU', 'SEATMAPS']; // ต้องล็อกอินจริง (BW_WISH ใครก็เขียนได้เหมือนเดิม)
 const OBJ_KEYS    = ['CUSTOM_TPL'];
@@ -17,7 +17,7 @@ const clean = {
   EVENTS(it) {
     if (!/^\d{4}-\d{2}-\d{2}$/.test(it.d || '')) return null;
     const o = { id: it.id, d: it.d, artist: ['duo', 'ginny', 'jayna'].includes(it.artist) ? it.artist : 'duo' };
-       for (const k of ['time', 'th_t', 'en_t', 'th_c', 'en_c', 'th_v', 'en_v', 'map_q'])
+    for (const k of ['time', 'th_t', 'en_t', 'th_c', 'en_c', 'th_v', 'en_v', 'map_q'])
       if (typeof it[k] === 'string') o[k] = str(it[k], 200);
     if (typeof it.note === 'string') o.note = str(it.note, 600);
     if (URLRE.test(it.img || '')) o.img = it.img;
@@ -92,7 +92,7 @@ module.exports = async (req, res) => {
       for (const d of docs) {
         if (!KNOWN.includes(d._id)) continue;                 // ไม่ปล่อยข้อมูลส่วนตัว เช่น แพลนของสมาชิก
         if (d._id === 'CUSTOM_ADMINS' && !isHead) continue;  // รหัสแอดมินเสริม เห็นเฉพาะ Head Admin
-                if (d._id === 'SEATMAPS' && !sess) continue;          // ผังที่นั่งเห็นเฉพาะคนที่ล็อกอิน
+        if (d._id === 'SEATMAPS' && !sess) continue;          // ผังที่นั่งเห็นเฉพาะคนที่ล็อกอิน
         out[d._id] = d.value;
       }
       res.setHeader('Cache-Control', 'no-store');
@@ -107,13 +107,13 @@ module.exports = async (req, res) => {
     for (const key of Object.keys(body)) {
       const inc = body[key];
       if (!KNOWN.includes(key)) { denied.push(key); continue; }
-      
+
       const okType = STR_KEYS.includes(key)
         ? (typeof inc === 'string' && (inc === '' || /^https:\/\/res\.cloudinary\.com\/[^\s"'<>()\\]{1,500}$/.test(inc)))
         : OBJ_KEYS.includes(key)
           ? (inc && typeof inc === 'object' && !Array.isArray(inc))
           : Array.isArray(inc);
-      
+
       if (!okType || JSON.stringify(inc).length > (isAdmin ? 4000000 : 1500000)) { denied.push(key); continue; }
 
       const doc = await col.findOne({ _id: key });
@@ -121,7 +121,7 @@ module.exports = async (req, res) => {
       if (JSON.stringify(old) === JSON.stringify(inc)) continue;
 
       let value;
-      if (.includes(key)) {
+      if (HEAD_KEYS.includes(key)) {
         if (!isHead) { denied.push(key); continue; }
         value = inc;
       } else if (ADMIN_KEYS.includes(key)) {
