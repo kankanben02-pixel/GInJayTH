@@ -166,12 +166,18 @@ body[data-role="user"] .admin-only,body[data-role="user"] .head-only{display:non
 body[data-role="admin"] .head-only{display:none!important}
 @media(max-width:820px){.works-layout,.merch-grid{grid-template-columns:1fr}.ticket-card{flex-direction:column;text-align:center}.travel-grid{grid-template-columns:1fr}}
 </style>
+<style>
+.brand .bob{position:relative;animation:bobUD 1.6s ease-in-out infinite}
+.brand .bob.b2{animation-delay:.8s}
+@keyframes bobUD{0%,100%{top:0}50%{top:-5px}}
+@media(prefers-reduced-motion:reduce){.brand .bob{animation:none}}
+</style>
 </head>
 <body data-role="guest">
 <header class="top glass-panel">
   <div class="wrap">
     <div class="header-top-row">
-      <div class="brand" onclick="switchTab('schedule')">🦙 GinJay Guide 🐒</div>
+      <div class="brand" onclick="switchTab('schedule')"><span class="bob">🦙</span> GinJay Guide <span class="bob b2">🐒</span></div>
       <div class="header-actions">
         <button id="langToggle" class="icon-btn">🇹🇭 TH</button>
         <button id="themeToggle" class="icon-btn"><span class="material-symbols-rounded">dark_mode</span></button>
@@ -262,9 +268,12 @@ body[data-role="admin"] .head-only{display:none!important}
     <div style="display:flex;justify-content:space-between;align-items:center;"><div><h2 style="color:var(--primary);"><span class="material-symbols-rounded" style="color:var(--accent);font-size:1.2em">info</span> <span data-th="เกี่ยวกับ GinJay & แฟนคลับอัลกี้" data-en="About GinJay & AlKey">เกี่ยวกับ GinJay & แฟนคลับอัลกี้</span></h2></div><button class="btn-submit head-only" onclick="openAboutModal()"><span class="material-symbols-rounded">add</span> <span data-th="เพิ่มการ์ด" data-en="Add Card">เพิ่มการ์ด</span></button></div><div style="display:grid;grid-template-columns:repeat(2,1fr);gap:24px;margin-top:24px;" id="aboutContainer"></div>
   </section>
 <footer style="text-align:center;color:var(--muted);font-size:13px;padding:24px 0 40px;line-height:1.8;">
-  <div><b>GinJay Fanguide</b> — เว็บไซต์แฟนเมดของชาวอัลกี้ (AlKey) รวมตารางงาน กดบัตร ผลงาน และการเดินทางของ จินนี่ ณัฐณิชา &amp; เจน่า แองเจลิน่า</div>
-  <div>ไม่ได้เกี่ยวข้องกับศิลปินหรือต้นสังกัด · Fan-made site, not affiliated with the artists or their label · <a href="/privacy.html">นโยบายความเป็นส่วนตัว</a></div>
-  <div>สามารถสนับสนุนผลงานต่างๆได้ที่ X: @GinJay171202 </div>
+  <div data-th="<b>GinJay Fanguide</b> — เว็บไซต์แฟนเมดของชาวอัลกี้ (AlKey) รวมตารางงาน กดบัตร ผลงาน และการเดินทางของ จินนี่ ณัฐณิชา &amp; เจน่า แองเจลิน่า"
+       data-en="<b>GinJay Fanguide</b> — a fan-made website for AlKey fans, featuring schedules, tickets, works and travel guides of Ginny Natnicha &amp; Jayna Angelina."><b>GinJay Fanguide</b> — เว็บไซต์แฟนเมดของชาวอัลกี้ (AlKey) รวมตารางงาน กดบัตร ผลงาน และการเดินทางของ จินนี่ ณัฐณิชา &amp; เจน่า แองเจลิน่า</div>
+  <div data-th="ไม่ได้เกี่ยวข้องกับศิลปินหรือต้นสังกัด · <a href='/privacy.html'>นโยบายความเป็นส่วนตัว</a>"
+       data-en="Fan-made site, not affiliated with the artists or their label · <a href='/privacy.html'>Privacy Policy</a>">ไม่ได้เกี่ยวข้องกับศิลปินหรือต้นสังกัด · <a href="/privacy.html">นโยบายความเป็นส่วนตัว</a></div>
+  <div data-th="สามารถสนับสนุนผลงานต่างๆได้ที่ X: @GinJay171202"
+       data-en="Support their work on X: @GinJay171202">สามารถสนับสนุนผลงานต่างๆได้ที่ X: @GinJay171202</div>
 </footer>
 </main>
 
@@ -801,6 +810,7 @@ async function loadDataFromDB(){
     if(db.BW_ORD)BW_ORD=db.BW_ORD;
     if(db.BW_GIFTS)BW_GIFTS=db.BW_GIFTS;
     if(db.CUSTOM_TPL){CUSTOM_TPL=db.CUSTOM_TPL;Object.assign(TEMPLATES,CUSTOM_TPL);}
+    if("SITE_BG" in db){SITE_BG=db.SITE_BG||"";applySiteBg();}
     updateUIRole();
   }catch(e){console.error("Load failed",e);updateUIRole();}
 }
@@ -2733,7 +2743,63 @@ async function bkPrint(){
   addEventListener("afterprint",done);
   setTimeout(()=>window.print(),300);
 }
-  
+  /* ===== พื้นหลังเว็บ (Head Admin เปลี่ยนได้) ===== */
+let SITE_BG="";
+try{SITE_BG=localStorage.getItem("gj_bg")||"";}catch(e){}
+function applySiteBg(){
+  let st=document.getElementById("siteBgCss");
+  if(!st){st=document.createElement("style");st.id="siteBgCss";document.head.appendChild(st);}
+  try{localStorage.setItem("gj_bg",SITE_BG||"");}catch(e){}
+  if(!/^https:\/\//i.test(SITE_BG||"")){st.textContent="";return;}
+  const u=SITE_BG.replace(/["'()\s\\]/g,c=>encodeURIComponent(c));
+  const sz="clamp(380px,48vw,720px) auto";
+  st.textContent=`body::before{content:"";position:fixed;inset:0;z-index:-2;pointer-events:none;background:url("${u}") repeat center top/${sz}}
+  [data-theme="dark"] body::before{background:linear-gradient(rgba(20,10,30,.82),rgba(20,10,30,.82)),url("${u}") repeat center top/${sz}}`;
+}
+async function bgPick(){
+  if(cRole!=="head_admin"||!AUTH_TOKEN)return alert("เฉพาะ Head Admin");
+  const inp=document.createElement("input");inp.type="file";inp.accept="image/png,image/jpeg,image/webp";
+  inp.onchange=async()=>{
+    const f=inp.files[0];if(!f)return;
+    const s=document.getElementById("bgStatus");if(s)s.textContent="⏳ กำลังอัปโหลด...";
+    try{
+      const bmp=await createImageBitmap(f),sc=Math.min(1,1600/Math.max(bmp.width,bmp.height));
+      const c=document.createElement("canvas");c.width=Math.round(bmp.width*sc);c.height=Math.round(bmp.height*sc);
+      const x=c.getContext("2d");x.fillStyle="#fff";x.fillRect(0,0,c.width,c.height);x.drawImage(bmp,0,0,c.width,c.height);
+      const blob=await new Promise(r=>c.toBlob(r,"image/jpeg",.9));
+      const res=await fetch("/api/upload",{method:"POST",headers:{"Content-Type":"image/jpeg","Authorization":"Bearer "+AUTH_TOKEN},body:blob});
+      const d=await res.json().catch(()=>({}));
+      if(!res.ok||!d.success)throw new Error((d.error&&d.error.message)||("HTTP "+res.status));
+      SITE_BG=d.data.url;
+      if(!(await saveToDB({SITE_BG})))throw new Error("บันทึกไม่สำเร็จ");
+      applySiteBg();openBgModal();
+    }catch(e){if(s)s.textContent="❌ "+e.message;}
+  };
+  inp.click();
+}
+async function bgReset(){
+  if(!confirm("กลับไปใช้พื้นหลังเดิม (สีไล่เฉด)?"))return;
+  SITE_BG="";if(!(await saveToDB({SITE_BG})))return;
+  applySiteBg();openBgModal();
+}
+function openBgModal(){
+  if(cRole!=="head_admin")return;
+  let m=document.getElementById("bgModal");
+  if(!m){m=document.createElement("div");m.className="modal";m.id="bgModal";document.body.appendChild(m);}
+  m.innerHTML=`<div class="modal-box"><h3 style="color:var(--primary);margin-bottom:14px;">🖼️ พื้นหลังเว็บไซต์</h3>
+  <div style="height:150px;border-radius:16px;border:1px solid var(--line);margin-bottom:12px;background:${SITE_BG?`url('${encodeURI(SITE_BG)}') center/cover`:"var(--bg-grad)"};"></div>
+  <div style="font-size:12px;color:var(--muted);margin-bottom:10px;">ภาพจะถูกวางต่อกันเป็นลายซ้ำ · โหมดมืดจะมีชั้นสีเข้มทับให้อ่านง่าย · ไฟล์ไม่เกิน 4MB (ระบบย่อให้อัตโนมัติ)</div>
+  <div id="bgStatus" style="font-size:13px;font-weight:700;margin-bottom:8px;"></div>
+  <div style="display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap;"><button class="chip" onclick="closeModal('bgModal')">ปิด</button>${SITE_BG?`<button class="chip" style="color:#ef4444;" onclick="bgReset()">🗑️ ใช้พื้นหลังเดิม</button>`:""}<button class="btn-submit" onclick="bgPick()">⬆️ ${SITE_BG?"เปลี่ยนรูป":"อัปโหลดรูป"}</button></div></div>`;
+  m.classList.add("on");
+}
+try{
+  const ha=document.querySelector(".header-actions"),b=document.createElement("button");
+  b.className="login-btn head-only";b.style.background="#10b981";
+  b.innerHTML='<span class="material-symbols-rounded" style="font-size:1.1em">wallpaper</span> <span>พื้นหลัง</span>';
+  b.onclick=openBgModal;ha.appendChild(b);
+}catch(e){console.error(e);}
+applySiteBg();
   
   loadMyPlan();
 loadDataFromDB();
