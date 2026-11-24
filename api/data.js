@@ -1,6 +1,6 @@
 const { getCol, getSession } = require('./_lib');
 
-const ADMIN_KEYS  = ['TICKETS', 'SERIES', 'MERCH', 'TRAVEL', 'BW_ORD', 'CUSTOM_TPL'];
+const ADMIN_KEYS  = ['TICKETS', 'SERIES', 'MERCH', 'TRAVEL', 'BW_ORD', 'CUSTOM_TPL', 'TRENDS'];
 const HEAD_KEYS   = ['ABOUT', 'CUSTOM_ADMINS', 'BW_GIFTS', 'SITE_BG'];
 const OPEN_KEYS   = ['EVENTS', 'COMMU', 'BW_WISH', 'SEATMAPS'];
 const MEMBER_KEYS = ['EVENTS', 'COMMU', 'SEATMAPS']; // ต้องล็อกอินจริง (BW_WISH ใครก็เขียนได้เหมือนเดิม)
@@ -17,7 +17,7 @@ const clean = {
   EVENTS(it) {
     if (!/^\d{4}-\d{2}-\d{2}$/.test(it.d || '')) return null;
     const o = { id: it.id, d: it.d, artist: ['duo', 'ginny', 'jayna'].includes(it.artist) ? it.artist : 'duo' };
-    for (const k of ['time', 'th_t', 'en_t', 'th_c', 'en_c', 'th_v', 'en_v', 'map_q'])
+    for (const k of ['time', 'th_t', 'en_t', 'th_c', 'en_c', 'th_v', 'en_v', 'map_q', 'tag', 'kw'])
       if (typeof it[k] === 'string') o[k] = str(it[k], 200);
     if (typeof it.note === 'string') o.note = str(it.note, 600);
     if (URLRE.test(it.img || '')) o.img = it.img;
