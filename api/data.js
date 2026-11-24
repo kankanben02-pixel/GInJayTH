@@ -1,10 +1,10 @@
 const { getCol, getSession } = require('./_lib');
 
 const ADMIN_KEYS  = ['TICKETS', 'SERIES', 'MERCH', 'TRAVEL', 'BW_ORD', 'CUSTOM_TPL', 'TRENDS'];
-const HEAD_KEYS   = ['ABOUT', 'CUSTOM_ADMINS', 'BW_GIFTS', 'SITE_BG'];
+const HEAD_KEYS   = ['ABOUT', 'CUSTOM_ADMINS', 'BW_GIFTS', 'SITE_BG', 'PROFILE'];
 const OPEN_KEYS   = ['EVENTS', 'COMMU', 'BW_WISH', 'SEATMAPS'];
 const MEMBER_KEYS = ['EVENTS', 'COMMU', 'SEATMAPS']; // ต้องล็อกอินจริง (BW_WISH ใครก็เขียนได้เหมือนเดิม)
-const OBJ_KEYS    = ['CUSTOM_TPL'];
+const OBJ_KEYS    = ['CUSTOM_TPL', 'PROFILE'];
 const STR_KEYS    = ['SITE_BG'];
 const KNOWN = [...ADMIN_KEYS, ...HEAD_KEYS, ...OPEN_KEYS];
 
