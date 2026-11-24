@@ -3161,6 +3161,199 @@ async function trImpSave(){
 {const f=window.updateUIRole;window.updateUIRole=function(){const r=f.apply(this,arguments);try{renderTrends();}catch(e){}return r;};}
 trSync();renderTrends();
 if(TR_DEFAULT){const b=document.querySelector('.works-cat-btn[data-wcat="trends"]');if(b)b.click();}
+  /* ===== หน้าเกี่ยวกับ v2: โปรไฟล์ / แฟนด้อม / ช่องทางติดตาม / ผลงานเด่น / ไทม์ไลน์ ===== */
+let PF=null,pfEd=null;
+const PF_PLAT={ig:{n:"Instagram",b:"IG",c:"#e1306c",u:h=>"https://instagram.com/"+h},x:{n:"X (Twitter)",b:"X",c:"#1d1d1f",u:h=>"https://x.com/"+h},tt:{n:"TikTok",b:"TT",c:"#111",u:h=>"https://tiktok.com/@"+h},yt:{n:"YouTube",b:"YT",c:"#ff0000",u:h=>"https://youtube.com/@"+h},fb:{n:"Facebook",b:"FB",c:"#1877f2",u:h=>"https://facebook.com/"+h},web:{n:"เว็บไซต์ / อื่นๆ",b:"🔗",c:"#7e22ce",u:h=>""}};
+const PF_DEF={
+  people:{
+    ginny:{th_n:"จินนี่ ณัฐณิชา",en_n:"Ginny Natnicha",th_l:"สังกัด North Star",en_l:"North Star label",bd:"2000-12-17",th_s:"ลามะ",en_s:"Llama",th_i:"",en_i:"",img:""},
+    jayna:{th_n:"เจน่า แองเจลิน่า",en_n:"Jayna Angelina",th_l:"สังกัด North Star",en_l:"North Star label",bd:"2006-02-17",th_s:"ลิง",en_s:"Monkey",th_i:"",en_i:"",img:""}
+  },
+  fandom:{th_n:"อัลกี้ (AlKey)",en_n:"AlKey",th_d:"ชื่อเรียกแฟนคลับของจินนี่และเจน่า",en_d:"The fandom name for Ginny and Jayna's fans"},
+  works:[
+    {id:"pw1",th_t:"พิษรัก (Poisonous Love)",en_t:"Poisonous Love",y:"2025",th_d:"ซีรีส์ที่จินนี่และเจน่าแสดงคู่กัน",en_d:"The series starring Ginny and Jayna together",u:""},
+    {id:"pw2",th_t:"รับจ้างเลิกรัก (Love on Hire)",en_t:"Love on Hire",y:"2026",th_d:"ซีรีส์ออริจินัล ฉายทาง WeTV",en_d:"A WeTV Original series",u:""}
+  ],
+  socials:[{id:"ps1",grp:"duo",p:"x",h:"GinJay171202",u:"https://x.com/GinJay171202",lb:"บัญชีแฟนเมด"}],
+  tl:[
+    {id:"pt1",d:"2025-09-20",i:"📺",th_t:"เริ่มออกอากาศซีรีส์ พิษรัก (Poisonous Love)",en_t:"Poisonous Love starts airing"},
+    {id:"pt2",d:"2025-12-06",i:"🎤",th_t:"GINJAY 1ST FAN MEETING {THE TEMPTING VENOM} ที่มะนิลา",en_t:"GINJAY 1ST FAN MEETING {THE TEMPTING VENOM} in Manila"},
+    {id:"pt3",d:"2026-02-14",i:"💜",th_t:"แฟนคอน GINNYJAYNA [HEART TO HEART] ที่ IDEA LIVE, BRAVO BKK",en_t:"GINNYJAYNA [HEART TO HEART] fan concert at IDEA LIVE, BRAVO BKK"},
+    {id:"pt4",d:"2026-06-28",i:"📖",th_t:"Fansign “Every Moment with GINNY JAYNA” จาก Photobook เล่มแรก",en_t:"Fansign “Every Moment with GINNY JAYNA” from the first photobook"},
+    {id:"pt5",d:"2026-10-22",i:"🎬",th_t:"รับจ้างเลิกรัก (Love on Hire) เริ่มฉายทาง WeTV",en_t:"Love on Hire premieres on WeTV"}
+  ]
+};
+PF=JSON.parse(JSON.stringify(PF_DEF));
+const PF_ARR={work:"works",social:"socials",tl:"tl"};
+const PF_SCH={
+  person:[["th_n","ชื่อ (ไทย)"],["en_n","Name (EN)"],["th_l","สังกัด / ป้ายกำกับ (ไทย)"],["en_l","Label (EN)"],["bd","วันเกิด","date"],["th_s","สัญลักษณ์ (ไทย)"],["en_s","Symbol (EN)"],["th_i","แนะนำตัว (ไทย)","ta"],["en_i","Intro (EN)","ta"],["img","รูปโปรไฟล์ (ไม่ใส่ก็ได้)","img"]],
+  fandom:[["th_n","ชื่อแฟนด้อม (ไทย)"],["en_n","Fandom name (EN)"],["th_d","คำอธิบาย (ไทย)","ta"],["en_d","Description (EN)","ta"]],
+  work:[["th_t","ชื่อผลงาน (ไทย)"],["en_t","Title (EN)"],["y","ปี / ช่วงเวลา"],["th_d","รายละเอียด (ไทย)","ta"],["en_d","Details (EN)","ta"],["u","ลิงก์ (ไม่ใส่ก็ได้)"]],
+  social:[["grp","ของใคร","sel",[["ginny","Ginny"],["jayna","Jayna"],["duo","ทั้งคู่ / บ้านแฟนคลับ"]]],["p","แพลตฟอร์ม","sel",Object.keys(PF_PLAT).map(k=>[k,PF_PLAT[k].n])],["h","ชื่อบัญชี (เช่น @name)"],["u","ลิงก์ (เว้นว่าง = สร้างให้อัตโนมัติ)"],["lb","หมายเหตุ เช่น บัญชีทางการ (ไม่ใส่ก็ได้)"]],
+  tl:[["d","วันที่","date"],["i","ไอคอน (อีโมจิ)"],["th_t","เหตุการณ์ (ไทย)"],["en_t","Event (EN)"]]
+};
+const pfOk=u=>/^https:\/\//i.test(u||"");
+const pfD=d=>{const p=(d||"").split("-").map(Number);return p.length<3||!p[0]?"":currLang==="th"?`${p[2]} ${TH_M[p[1]-1]} ${p[0]+543}`:`${EN_M[p[1]-1]} ${p[2]}, ${p[0]}`;};
+function pfMerge(db){
+  if(!db||typeof db!=="object"||Array.isArray(db))return;
+  const pp=db.people||{};
+  PF={people:{ginny:{...PF_DEF.people.ginny,...pp.ginny},jayna:{...PF_DEF.people.jayna,...pp.jayna}},
+    fandom:{...PF_DEF.fandom,...db.fandom},
+    works:Array.isArray(db.works)?db.works:PF_DEF.works,
+    socials:Array.isArray(db.socials)?db.socials:PF_DEF.socials,
+    tl:Array.isArray(db.tl)?db.tl:PF_DEF.tl};
+}
+
+try{
+  const st=document.createElement("style");
+  st.textContent=`
+  #profHost{margin-top:24px}
+  .pf-sec{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin:30px 0 12px}
+  .pf-sec h3{font-size:19px;color:var(--primary)}
+  .pf-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
+  .pf-card{border-radius:22px;padding:20px;border-top:5px solid var(--primary)}
+  .pf-head{display:flex;gap:14px;align-items:center;margin-bottom:10px}
+  .pf-av{width:60px;height:60px;border-radius:50%;object-fit:cover;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:18px;flex:none}
+  .pf-name{font-size:19px;font-weight:700;line-height:1.3}
+  .pf-tag{display:inline-block;font-size:12px;font-weight:700;padding:2px 10px;border-radius:999px;background:var(--surface-alt);color:var(--muted);border:1px solid var(--line)}
+  .pf-kv{font-size:14px;color:var(--muted);margin:3px 0}
+  .pf-intro{font-size:14px;margin-top:10px;white-space:pre-line}
+  .pf-fan{border-radius:22px;padding:22px;text-align:center;margin-top:16px;border:2px dashed var(--accent)}
+  .pf-fan b{display:block;font-size:30px;color:var(--primary);line-height:1.3}
+  .pf-soc{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px dashed var(--line);font-size:14px;min-width:0}
+  .pf-soc:last-of-type{border-bottom:0}
+  .pf-b{width:34px;height:34px;border-radius:10px;color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex:none}
+  .pf-st{flex:1;min-width:0;overflow-wrap:anywhere}
+  .pf-st small{display:block;color:var(--muted);font-size:12px}
+  .pf-work{border-radius:20px;padding:18px}
+  .pf-tlr{display:flex;gap:12px;padding:12px 0;border-bottom:1px dashed var(--line);align-items:flex-start}
+  .pf-tlr.fut{opacity:.6}
+  .pf-tlr .ic{font-size:22px;width:32px;text-align:center;flex:none}
+  .pf-tlr small{color:var(--muted);font-weight:700;display:block}
+  .pf-adm{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+  @media(max-width:640px){.pf-fan b{font-size:24px}}`;
+  document.head.appendChild(st);
+  const ac=document.getElementById("aboutContainer"),h=document.createElement("div");
+  h.id="profHost";ac.insertAdjacentElement("beforebegin",h);
+}catch(e){console.error(e);}
+
+function renderProf(){
+  const host=document.getElementById("profHost");if(!host)return;
+  const H=cRole==="head_admin",e=impEsc,today=new Date().toISOString().slice(0,10);
+  const ed=(k,id,del)=>H?`<div class="pf-adm"><button class="chip mv-btn" onclick="pfOpen('${k}','${id}')">✏️ Edit</button>${del?`<button class="chip mv-btn" style="color:#ef4444" onclick="pfDel('${k}','${id}')">🗑️ Del</button>`:""}</div>`:"";
+  const add=(k,pre)=>H?`<button class="btn-submit" style="padding:6px 16px;font-size:13px" onclick="pfOpen('${k}',null,${pre?e(JSON.stringify(pre)).replace(/&quot;/g,"&quot;"):"null"})">+ ${T("เพิ่ม","Add")}</button>`:"";
+  const person=k=>{
+    const o=PF.people[k],col=k==="ginny"?"#a855f7":"#f59e0b";
+    const ini=(o.en_n||o.th_n||"?").split(/\s+/).map(s=>s[0]).join("").slice(0,2).toUpperCase();
+    const av=pfOk(o.img)?`<img class="pf-av" src="${e(o.img)}" alt="">`:`<div class="pf-av" style="background:${col}33;color:${col}">${e(ini)}</div>`;
+    return `<div class="pf-card glass-panel" style="border-top-color:${col}"><div class="pf-head">${av}<div><div class="pf-name">${e(P(o,"n"))}</div>${P(o,"l")?`<span class="pf-tag">${e(P(o,"l"))}</span>`:""}</div></div>${o.bd?`<div class="pf-kv">🎂 ${T("เกิด","Born")} ${e(pfD(o.bd))}</div>`:""}${P(o,"s")?`<div class="pf-kv">💜 ${T("สัญลักษณ์:","Symbol:")} ${e(P(o,"s"))}</div>`:""}${P(o,"i")?`<div class="pf-intro">${e(P(o,"i"))}</div>`:""}${ed("person",k,false)}</div>`;
+  };
+  let h=`<div class="pf-grid">${person("ginny")}${person("jayna")}</div>`;
+  /* แฟนด้อม */
+  h+=`<div class="pf-fan glass-panel"><div style="font-size:13px;color:var(--muted);font-weight:700">💜💛 ${T("ชื่อแฟนด้อม","Fandom name")}</div><b>${e(P(PF.fandom,"n"))}</b>${P(PF.fandom,"d")?`<div style="font-size:14px;color:var(--muted)">${e(P(PF.fandom,"d"))}</div>`:""}<div style="display:flex;justify-content:center">${ed("fandom","fandom",false)}</div></div>`;
+  /* ช่องทางติดตาม */
+  const gn={ginny:"🦙 Ginny",jayna:"🐒 Jayna",duo:T("💜💛 ทั้งคู่ / บ้านแฟนคลับ","💜💛 Both / fan accounts")};
+  h+=`<div class="pf-sec"><h3>📲 ${T("ช่องทางติดตาม","Where to follow")}</h3>${add("social")}</div><div class="pf-grid">`;
+  ["ginny","jayna","duo"].forEach(g=>{
+    const ls=PF.socials.filter(s=>s.grp===g);
+    if(!ls.length&&!H)return;
+    h+=`<div class="pf-card glass-panel" style="border-top-color:${g==="ginny"?"#a855f7":g==="jayna"?"#f59e0b":"var(--primary)"}"><div style="font-weight:700;margin-bottom:6px">${gn[g]}</div>${ls.map(s=>{
+      const p=PF_PLAT[s.p]||PF_PLAT.web,name=s.h?(s.h.startsWith("@")?s.h:"@"+s.h):p.n;
+      return `<div class="pf-soc"><span class="pf-b" style="background:${p.c}">${p.b}</span><div class="pf-st">${e(name)}<small>${e(p.n)}${s.lb?" · "+e(s.lb):""}</small></div>${pfOk(s.u)?`<a class="chip mv-btn" href="${e(s.u)}" target="_blank" rel="noopener">${T("เปิด","Open")} ↗</a>`:""}${H?`<button class="chip mv-btn" onclick="pfOpen('social','${e(s.id)}')">✏️</button><button class="chip mv-btn" style="color:#ef4444" onclick="pfDel('social','${e(s.id)}')">🗑️</button>`:""}</div>`;
+    }).join("")||`<div class="pf-kv">${T("ยังไม่มีช่องทาง","No channels yet")}</div>`}${H?`<div class="pf-adm"><button class="chip mv-btn" onclick="pfOpen('social',null,{grp:'${g}'})">+ ${T("เพิ่มช่องทาง","Add channel")}</button></div>`:""}</div>`;
+  });
+  h+=`</div>`;
+  /* ผลงานเด่น */
+  h+=`<div class="pf-sec"><h3>⭐ ${T("ผลงานเด่น","Featured works")}</h3>${add("work")}</div>`;
+  h+=PF.works.length?`<div class="pf-grid">${PF.works.map(w=>`<div class="pf-work glass-panel"><div style="font-size:12px;color:var(--accent);font-weight:700">${e(w.y||"")}</div><div style="font-size:17px;font-weight:700">${e(P(w,"t"))}</div>${P(w,"d")?`<div class="pf-kv">${e(P(w,"d"))}</div>`:""}${pfOk(w.u)?`<a class="chip mv-btn" style="margin-top:8px" href="${e(w.u)}" target="_blank" rel="noopener">${T("ดูเพิ่มเติม","See more")} ↗</a>`:""}${ed("work",w.id,true)}</div>`).join("")}</div>`:`<div class="empty">${T("ยังไม่มีผลงานเด่น","No featured works yet")}</div>`;
+  /* ประวัติและไทม์ไลน์ */
+  h+=`<div class="pf-sec"><h3>🗓️ ${T("ประวัติและเส้นทางจินเจ","GinJay history and timeline")}</h3>${add("tl")}</div><div class="pf-card glass-panel" style="padding:8px 22px">`;
+  const tl=PF.tl.slice().sort((a,b)=>a.d.localeCompare(b.d));
+  h+=tl.length?tl.map(x=>`<div class="pf-tlr ${x.d>today?"fut":""}"><span class="ic">${e(x.i||"•")}</span><div style="flex:1;min-width:0"><small>${e(pfD(x.d))} ${x.d>today?"⏳":""}</small><div style="overflow-wrap:anywhere">${e(P(x,"t"))}</div>${ed("tl",x.id,true)}</div></div>`).join(""):`<div class="empty" style="margin:12px 0">${T("ยังไม่มีเหตุการณ์","No events yet")}</div>`;
+  h+=`</div>`;
+  host.innerHTML=h;
+}
+
+/* ซ่อนการ์ดเดิม 2 ใบ (จินนี่/เจน่า) ที่ซ้ำกับโปรไฟล์ใหม่ — ข้อมูลเดิมไม่ถูกลบ */
+{const f=window.renderAbout;window.renderAbout=function(){
+  const all=ABOUT;ABOUT=all.filter(a=>a.id!=="ab1"&&a.id!=="ab2");
+  try{return f.apply(this,arguments);}finally{ABOUT=all;}
+};}
+
+/* ---- ฟอร์มแก้ไข (Head Admin) ---- */
+function pfCur(kind,id){
+  if(kind==="person")return PF.people[id];
+  if(kind==="fandom")return PF.fandom;
+  return PF[PF_ARR[kind]].find(x=>x.id===id);
+}
+function pfOpen(kind,id,preset){
+  if(cRole!=="head_admin")return alert(T("เฉพาะ Head Admin","Head Admin only"));
+  pfEd={kind,id:id||null};
+  const cur=id?(pfCur(kind,id)||{}):(preset||(kind==="social"?{p:"ig",grp:"duo"}:{}));
+  let m=document.getElementById("pfModal");
+  if(!m){m=document.createElement("div");m.className="modal";m.id="pfModal";document.body.appendChild(m);}
+  const ttl={person:"โปรไฟล์",fandom:"ชื่อแฟนด้อม",work:"ผลงานเด่น",social:"ช่องทางติดตาม",tl:"เหตุการณ์ในไทม์ไลน์"}[kind];
+  const fields=PF_SCH[kind].map(f=>{
+    const v=cur[f[0]]||"",lab=`<label>${f[1]}</label>`;
+    if(f[2]==="ta")return `<div class="form-group">${lab}<textarea id="pf_${f[0]}" rows="3">${impEsc(v)}</textarea></div>`;
+    if(f[2]==="sel")return `<div class="form-group">${lab}<select id="pf_${f[0]}">${f[3].map(o=>`<option value="${o[0]}" ${o[0]===v?"selected":""}>${o[1]}</option>`).join("")}</select></div>`;
+    if(f[2]==="date")return `<div class="form-group">${lab}<input type="date" id="pf_${f[0]}" value="${impEsc(v)}"></div>`;
+    if(f[2]==="img")return `<div class="form-group">${lab}<input type="file" accept="image/*" onchange="handleImgUpload(this,'pf_img','pf_imgS')" style="background:rgba(255,255,255,.5);padding:8px 12px;border-radius:14px;width:100%;border:2px dashed rgba(126,34,206,.4);margin-bottom:6px"><span id="pf_imgS" style="font-size:13px;font-weight:700;display:block;margin-bottom:6px"></span><input type="text" id="pf_img" placeholder="หรือวางลิงก์รูป https://..." value="${impEsc(v)}"></div>`;
+    return `<div class="form-group">${lab}<input type="text" id="pf_${f[0]}" value="${impEsc(v)}"></div>`;
+  }).join("");
+  const hasEn=PF_SCH[kind].some(f=>f[0].startsWith("en_"));
+  m.innerHTML=`<div class="modal-box"><h3 style="color:var(--primary);margin-bottom:14px">✏️ ${ttl}</h3>${fields}<div style="display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap;margin-top:12px"><button class="chip" onclick="closeModal('pfModal')">ยกเลิก</button>${hasEn?`<button class="chip" onclick="pfTrans()">🌐 แปลเป็นอังกฤษให้</button>`:""}<button class="btn-submit" onclick="pfSave()">บันทึก</button></div></div>`;
+  m.classList.add("on");
+}
+async function pfTrans(){
+  let done=0,fail=0;
+  for(const f of PF_SCH[pfEd.kind]){
+    if(!f[0].startsWith("th_"))continue;
+    const A=document.getElementById("pf_"+f[0]),B=document.getElementById("pf_en_"+f[0].slice(3));
+    if(!A||!B||!A.value.trim()||B.value.trim())continue;
+    try{const t=await trvTr(A.value.trim());if(t){B.value=t;done++;}else fail++;}catch(e){fail++;}
+  }
+  alert(done?`แปลให้ ${done} ช่องแล้ว กรุณาตรวจทานก่อนบันทึก`+(fail?` (แปลไม่ได้ ${fail} ช่อง)`:""):"ไม่มีช่องที่ต้องแปล หรือบริการแปลใช้ไม่ได้ชั่วคราว");
+}
+async function pfSave(){
+  const {kind,id}=pfEd,o={};
+  PF_SCH[kind].forEach(f=>{o[f[0]]=document.getElementById("pf_"+f[0]).value.trim();});
+  if(kind==="person"&&o.img&&!pfOk(o.img))return alert("ลิงก์รูปต้องขึ้นต้นด้วย https://");
+  if(o.u&&!pfOk(o.u))o.u="https://"+o.u.replace(/^https?:\/\//i,"");
+  if(kind==="social"){
+    if(!o.h&&!o.u)return alert("ใส่ชื่อบัญชีหรือลิงก์อย่างน้อย 1 อย่าง");
+    if(!o.u&&o.h)o.u=(PF_PLAT[o.p]||PF_PLAT.web).u(o.h.replace(/^@/,""));
+  }
+  if(kind==="work"&&!o.th_t)return alert("ใส่ชื่อผลงานก่อนนะ");
+  if(kind==="tl"&&(!o.d||!o.th_t))return alert("ใส่วันที่และเหตุการณ์ก่อนนะ");
+  if(kind==="person")PF.people[id]={...PF.people[id],...o};
+  else if(kind==="fandom")PF.fandom={...PF.fandom,...o};
+  else{
+    const a=PF[PF_ARR[kind]];
+    if(id){const i=a.findIndex(x=>x.id===id);if(i>-1)a[i]={...a[i],...o};}
+    else a.push({id:"p"+kind[0]+"_"+Date.now(),...o});
+  }
+  closeModal("pfModal");renderProf();
+  await saveToDB({PROFILE:PF});
+}
+async function pfDel(kind,id){
+  if(cRole!=="head_admin"||!confirm(T("ลบรายการนี้?","Delete this item?")))return;
+  const k=PF_ARR[kind];PF[k]=PF[k].filter(x=>x.id!==id);
+  renderProf();await saveToDB({PROFILE:PF});
+}
+
+/* ---- โหลดข้อมูล + วาดใหม่เมื่อเปลี่ยนภาษา/สิทธิ์ ---- */
+{const f=window.loadDataFromDB;window.loadDataFromDB=async function(){
+  const r=await f.apply(this,arguments);
+  try{
+    const res=await fetch("/api/data",{cache:"no-store",headers:AUTH_TOKEN?{Authorization:"Bearer "+AUTH_TOKEN}:{}});
+    const db=await res.json();pfMerge(db.PROFILE);
+  }catch(e){}
+  renderProf();
+  return r;
+};}
+{const f=window.updateUIRole;window.updateUIRole=function(){const r=f.apply(this,arguments);try{renderProf();}catch(e){}return r;};}
+renderProf();
   
   loadMyPlan();
 loadDataFromDB();
