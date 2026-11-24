@@ -2800,6 +2800,237 @@ try{
   b.onclick=openBgModal;ha.appendChild(b);
 }catch(e){console.error(e);}
 applySiteBg();
+  /* ===== เทรนด์: แฮชแท็ก/คีย์เวิร์ดในงาน + แดชบอร์ดสถิติเทรนด์ ===== */
+let TRENDS=[],edTrend=null;
+const FLAGS={colombia:"🇨🇴",mexico:"🇲🇽",portugal:"🇵🇹",thailand:"🇹🇭",philippines:"🇵🇭",brazil:"🇧🇷",malaysia:"🇲🇾",vietnam:"🇻🇳",indonesia:"🇮🇩",italy:"🇮🇹",japan:"🇯🇵",korea:"🇰🇷","south korea":"🇰🇷",india:"🇮🇳",argentina:"🇦🇷",chile:"🇨🇱",peru:"🇵🇪",spain:"🇪🇸",france:"🇫🇷",turkey:"🇹🇷",singapore:"🇸🇬",taiwan:"🇹🇼",cambodia:"🇰🇭",laos:"🇱🇦",myanmar:"🇲🇲",usa:"🇺🇸","united states":"🇺🇸",uk:"🇬🇧","united kingdom":"🇬🇧",germany:"🇩🇪",canada:"🇨🇦",australia:"🇦🇺",worldwide:"🌍"};
+const fmtN=n=>{n=+n||0;if(n>=1e6)return (n/1e6).toFixed(1).replace(/\.0$/,"")+"M";if(n>=1e3)return (n/1e3).toFixed(1).replace(/\.0$/,"")+"K";return String(n);};
+function parseNum(s){s=String(s||"").replace(/,/g,"").trim();const m=/^([\d.]+)\s*([kKmM]?)/.exec(s);if(!m)return 0;let n=parseFloat(m[1])||0;if(m[2])n*=/k/i.test(m[2])?1e3:1e6;return Math.round(n);}
+function parseCtry(s){return String(s||"").split(/[,\n;]+/).map(x=>{const m=/^(.+?)[\s:：#]*(\d+)$/.exec(x.trim());return m?{n:m[1].trim(),r:+m[2]}:null;}).filter(Boolean);}
+const shortD=d=>{const p=(d||"").split("-");return p.length<3?"":(+p[2])+" "+(currLang==="th"?TH_M:EN_M)[p[1]-1]+" "+p[0].slice(2);};
+const longD=d=>{const p=(d||"").split("-").map(Number);return p.length<3?"":currLang==="th"?`${p[2]} ${TH_M[p[1]-1]} ${p[0]+543}`:`${EN_M[p[1]-1]} ${p[2]}, ${p[0]}`;};
+
+try{
+  const st=document.createElement("style");
+  st.textContent=`
+  .evtag{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0}
+  .tagcopy{font-size:12px;font-weight:700;padding:3px 10px;border-radius:999px;background:var(--surface-alt);color:var(--primary);border:1px solid var(--line);cursor:copy;overflow-wrap:anywhere}
+  .tagcopy:hover{background:var(--primary);color:#fff}.tagcopy.ok{background:#16a34a;color:#fff}
+  .tr-sum{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px;margin-bottom:20px}
+  .tr-kpi{border-radius:20px;padding:16px 18px}.tr-kpi small{color:var(--muted);font-weight:700}
+  .tr-kpi b{display:block;font-size:26px;color:var(--primary);line-height:1.2}.tr-kpi span{font-size:12px;color:var(--muted)}
+  .tr-box{border-radius:22px;padding:20px;margin-bottom:20px}.tr-box h3{font-size:17px;color:var(--primary);margin-bottom:12px}
+  .tr-bar{display:flex;align-items:center;gap:10px;margin:8px 0;cursor:pointer}
+  .tr-bl{width:34%;font-size:13px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .tr-bt{flex:1;height:14px;border-radius:99px;background:var(--line);overflow:hidden}
+  .tr-bt i{display:block;height:100%;border-radius:99px;background:var(--primary-grad)}
+  .tr-bar b{min-width:52px;text-align:right;font-size:13px;color:var(--primary)}
+  .tr-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:20px}
+  .tr-card{border-radius:22px;padding:20px;border-top:5px solid var(--accent);transition:box-shadow .3s}
+  .tr-card.flash{box-shadow:0 0 0 4px var(--accent),var(--shadow)}
+  .tr-ent{margin-top:14px;padding-top:12px;border-top:1px dashed var(--line)}
+  .tr-mg{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:10px 0}
+  .tr-m{background:var(--surface-alt);border-radius:14px;padding:8px;text-align:center}
+  .tr-m span{display:block;font-size:11px;color:var(--muted);font-weight:700}.tr-m b{font-size:18px;color:var(--primary)}
+  .tr-ct{display:flex;flex-wrap:wrap;gap:6px}
+  .tr-c{font-size:12px;font-weight:700;padding:3px 10px;border-radius:999px;background:var(--surface-alt);border:1px solid var(--line)}
+  .tr-c.top{background:var(--accent-soft);border-color:var(--accent);color:var(--ink)}
+  .tr-eb{border:1px dashed rgba(126,34,206,.4);border-radius:14px;padding:10px;margin-bottom:10px}
+  .tr-eb input,.tr-eb textarea{width:100%;padding:8px 12px;border-radius:10px;border:1px solid rgba(126,34,206,.3);background:rgba(255,255,255,.4);margin-bottom:6px;min-width:0}
+  .tr-g3{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+  @media(max-width:640px){.tr-grid{grid-template-columns:1fr}.tr-bl{width:40%}}`;
+  document.head.appendChild(st);
+}catch(e){console.error(e);}
+
+/* ---- ส่วน A: ช่องแฮชแท็ก/คีย์เวิร์ดในฟอร์มงาน (วางก่อนช่องสถานที่) ---- */
+try{
+  document.getElementById("evVenueTh").closest(".form-group").insertAdjacentHTML("beforebegin",
+  `<div class="form-group"><label>🏷️ แฮชแท็กเทรนด์ (คั่นด้วยเว้นวรรค · เว้นว่างได้)</label><input type="text" id="evTag" placeholder="#GINJAYxYEntertainAwards26"></div><div class="form-group"><label>🔑 คีย์เวิร์ด (คั่นด้วยลูกน้ำ · เว้นว่างได้)</label><input type="text" id="evKw" placeholder="GINNY JAYNA Y ENT AWARDS2026"></div>`);
+}catch(e){console.error(e);}
+{const f=window.openEventModal;window.openEventModal=function(id){
+  f.apply(this,arguments);
+  const e=id?EVENTS.find(x=>x.id===id):null;
+  document.getElementById("evTag").value=(e&&e.tag)||"";document.getElementById("evKw").value=(e&&e.kw)||"";
+};}
+{const f=window.saveEvent;window.saveEvent=function(){
+  const n=EVENTS.length,id0=edEv;
+  f.apply(this,arguments);
+  const ev=id0?EVENTS.find(x=>x.id===id0):(EVENTS.length>n?EVENTS[EVENTS.length-1]:null);
+  if(!ev)return;
+  const tag=document.getElementById("evTag").value.trim(),kw=document.getElementById("evKw").value.trim();
+  if(tag)ev.tag=tag;else delete ev.tag;
+  if(kw)ev.kw=kw;else delete ev.kw;
+  saveToDB({EVENTS});renderAllSched();
+};}
+
+/* ---- ส่วน B: โชว์แฮชแท็กในการ์ด/รายการ/หน้ารายละเอียด (ก่อนสถานที่) ---- */
+function evTagHtml(e){
+  if(!e)return "";
+  const tags=(e.tag||"").split(/[\s,]+/).filter(Boolean),kws=(e.kw||"").split(/[,\n]+/).map(s=>s.trim()).filter(Boolean);
+  if(!tags.length&&!kws.length)return "";
+  const chip=(x,ic)=>`<span class="tagcopy" data-copy="${impEsc(x)}" title="${T("แตะเพื่อคัดลอก","Tap to copy")}">${ic} ${impEsc(x)}</span>`;
+  return `<div class="evtag">${tags.map(x=>chip(x,"🏷️")).join("")}${kws.map(x=>chip(x,"🔑")).join("")}</div>`;
+}
+function decoEvents(){
+  document.querySelectorAll(".ev-card,.ev-row").forEach(c=>{
+    if(c.querySelector(".evtag"))return;
+    const m=/openEventDetailModal\('([^']+)'\)/.exec(c.getAttribute("onclick")||"");if(!m)return;
+    const h=evTagHtml(EVENTS.find(x=>x.id===m[1]));if(!h)return;
+    if(c.classList.contains("ev-card")){const ct=c.querySelector(".ev-card-content");if(ct&&ct.lastElementChild)ct.lastElementChild.insertAdjacentHTML("beforebegin",h);}
+    else{const mt=c.querySelector(".ev-meta");if(mt)mt.insertAdjacentHTML("beforebegin",h);}
+  });
+}
+["renderDayDetail","renderList"].forEach(n=>{const f=window[n];window[n]=function(){const r=f.apply(this,arguments);try{decoEvents();}catch(x){}return r;};});
+document.addEventListener("click",e=>{
+  const c=e.target.closest&&e.target.closest(".tagcopy");if(!c)return;
+  e.stopPropagation();gjCopy(c.dataset.copy,null);
+  c.classList.add("ok");setTimeout(()=>c.classList.remove("ok"),900);
+},true);
+{const f=window.openEventDetailModal;window.openEventDetailModal=function(id){
+  f.apply(this,arguments);
+  const old=document.getElementById("evDetTags");if(old)old.remove();
+  const e=EVENTS.find(x=>x.id===id);if(!e)return;
+  const tr=TRENDS.find(t=>t.evId===id);
+  let h=evTagHtml(e);
+  if(tr)h+=`<button class="chip" style="margin-bottom:8px" onclick="closeModal('eventDetailModal');switchTab('trends');setTimeout(()=>focusTrend('${impEsc(tr.id)}'),200)">📈 ${T("ดูสถิติเทรนด์งานนี้","View trend stats")}</button>`;
+  if(!h)return;
+  const d=document.createElement("div");d.id="evDetTags";d.innerHTML=h;
+  document.getElementById("evDetVenue").parentElement.before(d);
+};}
+
+/* ---- ส่วน C: หน้า "สถิติเทรนด์" (แท็บใหม่ถัดจากผลงาน) ---- */
+try{
+  const sec=document.createElement("section");sec.className="panel";sec.id="trends";
+  sec.innerHTML=`<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin:16px 0 10px;"><h2 style="color:var(--primary);"><span class="material-symbols-rounded" style="color:var(--accent);font-size:1.2em">trending_up</span> <span data-th="แดชบอร์ดสถิติเทรนด์" data-en="Trend Dashboard">แดชบอร์ดสถิติเทรนด์</span></h2><button class="btn-submit admin-only" onclick="openTrendModal()"><span class="material-symbols-rounded">add</span> <span data-th="เพิ่มสถิติเทรนด์" data-en="Add Trend">เพิ่มสถิติเทรนด์</span></button></div><div class="lv-tools"><input type="search" id="trSearch" autocomplete="off"><select id="trSort" style="padding:10px 14px;border-radius:999px;border:1px solid rgba(126,34,206,.3);background:var(--surface-alt);color:var(--ink)"></select></div><div id="trendHost"></div>`;
+  document.getElementById("series").insertAdjacentElement("afterend",sec);
+  const nav=document.querySelector("nav[role=tablist]"),b=document.createElement("button");
+  b.setAttribute("role","tab");b.dataset.t="trends";b.setAttribute("aria-selected","false");
+  b.innerHTML='<span class="material-symbols-rounded">trending_up</span> <span data-th="สถิติเทรนด์" data-en="Trends">สถิติเทรนด์</span>';
+  const sb=nav.querySelector('button[data-t="series"]');
+  if(sb)sb.after(b);else nav.appendChild(b);
+  document.getElementById("trSearch").addEventListener("input",()=>renderTrends());
+  document.getElementById("trSort").addEventListener("change",()=>renderTrends());
+}catch(e){console.error(e);}
+
+function trInfo(t){
+  const ev=EVENTS.find(x=>x.id===t.evId);
+  return {ev,title:t.title||(ev?P(ev,"t"):"-"),date:t.d||(ev&&ev.d)||"",val:Math.max(0,...(t.entries||[]).map(x=>+x.res||0))};
+}
+function trLine(items){
+  if(items.length<2)return "";
+  const W=700,H=230,L=48,R=18,Tp=16,B=36,mx=(Math.max(...items.map(i=>i.v))*1.1)||1;
+  const x=i=>L+(W-L-R)*i/(items.length-1),y=v=>Tp+(H-Tp-B)*(1-v/mx);
+  let g="";
+  for(let k=0;k<=4;k++){const v=mx*k/4,yy=y(v);g+=`<line x1="${L}" x2="${W-R}" y1="${yy}" y2="${yy}" stroke="currentColor" opacity=".12"/><text x="${L-6}" y="${yy+4}" text-anchor="end" font-size="11" fill="currentColor" opacity=".6">${fmtN(v)}</text>`;}
+  const step=Math.ceil(items.length/7);
+  const dots=items.map((it,i)=>`<circle cx="${x(i)}" cy="${y(it.v)}" r="5" fill="var(--primary)" stroke="#fff" stroke-width="2"><title>${impEsc(it.name)} · ${fmtN(it.v)}</title></circle>${i%step===0?`<text x="${x(i)}" y="${H-12}" text-anchor="middle" font-size="11" fill="currentColor" opacity=".7">${shortD(it.d)}</text>`:""}`).join("");
+  return `<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto;color:var(--ink)">${g}<polyline points="${items.map((it,i)=>x(i)+","+y(it.v)).join(" ")}" fill="none" stroke="var(--primary)" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>${dots}</svg>`;
+}
+function renderTrends(){
+  const host=document.getElementById("trendHost");if(!host)return;
+  const isA=(cRole==="admin"||cRole==="head_admin");
+  const sIn=document.getElementById("trSearch"),sSel=document.getElementById("trSort");
+  sIn.placeholder=T("🔍 ค้นหางาน / แฮชแท็ก","🔍 Search event / hashtag");
+  if(!sSel.options.length||sSel.dataset.l!==currLang){
+    const cur=sSel.value||"new";sSel.dataset.l=currLang;
+    sSel.innerHTML=`<option value="new">${T("ใหม่ → เก่า","Newest first")}</option><option value="old">${T("เก่า → ใหม่","Oldest first")}</option><option value="high">${T("Result สูง → ต่ำ","Highest result")}</option>`;
+    sSel.value=cur;
+  }
+  const q=sIn.value.trim().toLowerCase();
+  let ls=TRENDS.map(t=>({t,i:trInfo(t)})).filter(o=>!q||[o.i.title,...(o.t.entries||[]).map(e=>e.tag)].some(x=>x&&String(x).toLowerCase().includes(q)));
+  const sv=sSel.value;
+  ls.sort((a,b)=>sv==="high"?b.i.val-a.i.val:sv==="old"?a.i.date.localeCompare(b.i.date):b.i.date.localeCompare(a.i.date));
+  if(!TRENDS.length){host.innerHTML=`<div class="empty">${T("ยังไม่มีข้อมูลสถิติเทรนด์ แอดมินกด “เพิ่มสถิติเทรนด์” ได้เลย","No trend stats yet.")}</div>`;return;}
+  if(!ls.length){host.innerHTML=`<div class="empty">${T("ไม่พบรายการที่ค้นหา","Nothing found")}</div>`;return;}
+  const best=ls.slice().sort((a,b)=>b.i.val-a.i.val)[0];
+  let top10=0,totEng=0;
+  ls.forEach(o=>(o.t.entries||[]).forEach(e=>{totEng+=+e.eng||0;(e.ctry||[]).forEach(c=>{if(c.r<=10&&!/worldwide/i.test(c.n))top10++;});}));
+  const kpi=(l,v,s)=>`<div class="tr-kpi glass-panel"><small>${l}</small><b>${v}</b><span>${s||"&nbsp;"}</span></div>`;
+  let h=`<div class="tr-sum">${kpi(T("งานที่มีสถิติ","Events tracked"),ls.length,"")}${kpi(T("Result สูงสุด","Best result"),fmtN(best.i.val),impEsc(best.i.title))}${kpi(T("Engagement รวม","Total engagement"),fmtN(totEng),"")}${kpi(T("ติด Top 10 รายประเทศ","Top-10 country ranks"),top10,T("นับทุกแฮชแท็ก","across all tags"))}</div>`;
+  const bars=ls.slice().sort((a,b)=>b.i.val-a.i.val).slice(0,8),bm=bars[0].i.val||1;
+  h+=`<div class="tr-box glass-panel"><h3>🏆 ${T("อันดับ Result สูงสุด (แตะเพื่อดูรายละเอียด)","Top results (tap for details)")}</h3>${bars.map(o=>`<div class="tr-bar" onclick="focusTrend('${impEsc(o.t.id)}')"><div class="tr-bl">${impEsc(o.i.title)}</div><div class="tr-bt"><i style="width:${Math.max(3,o.i.val/bm*100)}%"></i></div><b>${fmtN(o.i.val)}</b></div>`).join("")}</div>`;
+  const line=trLine(ls.filter(o=>o.i.date).slice().sort((a,b)=>a.i.date.localeCompare(b.i.date)).map(o=>({v:o.i.val,d:o.i.date,name:o.i.title})));
+  if(line)h+=`<div class="tr-box glass-panel"><h3>📈 ${T("แนวโน้ม Result ตามเวลา","Result over time")}</h3>${line}</div>`;
+  h+=`<div class="tr-grid">`+ls.map(o=>{
+    const t=o.t,adm=isA?`<div style="display:flex;gap:6px;margin-top:10px"><button class="chip mv-btn" onclick="openTrendModal('${impEsc(t.id)}')">✏️ Edit</button><button class="chip mv-btn" style="color:#ef4444" onclick="deleteTrend('${impEsc(t.id)}')">🗑️ Del</button></div>`:"";
+    const ents=(t.entries||[]).map(en=>{
+      const m=[["📊","Result",en.res],["💬","Engagement",en.eng],["🌐","Potential reach",en.reach]].filter(x=>+x[2]>0).map(x=>`<div class="tr-m"><span>${x[0]} ${x[1]}</span><b>${fmtN(x[2])}</b></div>`).join("");
+      const cs=(en.ctry||[]).slice().sort((a,b)=>a.r-b.r).map(c=>`<span class="tr-c ${c.r<=10?"top":""}">${FLAGS[c.n.toLowerCase()]||"📍"} ${impEsc(c.n)} #${c.r}</span>`).join("");
+      return `<div class="tr-ent">${en.tag?`<div class="evtag"><span class="tagcopy" data-copy="${impEsc(en.tag)}">🏷️ ${impEsc(en.tag)}</span></div>`:""}${m?`<div class="tr-mg">${m}</div>`:""}${cs?`<div class="tr-ct">${cs}</div>`:""}</div>`;
+    }).join("");
+    return `<div class="tr-card glass-panel" id="trc_${impEsc(t.id)}"><div style="font-size:18px;font-weight:700">${impEsc(o.i.title)}</div><div style="font-size:13px;color:var(--muted)">${o.i.date?"📅 "+longD(o.i.date):""}</div>${ents}${t.img?`<a href="${impEsc(t.img)}" target="_blank" rel="noopener"><img src="${impEsc(t.img)}" alt="" style="width:100%;max-height:260px;object-fit:cover;object-position:top;border-radius:14px;margin-top:12px"></a>`:""}${adm}</div>`;
+  }).join("")+`</div>`;
+  host.innerHTML=h;
+}
+function focusTrend(id){
+  let el=document.getElementById("trc_"+id);
+  if(!el){document.getElementById("trSearch").value="";renderTrends();el=document.getElementById("trc_"+id);}
+  if(!el)return;
+  el.scrollIntoView({behavior:"smooth",block:"center"});
+  el.classList.add("flash");setTimeout(()=>el.classList.remove("flash"),1800);
+}
+
+/* ---- ฟอร์มเพิ่ม/แก้สถิติ (Admin / Head Admin) ---- */
+function trEntryHtml(en){
+  en=en||{};
+  const cs=(en.ctry||[]).map(c=>c.n+" "+c.r).join(", ");
+  return `<div class="tr-eb"><input class="te-tag" placeholder="#แฮชแท็ก หรือ คีย์เวิร์ด" value="${impEsc(en.tag||"")}"><div class="tr-g3"><input class="te-res" placeholder="Result เช่น 101.2K" value="${en.res||""}"><input class="te-eng" placeholder="Engagement" value="${en.eng||""}"><input class="te-reach" placeholder="Reach เช่น 21.1M" value="${en.reach||""}"></div><textarea class="te-ct" rows="2" placeholder="อันดับประเทศ เช่น Colombia 7, Mexico 21, Thailand 29">${impEsc(cs)}</textarea><button class="chip mv-btn" style="color:#ef4444" onclick="this.closest('.tr-eb').remove()">🗑️ ลบชุดนี้</button></div>`;
+}
+function trAddEntry(en){document.getElementById("trEntries").insertAdjacentHTML("beforeend",trEntryHtml(en));}
+function openTrendModal(id){
+  if(!(cRole==="admin"||cRole==="head_admin"))return alert(T("เฉพาะ Admin","Admin only"));
+  edTrend=id||null;
+  let m=document.getElementById("trendModal");
+  if(!m){m=document.createElement("div");m.className="modal";m.id="trendModal";document.body.appendChild(m);}
+  const t=id?TRENDS.find(x=>x.id===id):null;
+  const evs=EVENTS.slice().sort((a,b)=>b.d.localeCompare(a.d));
+  m.innerHTML=`<div class="modal-box" style="max-width:640px"><h3 style="color:var(--primary);margin-bottom:12px">📈 เพิ่ม/แก้สถิติเทรนด์</h3>
+  <div class="form-group"><label>เลือกงานจากตาราง (ไม่เลือกก็ได้)</label><select id="trEv" onchange="trPickEv()"><option value="">-- ไม่ผูกกับงาน --</option>${evs.map(e=>`<option value="${impEsc(e.id)}" ${t&&t.evId===e.id?"selected":""}>${e.d} : ${impEsc(P(e,"t"))}</option>`).join("")}</select></div>
+  <div class="form-group"><label>ชื่อรายการ</label><input id="trTitle" value="${impEsc(t?t.title:"")}"></div>
+  <div class="form-group"><label>วันที่ (ใช้วันที่ของงานถ้าเลือกงาน)</label><input type="date" id="trDate" value="${t?(t.d||""):""}"></div>
+  <div class="trv-lab">แฮชแท็ก / คีย์เวิร์ด และตัวเลข (เพิ่มได้หลายชุด · พิมพ์ K/M ได้ เช่น 101.2K)</div>
+  <div id="trEntries"></div><button class="chip" onclick="trAddEntry()">+ เพิ่มชุดแฮชแท็ก</button>
+  <div class="form-group" style="margin-top:14px"><label>รูปสรุปจากบ้านเทรนด์ (ไม่ใส่ก็ได้)</label><input type="file" id="trImgUp" accept="image/*" onchange="handleImgUpload(this,'trImgUrl','trImgStatus')" style="background:rgba(255,255,255,.5);padding:8px 12px;border-radius:14px;width:100%;border:2px dashed rgba(126,34,206,.4);margin-bottom:6px"><span id="trImgStatus" style="font-size:13px;font-weight:700;display:block;margin-bottom:6px"></span><input id="trImgUrl" placeholder="หรือวางลิงก์รูป" value="${impEsc(t?t.img||"":"")}"></div>
+  <div style="text-align:right;margin-top:16px"><button class="chip" onclick="closeModal('trendModal')">ยกเลิก</button> <button class="btn-submit" onclick="saveTrend()">บันทึก</button></div></div>`;
+  ((t&&t.entries&&t.entries.length)?t.entries:[{}]).forEach(trAddEntry);
+  m.classList.add("on");
+}
+function trPickEv(){
+  const e=EVENTS.find(x=>x.id===document.getElementById("trEv").value);if(!e)return;
+  if(!document.getElementById("trTitle").value.trim())document.getElementById("trTitle").value=P(e,"t");
+  document.getElementById("trDate").value=e.d;
+  if(e.tag&&!document.querySelector("#trEntries .te-tag").value)document.querySelector("#trEntries .te-tag").value=e.tag.split(/[\s,]+/)[0];
+}
+function saveTrend(){
+  const evId=document.getElementById("trEv").value,title=document.getElementById("trTitle").value.trim();
+  const ev=EVENTS.find(x=>x.id===evId);
+  const entries=[...document.querySelectorAll("#trEntries .tr-eb")].map(b=>({
+    tag:b.querySelector(".te-tag").value.trim(),res:parseNum(b.querySelector(".te-res").value),eng:parseNum(b.querySelector(".te-eng").value),reach:parseNum(b.querySelector(".te-reach").value),ctry:parseCtry(b.querySelector(".te-ct").value)
+  })).filter(e=>e.tag||e.res||e.eng||e.reach||e.ctry.length);
+  if(!title&&!ev)return alert("ใส่ชื่อรายการ หรือเลือกงานก่อนนะ");
+  if(!entries.length)return alert("ใส่ข้อมูลอย่างน้อย 1 ชุด");
+  const d=(ev&&ev.d)||document.getElementById("trDate").value||"";
+  const p={evId:evId||"",title,d,entries,img:document.getElementById("trImgUrl").value.trim()};
+  if(edTrend){const i=TRENDS.findIndex(x=>x.id===edTrend);if(i>-1)TRENDS[i]={...TRENDS[i],...p};}
+  else TRENDS.push({id:"tr_"+Date.now(),...p});
+  saveToDB({TRENDS});closeModal("trendModal");renderTrends();
+}
+function deleteTrend(id){
+  if(!confirm(T("ลบสถิตินี้?","Delete this trend?")))return;
+  TRENDS=TRENDS.filter(x=>x.id!==id);saveToDB({TRENDS});renderTrends();
+}
+
+/* ---- โหลดข้อมูล + วาดใหม่เมื่อเปลี่ยนภาษา/สิทธิ์ ---- */
+{const f=window.loadDataFromDB;window.loadDataFromDB=async function(){
+  const r=await f.apply(this,arguments);
+  try{
+    const res=await fetch("/api/data",{cache:"no-store",headers:AUTH_TOKEN?{Authorization:"Bearer "+AUTH_TOKEN}:{}});
+    const db=await res.json();if(Array.isArray(db.TRENDS))TRENDS=db.TRENDS;
+  }catch(e){}
+  renderTrends();renderAllSched();
+  return r;
+};}
+{const f=window.updateUIRole;window.updateUIRole=function(){const r=f.apply(this,arguments);try{renderTrends();}catch(e){}return r;};}
+renderTrends();
   
   loadMyPlan();
 loadDataFromDB();
