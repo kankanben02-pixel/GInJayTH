@@ -2800,22 +2800,39 @@ try{
   b.onclick=openBgModal;ha.appendChild(b);
 }catch(e){console.error(e);}
 applySiteBg();
- /* ===== เทรนด์: แฮชแท็ก/คีย์เวิร์ดในงาน + สถิติเทรนด์ (อยู่ในหน้าผลงาน) ===== */
-let TRENDS=[],edTrend=null;
-const TR_DEFAULT=false; // เปลี่ยนเป็น true = เปิดหน้าผลงานมาแล้วเจอ "สถิติเทรนด์" ก่อน
+/* ===== เทรนด์: แฮชแท็ก/คีย์เวิร์ดในงาน + สถิติเทรนด์ (อยู่ในหน้าผลงาน) v3 ===== */
+let TRENDS=[],edTrend=null,TRIMP=[];
+const TR_DEFAULT=false; // true = เปิดหน้าผลงานมาแล้วเจอ "สถิติเทรนด์" ก่อน
 const FLAGS={colombia:"🇨🇴",mexico:"🇲🇽",portugal:"🇵🇹",thailand:"🇹🇭",philippines:"🇵🇭",brazil:"🇧🇷",malaysia:"🇲🇾",vietnam:"🇻🇳",indonesia:"🇮🇩",italy:"🇮🇹",japan:"🇯🇵",korea:"🇰🇷","south korea":"🇰🇷",india:"🇮🇳",argentina:"🇦🇷",chile:"🇨🇱",peru:"🇵🇪",spain:"🇪🇸",france:"🇫🇷",turkey:"🇹🇷",singapore:"🇸🇬",taiwan:"🇹🇼",cambodia:"🇰🇭",laos:"🇱🇦",myanmar:"🇲🇲",usa:"🇺🇸","united states":"🇺🇸",uk:"🇬🇧","united kingdom":"🇬🇧",germany:"🇩🇪",canada:"🇨🇦",australia:"🇦🇺",worldwide:"🌍"};
 const fmtN=n=>{n=+n||0;if(n>=1e6)return (n/1e6).toFixed(1).replace(/\.0$/,"")+"M";if(n>=1e3)return (n/1e3).toFixed(1).replace(/\.0$/,"")+"K";return String(n);};
 function parseNum(s){s=String(s||"").replace(/,/g,"").trim();const m=/^([\d.]+)\s*([kKmM]?)/.exec(s);if(!m)return 0;let n=parseFloat(m[1])||0;if(m[2])n*=/k/i.test(m[2])?1e3:1e6;return Math.round(n);}
 function parseCtry(s){return String(s||"").split(/[,\n;]+/).map(x=>{const m=/^(.+?)[\s:：#]*(\d+)$/.exec(x.trim());return m?{n:m[1].trim(),r:+m[2]}:null;}).filter(Boolean);}
 const shortD=d=>{const p=(d||"").split("-");return p.length<3?"":(+p[2])+" "+(currLang==="th"?TH_M:EN_M)[p[1]-1]+" "+p[0].slice(2);};
 const longD=d=>{const p=(d||"").split("-").map(Number);return p.length<3?"":currLang==="th"?`${p[2]} ${TH_M[p[1]-1]} ${p[0]+543}`:`${EN_M[p[1]-1]} ${p[2]}, ${p[0]}`;};
+const bgUrl=u=>String(u||"").replace(/['"()\s\\]/g,c=>encodeURIComponent(c));
+const emptyS=()=>({res:0,eng:0,reach:0,ctry:[]});
+const hasS=s=>!!(s&&(s.res||s.eng||s.reach||(s.ctry||[]).length));
 
-/* ข้อมูลตัวอย่าง (Mock) จากรูปบ้านเทรนด์ — โชว์เฉพาะตอนยังไม่มีสถิติจริง ไม่ถูกบันทึกลงฐานข้อมูล */
-const TR_DEMO=[{id:"demo1",demo:true,evId:"",title:"Y ENT Awards 2026 (ตัวอย่าง)",d:"",entries:[
-  {tag:"#GINJAYxYEntertainAwards26",kw:"",res:101200,eng:433600,reach:21100000,ctry:[{n:"Colombia",r:7},{n:"Mexico",r:21},{n:"Portugal",r:23},{n:"Thailand",r:29},{n:"Philippines",r:33},{n:"Brazil",r:38}]},
-  {tag:"",kw:"GINNY JAYNA Y ENT AWARDS2026",res:99600,eng:425900,reach:20900000,ctry:[{n:"Colombia",r:5},{n:"Philippines",r:8},{n:"Thailand",r:9},{n:"Malaysia",r:13},{n:"Vietnam",r:16},{n:"Brazil",r:18},{n:"Indonesia",r:19},{n:"Mexico",r:19},{n:"Worldwide",r:22},{n:"Italy",r:22},{n:"Portugal",r:32}]}
-]}];
+/* ข้อมูลตัวอย่าง (Mock) — โชว์เฉพาะตอนยังไม่มีสถิติจริง ไม่ถูกบันทึก (วันที่และตัวเลขงานที่ 2 เป็นของสมมติ) */
+const TR_DEMO=[
+ {id:"demo1",demo:true,evId:"",title:"Y ENT Awards 2026 (ตัวอย่าง)",d:"2026-03-01",tag:"#GINJAYxYEntertainAwards26",kw:"GINNY JAYNA Y ENT AWARDS2026",
+  ts:{res:101200,eng:433600,reach:21100000,ctry:[{n:"Colombia",r:7},{n:"Mexico",r:21},{n:"Portugal",r:23},{n:"Thailand",r:29},{n:"Philippines",r:33},{n:"Brazil",r:38}]},
+  ks:{res:99600,eng:425900,reach:20900000,ctry:[{n:"Colombia",r:5},{n:"Philippines",r:8},{n:"Thailand",r:9},{n:"Malaysia",r:13},{n:"Vietnam",r:16},{n:"Brazil",r:18},{n:"Indonesia",r:19},{n:"Mexico",r:19},{n:"Worldwide",r:22},{n:"Italy",r:22},{n:"Portugal",r:32}]}},
+ {id:"demo2",demo:true,evId:"",title:"งานตัวอย่างที่ 2",d:"2026-05-10",tag:"#ตัวอย่าง2",kw:"ตัวอย่าง คีย์เวิร์ด",
+  ts:{res:64000,eng:210000,reach:9800000,ctry:[{n:"Thailand",r:3},{n:"Philippines",r:12}]},ks:{res:58000,eng:190000,reach:8700000,ctry:[{n:"Thailand",r:5}]}}
+];
 const trSrc=()=>TRENDS.length?TRENDS:TR_DEMO;
+/* รองรับข้อมูลรูปแบบเก่า (entries) อัตโนมัติ */
+function trNorm(t){
+  if(!t.entries)return {tag:t.tag||"",kw:t.kw||"",ts:{...emptyS(),...(t.ts||{})},ks:{...emptyS(),...(t.ks||{})}};
+  const E=t.entries,a=E.find(e=>e.tag),b=E.find(e=>e.kw&&e!==a);
+  const S=e=>e?{res:+e.res||0,eng:+e.eng||0,reach:+e.reach||0,ctry:e.ctry||[]}:emptyS();
+  return {tag:a?a.tag:"",kw:(b&&b.kw)||(a&&a.kw)||"",ts:S(a),ks:S(b)};
+}
+function trInfo(t){
+  const ev=EVENTS.find(x=>x.id===t.evId),n=trNorm(t);
+  return {ev,n,title:t.title||(ev?P(ev,"t"):"-"),date:t.d||(ev&&ev.d)||"",val:Math.max(+n.ts.res||0,+n.ks.res||0)};
+}
 
 try{
   const st=document.createElement("style");
@@ -2835,11 +2852,17 @@ try{
   .tr-bt i{display:block;height:100%;border-radius:99px;background:var(--primary-grad)}
   .tr-bar b{min-width:52px;text-align:right;font-size:13px;color:var(--primary)}
   .tr-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:20px}
-  .tr-card{border-radius:22px;padding:20px;border-top:5px solid var(--accent);transition:box-shadow .3s}
-  .tr-card.flash{box-shadow:0 0 0 4px var(--accent),var(--shadow)}
-  .tr-ent{margin-top:14px;padding-top:12px;border-top:1px dashed var(--line)}
-  .tr-cp{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:6px 0}
-  .tr-cl{font-weight:700;font-size:14px;overflow-wrap:anywhere;flex:1;min-width:0}
+  .tr-card{position:relative;overflow:hidden;cursor:pointer;border-radius:22px;padding:20px;border-top:5px solid var(--accent);transition:transform .3s,box-shadow .3s}
+  .tr-card:hover{transform:translateY(-4px);box-shadow:0 12px 32px rgba(126,34,206,.2)}
+  .tr-bg{position:absolute;inset:0;background-size:cover;background-position:center top;opacity:.13;pointer-events:none}
+  .tr-in{position:relative}
+  .tr-two{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+  .tr-mini{background:var(--surface-alt);border-radius:14px;padding:8px 10px;min-width:0}
+  .tr-mini small{display:block;font-size:11px;color:var(--muted);font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .tr-mini b{font-size:20px;color:var(--primary)}
+  .tr-hint{font-size:12px;color:var(--muted);margin-top:10px}
+  .tr-sec{margin-top:16px;padding-top:14px;border-top:1px dashed var(--line)}
+  .tr-sh{font-weight:700;font-size:15px;overflow-wrap:anywhere}
   .tr-mg{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:10px 0}
   .tr-m{background:var(--surface-alt);border-radius:14px;padding:8px;text-align:center}
   .tr-m span{display:block;font-size:11px;color:var(--muted);font-weight:700}.tr-m b{font-size:18px;color:var(--primary)}
@@ -2849,14 +2872,14 @@ try{
   .tr-eb{border:1px dashed rgba(126,34,206,.4);border-radius:14px;padding:10px;margin-bottom:10px}
   .tr-eb input,.tr-eb textarea{width:100%;padding:8px 12px;border-radius:10px;border:1px solid rgba(126,34,206,.3);background:rgba(255,255,255,.4);margin-bottom:6px;min-width:0}
   .tr-g3{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
-  @media(max-width:640px){.tr-grid{grid-template-columns:1fr}.tr-bl{width:40%}}`;
+  @media(max-width:640px){.tr-grid{grid-template-columns:1fr}.tr-bl{width:40%}.tr-two{grid-template-columns:1fr 1fr}}`;
   document.head.appendChild(st);
 }catch(e){console.error(e);}
 
-/* ---- ส่วน A: ช่องแฮชแท็ก/คีย์เวิร์ดในฟอร์มงาน (ก่อนช่องสถานที่) ---- */
+/* ---- A: ช่องแฮชแท็ก/คีย์เวิร์ดในฟอร์มงาน (ก่อนช่องสถานที่) ---- */
 try{
   document.getElementById("evVenueTh").closest(".form-group").insertAdjacentHTML("beforebegin",
-  `<div class="form-group"><label>🏷️ แฮชแท็กเทรนด์ (คั่นด้วยเว้นวรรค · เว้นว่างได้)</label><input type="text" id="evTag" placeholder="#GINJAYxYEntertainAwards26"></div><div class="form-group"><label>🔑 คีย์เวิร์ด (คั่นด้วยลูกน้ำ · เว้นว่างได้)</label><input type="text" id="evKw" placeholder="GINNY JAYNA Y ENT AWARDS2026"></div>`);
+  `<div class="form-group"><label>🏷️ แฮชแท็กเทรนด์ (1 งาน 1 แท็ก · เว้นว่างได้)</label><input type="text" id="evTag" placeholder="#GINJAYxYEntertainAwards26"></div><div class="form-group"><label>🔑 คีย์เวิร์ด (เว้นว่างได้)</label><input type="text" id="evKw" placeholder="GINNY JAYNA Y ENT AWARDS2026"></div>`);
 }catch(e){console.error(e);}
 {const f=window.openEventModal;window.openEventModal=function(id){
   f.apply(this,arguments);
@@ -2875,7 +2898,7 @@ try{
   saveToDB({EVENTS});renderAllSched();
 };}
 
-/* ---- ส่วน B: โชว์แฮชแท็ก/คีย์เวิร์ดในการ์ด รายการ และหน้ารายละเอียด + ปุ่มคัดลอก ---- */
+/* ---- B: แฮชแท็ก/คีย์เวิร์ด + ปุ่มคัดลอก อยู่ที่การ์ดงานในตารางงาน ---- */
 function evTagHtml(e){
   if(!e)return "";
   const tags=(e.tag||"").split(/[\s,]+/).filter(Boolean),kws=(e.kw||"").split(/[,\n]+/).map(s=>s.trim()).filter(Boolean);
@@ -2885,15 +2908,15 @@ function evTagHtml(e){
 }
 function evCopyHtml(e){
   const b=[];
-  if(e.tag)b.push(`<button class="chip copybtn" data-copy="${impEsc(e.tag)}">📋 ${T("คัดลอกแฮชแท็ก","Copy hashtags")}</button>`);
-  if(e.kw)b.push(`<button class="chip copybtn" data-copy="${impEsc(e.kw)}">📋 ${T("คัดลอกคีย์เวิร์ด","Copy keywords")}</button>`);
-  return b.length?`<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px">${b.join("")}</div>`:"";
+  if(e.tag)b.push(`<button class="chip mv-btn copybtn" data-copy="${impEsc(e.tag)}">📋 ${T("คัดลอกแฮชแท็ก","Copy hashtag")}</button>`);
+  if(e.kw)b.push(`<button class="chip mv-btn copybtn" data-copy="${impEsc(e.kw)}">📋 ${T("คัดลอกคีย์เวิร์ด","Copy keyword")}</button>`);
+  return b.length?`<div style="display:flex;gap:8px;flex-wrap:wrap;margin:4px 0 8px">${b.join("")}</div>`:"";
 }
 function decoEvents(){
   document.querySelectorAll(".ev-card,.ev-row").forEach(c=>{
     if(c.querySelector(".evtag"))return;
     const m=/openEventDetailModal\('([^']+)'\)/.exec(c.getAttribute("onclick")||"");if(!m)return;
-    const h=evTagHtml(EVENTS.find(x=>x.id===m[1]));if(!h)return;
+    const e=EVENTS.find(x=>x.id===m[1]),h=evTagHtml(e)+evCopyHtml(e||{});if(!e||!h)return;
     if(c.classList.contains("ev-card")){const ct=c.querySelector(".ev-card-content");if(ct&&ct.lastElementChild)ct.lastElementChild.insertAdjacentHTML("beforebegin",h);}
     else{const mt=c.querySelector(".ev-meta");if(mt)mt.insertAdjacentHTML("beforebegin",h);}
   });
@@ -2918,11 +2941,11 @@ document.addEventListener("click",e=>{
   document.getElementById("evDetVenue").parentElement.before(d);
 };}
 
-/* ---- ส่วน C: "สถิติเทรนด์" เป็นตัวเลือกแรกในเมนูซ้ายของหน้าผลงาน ---- */
+/* ---- C: "สถิติเทรนด์" เป็นตัวเลือกแรกในเมนูซ้ายของหน้าผลงาน ---- */
 try{
   const col=document.getElementById("seriesList").parentNode;
   const v=document.createElement("div");v.id="trendView";v.className="tr-hide";
-  v.innerHTML=`<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:12px"><h3>📈 <span data-th="แดชบอร์ดสถิติเทรนด์" data-en="Trend Dashboard">แดชบอร์ดสถิติเทรนด์</span></h3><button class="btn-submit admin-only" onclick="openTrendModal()"><span class="material-symbols-rounded">add</span> <span data-th="เพิ่มสถิติเทรนด์" data-en="Add Trend">เพิ่มสถิติเทรนด์</span></button></div><div class="lv-tools"><input type="search" id="trSearch" autocomplete="off"><select id="trSort" style="padding:10px 14px;border-radius:999px;border:1px solid rgba(126,34,206,.3);background:var(--surface-alt);color:var(--ink)"></select></div><div id="trendHost"></div>`;
+  v.innerHTML=`<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:12px"><h3>📈 <span data-th="แดชบอร์ดสถิติเทรนด์" data-en="Trend Dashboard">แดชบอร์ดสถิติเทรนด์</span></h3><div class="admin-only" style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn-submit" onclick="openTrendModal()"><span class="material-symbols-rounded">add</span> <span data-th="เพิ่มสถิติเทรนด์" data-en="Add Trend">เพิ่มสถิติเทรนด์</span></button><button class="btn-submit" style="background:var(--accent);color:#000" onclick="openTrendImport()">📥 นำเข้าหลายรายการ</button></div></div><div class="lv-tools"><input type="search" id="trSearch" autocomplete="off"><select id="trSort" style="padding:10px 14px;border-radius:999px;border:1px solid rgba(126,34,206,.3);background:var(--surface-alt);color:var(--ink)"></select></div><div id="trendHost"></div>`;
   col.appendChild(v);
   document.getElementById("worksCatMenu").insertAdjacentHTML("afterbegin",`<button class="works-cat-btn" data-wcat="trends"><span style="display:flex;align-items:center;"><span class="material-symbols-rounded">trending_up</span> <span data-th="สถิติเทรนด์" data-en="Trend Stats">สถิติเทรนด์</span></span><span class="works-cat-count" id="cnt-trends">0</span></button>`);
   document.getElementById("trSearch").addEventListener("input",()=>renderTrends());
@@ -2941,125 +2964,188 @@ function trSync(){
 function goTrend(id){
   closeModal("eventDetailModal");switchTab("series");
   if(cWC!=="trends"){const b=document.querySelector('.works-cat-btn[data-wcat="trends"]');if(b)b.click();}
-  setTimeout(()=>focusTrend(id),250);
+  setTimeout(()=>openTrendDetail(id,false),250);
 }
 
-function trInfo(t){
-  const ev=EVENTS.find(x=>x.id===t.evId);
-  return {ev,title:t.title||(ev?P(ev,"t"):"-"),date:t.d||(ev&&ev.d)||"",val:Math.max(0,...(t.entries||[]).map(x=>+x.res||0))};
-}
-function trLine(items){
+/* ---- กราฟเส้น (ใช้ในหน้ารายละเอียดเท่านั้น) ---- */
+function trLine(items,hl){
   if(items.length<2)return "";
   const W=700,H=230,L=48,R=18,Tp=16,B=36,mx=(Math.max(...items.map(i=>i.v))*1.1)||1;
   const x=i=>L+(W-L-R)*i/(items.length-1),y=v=>Tp+(H-Tp-B)*(1-v/mx);
   let g="";
   for(let k=0;k<=4;k++){const v=mx*k/4,yy=y(v);g+=`<line x1="${L}" x2="${W-R}" y1="${yy}" y2="${yy}" stroke="currentColor" opacity=".12"/><text x="${L-6}" y="${yy+4}" text-anchor="end" font-size="11" fill="currentColor" opacity=".6">${fmtN(v)}</text>`;}
   const step=Math.ceil(items.length/7);
-  const dots=items.map((it,i)=>`<circle cx="${x(i)}" cy="${y(it.v)}" r="5" fill="var(--primary)" stroke="#fff" stroke-width="2"><title>${impEsc(it.name)} · ${fmtN(it.v)}</title></circle>${i%step===0?`<text x="${x(i)}" y="${H-12}" text-anchor="middle" font-size="11" fill="currentColor" opacity=".7">${shortD(it.d)}</text>`:""}`).join("");
-  return `<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto;color:var(--ink)">${g}<polyline points="${items.map((it,i)=>x(i)+","+y(it.v)).join(" ")}" fill="none" stroke="var(--primary)" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>${dots}</svg>`;
+  const dots=items.map((it,i)=>{const h=it.id===hl;return `<circle cx="${x(i)}" cy="${y(it.v)}" r="${h?8:4.5}" fill="${h?"var(--accent)":"var(--primary)"}" stroke="#fff" stroke-width="2"><title>${impEsc(it.name)} · ${fmtN(it.v)}</title></circle>${i%step===0||h?`<text x="${x(i)}" y="${H-12}" text-anchor="middle" font-size="11" fill="currentColor" opacity=".7">${shortD(it.d)}</text>`:""}`;}).join("");
+  return `<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto;color:var(--ink)"><g>${g}</g><polyline points="${items.map((it,i)=>x(i)+","+y(it.v)).join(" ")}" fill="none" stroke="var(--primary)" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>${dots}</svg>`;
 }
+
+/* ---- หน้าแดชบอร์ด ---- */
 function renderTrends(){
   const host=document.getElementById("trendHost");if(!host)return;
   const isA=(cRole==="admin"||cRole==="head_admin");
   const sIn=document.getElementById("trSearch"),sSel=document.getElementById("trSort");
   sIn.placeholder=T("🔍 ค้นหางาน / แฮชแท็ก / คีย์เวิร์ด","🔍 Search event / hashtag / keyword");
-  if(!sSel.options.length||sSel.dataset.l!==currLang){
-    const cur=sSel.value||"new";sSel.dataset.l=currLang;
-    sSel.innerHTML=`<option value="new">${T("ใหม่ → เก่า","Newest first")}</option><option value="old">${T("เก่า → ใหม่","Oldest first")}</option><option value="high">${T("Result สูง → ต่ำ","Highest result")}</option>`;
-    sSel.value=cur;
+  const all=trSrc().map(t=>({t,i:trInfo(t)}));
+  const years=[...new Set(all.map(o=>o.i.date.slice(0,4)).filter(Boolean))].sort().reverse();
+  const sig=currLang+"|"+years.join();
+  if(sSel.dataset.s!==sig){
+    const cur=sSel.value||"latest";sSel.dataset.s=sig;
+    sSel.innerHTML=`<option value="latest">${T("ล่าสุด (2 งาน)","Latest (2 events)")}</option><option value="all">${T("ทั้งหมด","All")}</option>`+years.map(y=>`<option value="${y}">${T("ปี","Year")} ${y}</option>`).join("");
+    sSel.value=[...sSel.options].some(o=>o.value===cur)?cur:"latest";
   }
-  const demo=!TRENDS.length,q=sIn.value.trim().toLowerCase();
-  let ls=trSrc().map(t=>({t,i:trInfo(t)})).filter(o=>!q||[o.i.title,...(o.t.entries||[]).flatMap(e=>[e.tag,e.kw])].some(x=>x&&String(x).toLowerCase().includes(q)));
-  const sv=sSel.value;
-  ls.sort((a,b)=>sv==="high"?b.i.val-a.i.val:sv==="old"?a.i.date.localeCompare(b.i.date):b.i.date.localeCompare(a.i.date));
-  if(!ls.length){host.innerHTML=`<div class="empty">${T("ไม่พบรายการที่ค้นหา","Nothing found")}</div>`;return;}
-  const best=ls.slice().sort((a,b)=>b.i.val-a.i.val)[0];
+  const q=sIn.value.trim().toLowerCase(),sv=sSel.value,demo=!TRENDS.length;
+  const byDate=(a,b)=>b.i.date.localeCompare(a.i.date);
+  let scope=all.filter(o=>!q||[o.i.title,o.i.n.tag,o.i.n.kw].some(x=>x&&String(x).toLowerCase().includes(q)));
+  if(!q&&/^\d{4}$/.test(sv))scope=scope.filter(o=>o.i.date.startsWith(sv));
+  scope.sort(byDate);
+  const cards=(!q&&sv==="latest")?scope.slice(0,2):scope;
+  if(!scope.length){host.innerHTML=`<div class="empty">${T("ไม่พบรายการ","Nothing found")}</div>`;return;}
+  const best=scope.slice().sort((a,b)=>b.i.val-a.i.val)[0];
   let top10=0,totEng=0;
-  ls.forEach(o=>(o.t.entries||[]).forEach(e=>{totEng+=+e.eng||0;(e.ctry||[]).forEach(c=>{if(c.r<=10&&!/worldwide/i.test(c.n))top10++;});}));
+  scope.forEach(o=>[o.i.n.ts,o.i.n.ks].forEach(s=>{totEng+=+s.eng||0;(s.ctry||[]).forEach(c=>{if(c.r<=10&&!/worldwide/i.test(c.n))top10++;});}));
   const kpi=(l,v,s)=>`<div class="tr-kpi glass-panel"><small>${l}</small><b>${v}</b><span>${s||"&nbsp;"}</span></div>`;
-  let h=demo?`<div class="tr-demo">🧪 ${T("นี่คือข้อมูลตัวอย่าง (Mock) ยังไม่ได้บันทึกลงระบบ จะหายไปเองเมื่อแอดมินเพิ่มสถิติจริงชิ้นแรก","This is sample (mock) data, not saved. It disappears once an admin adds the first real entry.")}</div>`:"";
-  h+=`<div class="tr-sum">${kpi(T("งานที่มีสถิติ","Events tracked"),ls.length,"")}${kpi(T("Result สูงสุด","Best result"),fmtN(best.i.val),impEsc(best.i.title))}${kpi(T("Engagement รวม","Total engagement"),fmtN(totEng),"")}${kpi(T("ติด Top 10 รายประเทศ","Top-10 country ranks"),top10,T("นับทุกแฮชแท็ก","across all tags"))}</div>`;
-  const bars=ls.slice().sort((a,b)=>b.i.val-a.i.val).slice(0,8),bm=bars[0].i.val||1;
-  h+=`<div class="tr-box glass-panel"><h3>🏆 ${T("อันดับ Result สูงสุด (แตะเพื่อดูรายละเอียด)","Top results (tap for details)")}</h3>${bars.map(o=>`<div class="tr-bar" onclick="focusTrend('${impEsc(o.t.id)}')"><div class="tr-bl">${impEsc(o.i.title)}</div><div class="tr-bt"><i style="width:${Math.max(3,o.i.val/bm*100)}%"></i></div><b>${fmtN(o.i.val)}</b></div>`).join("")}</div>`;
-  const line=trLine(ls.filter(o=>o.i.date).slice().sort((a,b)=>a.i.date.localeCompare(b.i.date)).map(o=>({v:o.i.val,d:o.i.date,name:o.i.title})));
-  if(line)h+=`<div class="tr-box glass-panel"><h3>📈 ${T("แนวโน้ม Result ตามเวลา","Result over time")}</h3>${line}</div>`;
-  h+=`<div class="tr-grid">`+ls.map(o=>{
-    const t=o.t,tid=impEsc(t.id);
-    const adm=(isA&&!t.demo)?`<div style="display:flex;gap:6px;margin-top:10px"><button class="chip mv-btn" onclick="openTrendModal('${tid}')">✏️ Edit</button><button class="chip mv-btn" style="color:#ef4444" onclick="deleteTrend('${tid}')">🗑️ Del</button></div>`:"";
-    const row=(ic,txt,lab)=>txt?`<div class="tr-cp"><span class="tr-cl">${ic} ${impEsc(txt)}</span><button class="chip mv-btn copybtn" data-copy="${impEsc(txt)}">📋 ${lab}</button></div>`:"";
-    const ents=(t.entries||[]).map(en=>{
-      const m=[["📊","Result",en.res],["💬","Engagement",en.eng],["🌐","Potential reach",en.reach]].filter(x=>+x[2]>0).map(x=>`<div class="tr-m"><span>${x[0]} ${x[1]}</span><b>${fmtN(x[2])}</b></div>`).join("");
-      const cs=(en.ctry||[]).slice().sort((a,b)=>a.r-b.r).map(c=>`<span class="tr-c ${c.r<=10?"top":""}">${FLAGS[c.n.toLowerCase()]||"📍"} ${impEsc(c.n)} #${c.r}</span>`).join("");
-      return `<div class="tr-ent">${row("🏷️",en.tag,T("คัดลอก #","Copy #"))}${row("🔑",en.kw,T("คัดลอกคีย์เวิร์ด","Copy keyword"))}${m?`<div class="tr-mg">${m}</div>`:""}${cs?`<div class="tr-ct">${cs}</div>`:""}</div>`;
-    }).join("");
-    const hasCopy=(t.entries||[]).some(e=>e.tag||e.kw);
-    return `<div class="tr-card glass-panel" id="trc_${tid}"><div style="font-size:18px;font-weight:700">${impEsc(o.i.title)}</div><div style="font-size:13px;color:var(--muted)">${o.i.date?"📅 "+longD(o.i.date):""}</div>${hasCopy?`<button class="chip" style="margin-top:8px" onclick="copyTrendAll('${tid}',this)">📋 ${T("คัดลอกทั้งหมด (# + คีย์เวิร์ด)","Copy all (# + keywords)")}</button>`:""}${ents}${t.img?`<a href="${impEsc(t.img)}" target="_blank" rel="noopener"><img src="${impEsc(t.img)}" alt="" style="width:100%;max-height:260px;object-fit:cover;object-position:top;border-radius:14px;margin-top:12px"></a>`:""}${adm}</div>`;
+  let h=demo?`<div class="tr-demo">🧪 ${T("นี่คือข้อมูลตัวอย่าง (Mock) ไม่ได้บันทึกลงระบบ จะหายไปเองเมื่อแอดมินเพิ่มสถิติจริงชิ้นแรก (วันที่และตัวเลขงานที่ 2 เป็นของสมมติ)","Sample (mock) data, not saved. It disappears when an admin adds the first real entry.")}</div>`:"";
+  h+=`<div class="tr-sum">${kpi(T("งานที่มีสถิติ","Events tracked"),scope.length,"")}${kpi(T("Result สูงสุด","Best result"),fmtN(best.i.val),impEsc(best.i.title))}${kpi(T("Engagement รวม","Total engagement"),fmtN(totEng),"")}${kpi(T("ติด Top 10 รายประเทศ","Top-10 country ranks"),top10,"")}</div>`;
+  const bars=scope.slice().sort((a,b)=>b.i.val-a.i.val).slice(0,8),bm=bars[0].i.val||1;
+  h+=`<div class="tr-box glass-panel"><h3>🏆 ${T("อันดับ Result สูงสุด (แตะเพื่อดูรายละเอียด + แนวโน้ม)","Top results (tap for details + trend)")}</h3>${bars.map(o=>`<div class="tr-bar" onclick="openTrendDetail('${impEsc(o.t.id)}',true)"><div class="tr-bl">${impEsc(o.i.title)}</div><div class="tr-bt"><i style="width:${Math.max(3,o.i.val/bm*100)}%"></i></div><b>${fmtN(o.i.val)}</b></div>`).join("")}</div>`;
+  h+=`<div class="tr-grid">`+cards.map(o=>{
+    const t=o.t,tid=impEsc(t.id),n=o.i.n;
+    const adm=(isA&&!t.demo)?`<div style="display:flex;gap:6px;margin-top:10px" onclick="event.stopPropagation()"><button class="chip mv-btn" onclick="openTrendModal('${tid}')">✏️ Edit</button><button class="chip mv-btn" style="color:#ef4444" onclick="deleteTrend('${tid}')">🗑️ Del</button></div>`:"";
+    const mini=(ic,txt,s)=>(txt||hasS(s))?`<div class="tr-mini"><small>${ic} ${impEsc(txt||"-")}</small><b>${s.res?fmtN(s.res):"-"}</b></div>`:"";
+    return `<div class="tr-card glass-panel" onclick="openTrendDetail('${tid}',false)">${t.img?`<div class="tr-bg" style="background-image:url('${bgUrl(t.img)}')"></div>`:""}<div class="tr-in"><div style="font-size:18px;font-weight:700">${impEsc(o.i.title)}</div><div style="font-size:13px;color:var(--muted)">${o.i.date?"📅 "+longD(o.i.date):""}</div><div class="tr-two">${mini("🏷️",n.tag,n.ts)}${mini("🔑",n.kw,n.ks)}</div><div class="tr-hint">👆 ${T("แตะเพื่อดูรายละเอียด","Tap for details")}</div>${adm}</div></div>`;
   }).join("")+`</div>`;
+  if(!q&&sv==="latest"&&scope.length>2)h+=`<div style="text-align:center;margin-top:14px;color:var(--muted);font-size:13px">${T("แสดง 2 งานล่าสุด · เลือก “ทั้งหมด” หรือปีจากเมนูด้านบน หรือค้นหาเพื่อดูงานอื่น","Showing the 2 latest · use the menu above or search for more")}</div>`;
   host.innerHTML=h;
 }
-function copyTrendAll(id,btn){
+
+/* ---- หน้าต่างรายละเอียด (กดการ์ด หรือกดอันดับ Result) ---- */
+function openTrendDetail(id,chart){
   const t=trSrc().find(x=>x.id===id);if(!t)return;
-  const parts=[];(t.entries||[]).forEach(en=>{if(en.tag)parts.push(en.tag);if(en.kw)parts.push(en.kw);});
-  gjCopy(parts.join("\n"),btn);
-}
-function focusTrend(id){
-  let el=document.getElementById("trc_"+id);
-  if(!el){document.getElementById("trSearch").value="";renderTrends();el=document.getElementById("trc_"+id);}
-  if(!el)return;
-  el.scrollIntoView({behavior:"smooth",block:"center"});
-  el.classList.add("flash");setTimeout(()=>el.classList.remove("flash"),1800);
+  const i=trInfo(t),n=i.n;
+  let m=document.getElementById("trDetailModal");
+  if(!m){m=document.createElement("div");m.className="modal";m.id="trDetailModal";document.body.appendChild(m);}
+  const sec=(ic,label,txt,s)=>{
+    if(!txt&&!hasS(s))return "";
+    const mg=[["📊","Result",s.res],["💬","Engagement",s.eng],["🌐","Potential reach",s.reach]].filter(x=>+x[2]>0).map(x=>`<div class="tr-m"><span>${x[0]} ${x[1]}</span><b>${fmtN(x[2])}</b></div>`).join("");
+    const cs=(s.ctry||[]).slice().sort((a,b)=>a.r-b.r).map(c=>`<span class="tr-c ${c.r<=10?"top":""}">${FLAGS[c.n.toLowerCase()]||"📍"} ${impEsc(c.n)} #${c.r}</span>`).join("");
+    return `<div class="tr-sec"><div style="font-size:12px;color:var(--muted);font-weight:700">${ic} ${label}</div><div class="tr-sh">${impEsc(txt||"-")}</div>${mg?`<div class="tr-mg">${mg}</div>`:""}${cs?`<div class="tr-ct">${cs}</div>`:""}</div>`;
+  };
+  let ch="";
+  if(chart){
+    const its=trSrc().map(x=>({x,i:trInfo(x)})).filter(o=>o.i.date).sort((a,b)=>a.i.date.localeCompare(b.i.date)).map(o=>({id:o.x.id,v:o.i.val,d:o.i.date,name:o.i.title}));
+    const svg=trLine(its,id);
+    if(svg)ch=`<div class="tr-sec"><div class="tr-sh">📈 ${T("แนวโน้ม Result ตามเวลา (จุดสีเหลือง = งานนี้)","Result over time (yellow dot = this event)")}</div>${svg}</div>`;
+  }
+  m.innerHTML=`<div class="modal-detail-box" style="position:relative;overflow-x:hidden">${t.img?`<div class="tr-bg" style="background-image:url('${bgUrl(t.img)}');position:absolute;opacity:.1"></div>`:""}<div class="tr-in"><button onclick="closeModal('trDetailModal')" style="color:var(--primary);font-weight:700;margin-bottom:12px;font-size:16px;display:inline-flex;align-items:center;gap:4px;"><span class="material-symbols-rounded">arrow_back</span> ${T("กลับ","Back")}</button><h2 style="font-size:24px;color:var(--primary)">${impEsc(i.title)}</h2><div style="color:var(--muted);font-size:14px">${i.date?"📅 "+longD(i.date):""}</div>${sec("🏷️ "+T("แฮชแท็ก","Hashtag"),"",n.tag,n.ts).replace('> </div><div class="tr-sh"','></div><div class="tr-sh"')}${sec("🔑",T("คีย์เวิร์ด","Keyword"),n.kw,n.ks)}${ch}${t.img?`<div class="tr-sec"><a href="${impEsc(t.img)}" target="_blank" rel="noopener"><img src="${impEsc(t.img)}" alt="" style="width:100%;max-height:420px;object-fit:contain;border-radius:14px"></a></div>`:""}</div></div>`;
+  m.classList.add("on");
 }
 
-/* ---- ฟอร์มเพิ่ม/แก้สถิติ (Admin / Head Admin) ---- */
-function trEntryHtml(en){
-  en=en||{};
-  const cs=(en.ctry||[]).map(c=>c.n+" "+c.r).join(", ");
-  return `<div class="tr-eb"><input class="te-tag" placeholder="🏷️ #แฮชแท็ก (ถ้ามี)" value="${impEsc(en.tag||"")}"><input class="te-kw" placeholder="🔑 คีย์เวิร์ด (ถ้ามี)" value="${impEsc(en.kw||"")}"><div class="tr-g3"><input class="te-res" placeholder="Result เช่น 101.2K" value="${en.res||""}"><input class="te-eng" placeholder="Engagement" value="${en.eng||""}"><input class="te-reach" placeholder="Reach เช่น 21.1M" value="${en.reach||""}"></div><textarea class="te-ct" rows="2" placeholder="อันดับประเทศ เช่น Colombia 7, Mexico 21, Thailand 29">${impEsc(cs)}</textarea><button class="chip mv-btn" style="color:#ef4444" onclick="this.closest('.tr-eb').remove()">🗑️ ลบชุดนี้</button></div>`;
+/* ---- ฟอร์มเพิ่ม/แก้สถิติ 1 งาน (Admin / Head Admin) ---- */
+function trStatBox(ic,label,pre,tag,s){
+  s=s||emptyS();
+  const cs=(s.ctry||[]).map(c=>c.n+" "+c.r).join(", ");
+  return `<div class="tr-eb"><div class="trv-lab" style="margin-top:0">${ic} ${label}</div><input id="tr${pre}T" placeholder="${label}" value="${impEsc(tag||"")}"><div class="tr-g3"><input id="tr${pre}R" placeholder="Result เช่น 101.2K" value="${s.res||""}"><input id="tr${pre}E" placeholder="Engagement" value="${s.eng||""}"><input id="tr${pre}H" placeholder="Reach เช่น 21.1M" value="${s.reach||""}"></div><textarea id="tr${pre}C" rows="2" placeholder="อันดับประเทศ เช่น Colombia 7, Mexico 21, Thailand 29">${impEsc(cs)}</textarea></div>`;
 }
-function trAddEntry(en){document.getElementById("trEntries").insertAdjacentHTML("beforeend",trEntryHtml(en));}
 function openTrendModal(id){
   if(!(cRole==="admin"||cRole==="head_admin"))return alert(T("เฉพาะ Admin","Admin only"));
   edTrend=id||null;
   let m=document.getElementById("trendModal");
   if(!m){m=document.createElement("div");m.className="modal";m.id="trendModal";document.body.appendChild(m);}
-  const t=id?TRENDS.find(x=>x.id===id):null;
+  const t=id?TRENDS.find(x=>x.id===id):null,n=t?trNorm(t):null;
   const evs=EVENTS.slice().sort((a,b)=>b.d.localeCompare(a.d));
-  m.innerHTML=`<div class="modal-box" style="max-width:640px"><h3 style="color:var(--primary);margin-bottom:12px">📈 เพิ่ม/แก้สถิติเทรนด์</h3>
+  m.innerHTML=`<div class="modal-box" style="max-width:640px"><h3 style="color:var(--primary);margin-bottom:12px">📈 เพิ่ม/แก้สถิติเทรนด์ (1 งาน)</h3>
   <div class="form-group"><label>เลือกงานจากตาราง (ไม่เลือกก็ได้)</label><select id="trEv" onchange="trPickEv()"><option value="">-- ไม่ผูกกับงาน --</option>${evs.map(e=>`<option value="${impEsc(e.id)}" ${t&&t.evId===e.id?"selected":""}>${e.d} : ${impEsc(P(e,"t"))}</option>`).join("")}</select></div>
   <div class="form-group"><label>ชื่อรายการ</label><input id="trTitle" value="${impEsc(t?t.title:"")}"></div>
   <div class="form-group"><label>วันที่ (ใช้วันที่ของงานถ้าเลือกงาน)</label><input type="date" id="trDate" value="${t?(t.d||""):""}"></div>
-  <div class="trv-lab">ชุดแฮชแท็ก / คีย์เวิร์ด และตัวเลข (เพิ่มได้หลายชุด · พิมพ์ K/M ได้ เช่น 101.2K)</div>
-  <div id="trEntries"></div><button class="chip" onclick="trAddEntry()">+ เพิ่มชุดแฮชแท็ก</button>
-  <div class="form-group" style="margin-top:14px"><label>รูปสรุปจากบ้านเทรนด์ (ไม่ใส่ก็ได้)</label><input type="file" id="trImgUp" accept="image/*" onchange="handleImgUpload(this,'trImgUrl','trImgStatus')" style="background:rgba(255,255,255,.5);padding:8px 12px;border-radius:14px;width:100%;border:2px dashed rgba(126,34,206,.4);margin-bottom:6px"><span id="trImgStatus" style="font-size:13px;font-weight:700;display:block;margin-bottom:6px"></span><input id="trImgUrl" placeholder="หรือวางลิงก์รูป" value="${impEsc(t?t.img||"":"")}"></div>
+  ${trStatBox("🏷️","แฮชแท็ก #","T",n&&n.tag,n&&n.ts)}${trStatBox("🔑","คีย์เวิร์ด","K",n&&n.kw,n&&n.ks)}
+  <div style="font-size:12px;color:var(--muted)">พิมพ์ K/M ได้ เช่น 101.2K · ไม่มีแท็กหรือคีย์เวิร์ดฝั่งไหนก็เว้นว่างได้</div>
+  <div class="form-group" style="margin-top:12px"><label>รูปสรุปจากบ้านเทรนด์ (ไม่ใส่ก็ได้ · จะเป็นพื้นหลังจางๆ ของการ์ด)</label><input type="file" id="trImgUp" accept="image/*" onchange="handleImgUpload(this,'trImgUrl','trImgStatus')" style="background:rgba(255,255,255,.5);padding:8px 12px;border-radius:14px;width:100%;border:2px dashed rgba(126,34,206,.4);margin-bottom:6px"><span id="trImgStatus" style="font-size:13px;font-weight:700;display:block;margin-bottom:6px"></span><input id="trImgUrl" placeholder="หรือวางลิงก์รูป" value="${impEsc(t?t.img||"":"")}"></div>
   <div style="text-align:right;margin-top:16px"><button class="chip" onclick="closeModal('trendModal')">ยกเลิก</button> <button class="btn-submit" onclick="saveTrend()">บันทึก</button></div></div>`;
-  ((t&&t.entries&&t.entries.length)?t.entries:[{}]).forEach(trAddEntry);
   m.classList.add("on");
 }
 function trPickEv(){
   const e=EVENTS.find(x=>x.id===document.getElementById("trEv").value);if(!e)return;
   if(!document.getElementById("trTitle").value.trim())document.getElementById("trTitle").value=P(e,"t");
   document.getElementById("trDate").value=e.d;
-  const tg=document.querySelector("#trEntries .te-tag"),kw=document.querySelector("#trEntries .te-kw");
-  if(e.tag&&tg&&!tg.value)tg.value=e.tag;
-  if(e.kw&&kw&&!kw.value)kw.value=e.kw;
+  if(e.tag&&!document.getElementById("trTT").value)document.getElementById("trTT").value=e.tag;
+  if(e.kw&&!document.getElementById("trKT").value)document.getElementById("trKT").value=e.kw;
 }
+function trReadStat(p){const g=k=>document.getElementById("tr"+p+k).value;return {res:parseNum(g("R")),eng:parseNum(g("E")),reach:parseNum(g("H")),ctry:parseCtry(g("C"))};}
 function saveTrend(){
   const evId=document.getElementById("trEv").value,title=document.getElementById("trTitle").value.trim();
   const ev=EVENTS.find(x=>x.id===evId);
-  const entries=[...document.querySelectorAll("#trEntries .tr-eb")].map(b=>({
-    tag:b.querySelector(".te-tag").value.trim(),kw:b.querySelector(".te-kw").value.trim(),res:parseNum(b.querySelector(".te-res").value),eng:parseNum(b.querySelector(".te-eng").value),reach:parseNum(b.querySelector(".te-reach").value),ctry:parseCtry(b.querySelector(".te-ct").value)
-  })).filter(e=>e.tag||e.kw||e.res||e.eng||e.reach||e.ctry.length);
+  const tag=document.getElementById("trTT").value.trim(),kw=document.getElementById("trKT").value.trim(),ts=trReadStat("T"),ks=trReadStat("K");
   if(!title&&!ev)return alert("ใส่ชื่อรายการ หรือเลือกงานก่อนนะ");
-  if(!entries.length)return alert("ใส่ข้อมูลอย่างน้อย 1 ชุด");
+  if(!tag&&!kw&&!hasS(ts)&&!hasS(ks))return alert("ใส่ข้อมูลอย่างน้อย 1 อย่าง");
   const d=(ev&&ev.d)||document.getElementById("trDate").value||"";
-  const p={evId:evId||"",title,d,entries,img:document.getElementById("trImgUrl").value.trim()};
-  if(edTrend){const i=TRENDS.findIndex(x=>x.id===edTrend);if(i>-1)TRENDS[i]={...TRENDS[i],...p};}
+  const p={evId:evId||"",title,d,tag,kw,ts,ks,img:document.getElementById("trImgUrl").value.trim()};
+  if(edTrend){const i=TRENDS.findIndex(x=>x.id===edTrend);if(i>-1){const o={...TRENDS[i],...p};delete o.entries;TRENDS[i]=o;}}
   else TRENDS.push({id:"tr_"+Date.now(),...p});
   saveToDB({TRENDS});closeModal("trendModal");trSync();renderTrends();
 }
 function deleteTrend(id){
   if(!confirm(T("ลบสถิตินี้?","Delete this trend?")))return;
   TRENDS=TRENDS.filter(x=>x.id!==id);saveToDB({TRENDS});trSync();renderTrends();
+}
+
+/* ---- นำเข้าหลายรายการ (พิมพ์แบบ "หัวข้อ : ข้อมูล" เว้น 1 บรรทัดต่อ 1 งาน) ---- */
+const TRK={"งาน":"title","ชื่องาน":"title","ชื่อ":"title","title":"title","event":"title","วันที่":"d","date":"d","แฮชแท็ก":"tag","hashtag":"tag","tag":"tag","#":"tag","คีย์เวิร์ด":"kw","keyword":"kw","kw":"kw"};
+{const base={res:["result","res"],eng:["engagement","eng"],reach:["reach","potentialreach"],ctry:["ประเทศ","country","countries"]};
+ Object.keys(base).forEach(k=>base[k].forEach(a=>{TRK[a]="t_"+k;["แฮชแท็ก","hashtag","tag"].forEach(p=>TRK[p+a]="t_"+k);["คีย์เวิร์ด","keyword","kw"].forEach(p=>TRK[p+a]="k_"+k);}));}
+const trKey=s=>String(s||"").toLowerCase().replace(/[\s()（）_\-\[\]]/g,"");
+const TR_TPL="งาน : \nวันที่ : \nแฮชแท็ก : \nResult : \nEngagement : \nReach : \nประเทศ : \nคีย์เวิร์ด : \nคีย์เวิร์ด Result : \nคีย์เวิร์ด Engagement : \nคีย์เวิร์ด Reach : \nคีย์เวิร์ด ประเทศ : \n";
+function trParseText(text){
+  const recs=[],errs=[];let cur=null;
+  text.split(/\r?\n/).forEach(raw=>{
+    const line=raw.trim();
+    if(!line){cur=null;return;}
+    const m=line.match(/^([^:：]{1,40}?)\s*[:：]\s*(.*)$/),key=m?TRK[trKey(m[1])]:null;
+    if(!key)return;
+    if(!cur||(key==="title"&&cur.title)){cur={};recs.push(cur);}
+    cur[key]=m[2].trim();
+  });
+  const items=[];
+  recs.forEach((r,idx)=>{
+    const lab=`รายการที่ ${idx+1}`;
+    if(!r.title){errs.push(`${lab}: ไม่มีชื่องาน`);return;}
+    let d="";if(r.d){d=impParseDate(r.d);if(!d){errs.push(`${lab}: วันที่ไม่ถูกต้อง (${r.d})`);return;}}
+    const S=p=>({res:parseNum(r[p+"_res"]),eng:parseNum(r[p+"_eng"]),reach:parseNum(r[p+"_reach"]),ctry:parseCtry(r[p+"_ctry"])});
+    const it={title:r.title,d,tag:r.tag||"",kw:r.kw||"",ts:S("t"),ks:S("k")};
+    if(!it.tag&&!it.kw&&!hasS(it.ts)&&!hasS(it.ks)){errs.push(`${lab}: ไม่มีข้อมูลเทรนด์`);return;}
+    items.push(it);
+  });
+  return {items,errs};
+}
+const trMatchEv=p=>EVENTS.find(e=>(impNorm(e.th_t)===impNorm(p.title)||impNorm(e.en_t)===impNorm(p.title))&&(!p.d||e.d===p.d));
+const trMatchTr=(p,ev)=>TRENDS.find(x=>(ev&&x.evId===ev.id)||impNorm(x.title)===impNorm(p.title));
+function openTrendImport(){
+  if(!(cRole==="admin"||cRole==="head_admin"))return alert(T("เฉพาะ Admin","Admin only"));
+  let m=document.getElementById("trImpModal");
+  if(!m){m=document.createElement("div");m.className="modal";m.id="trImpModal";document.body.appendChild(m);}
+  TRIMP=[];
+  m.innerHTML=`<div class="modal-box" style="max-width:720px"><h3 style="color:var(--primary);margin-bottom:10px">📥 นำเข้าสถิติเทรนด์หลายงาน</h3><div style="font-size:13px;color:var(--muted);white-space:pre-line;margin-bottom:10px">พิมพ์ทีละบรรทัดแบบ "หัวข้อ : ข้อมูล" แล้วเว้น 1 บรรทัดว่างเมื่อขึ้นงานใหม่
+ต้องมี "งาน" · ใส่เฉพาะช่องที่มี · ถ้าชื่องานตรงกับงานในตาราง ระบบผูกให้และใช้วันที่ของงานนั้น
+ฝั่งแฮชแท็กใช้ Result / Engagement / Reach / ประเทศ · ฝั่งคีย์เวิร์ดนำหน้าด้วยคำว่า "คีย์เวิร์ด" เช่น คีย์เวิร์ด Result
+ชื่องานซ้ำกับของเดิม = อัปเดตให้ ไม่สร้างซ้ำ · กดปุ่ม 📝 เพื่อได้แบบฟอร์มว่าง</div><div class="form-group"><textarea id="trImpText" rows="12" style="white-space:pre-wrap" placeholder="งาน : Y ENT Awards 2026&#10;วันที่ : 2026-03-01&#10;แฮชแท็ก : #GINJAYxYEntertainAwards26&#10;Result : 101.2K"></textarea></div><div id="trImpPrev" style="font-size:13px;max-height:180px;overflow:auto;margin-bottom:8px"></div><div style="display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap"><button class="chip" onclick="closeModal('trImpModal')">ยกเลิก</button><button class="chip" onclick="const t=document.getElementById('trImpText');t.value=(t.value.trim()?t.value.replace(/\\s+$/,'')+'\\n\\n':'')+TR_TPL;t.focus()">📝 แบบฟอร์มว่าง</button><button class="chip" onclick="trImpPreview()">🔍 ตรวจสอบ</button><button class="btn-submit" id="trImpBtn" onclick="trImpSave()" style="opacity:.4;pointer-events:none">นำเข้า</button></div></div>`;
+  m.classList.add("on");
+}
+function trImpPreview(){
+  const r=trParseText(document.getElementById("trImpText").value),box=document.getElementById("trImpPrev"),btn=document.getElementById("trImpBtn");
+  TRIMP=r.items;
+  const lines=r.items.map(p=>{const ev=trMatchEv(p),ex=trMatchTr(p,ev);return `${ex?"🔄":"✅"} ${impEsc(p.title)}${ev?" · ผูกกับงานในตาราง":""}`;});
+  let nu=0;r.items.forEach(p=>{if(trMatchTr(p,trMatchEv(p)))nu++;});
+  box.innerHTML=`<div style="margin-bottom:6px"><b>✅ ใหม่ ${r.items.length-nu}</b> · <b>🔄 อัปเดต ${nu}</b> · <b>⚠️ ข้าม ${r.errs.length}</b></div>${r.errs.length?`<div style="color:#b91c1c;margin-bottom:6px">${r.errs.map(impEsc).join("<br>")}</div>`:""}${lines.join("<br>")}`;
+  btn.style.opacity=r.items.length?"1":".4";btn.style.pointerEvents=r.items.length?"auto":"none";
+}
+async function trImpSave(){
+  if(!(cRole==="admin"||cRole==="head_admin")||!TRIMP.length)return;
+  TRIMP.forEach((p,k)=>{
+    const ev=trMatchEv(p),ex=trMatchTr(p,ev);
+    const o={evId:ev?ev.id:(ex?ex.evId:""),title:p.title,d:ev?ev.d:(p.d||(ex&&ex.d)||""),tag:p.tag||(ev&&ev.tag)||"",kw:p.kw||(ev&&ev.kw)||"",ts:p.ts,ks:p.ks};
+    if(ex){const i=TRENDS.indexOf(ex),n=trNorm(ex);const keep=(a,b)=>hasS(a)?a:b;TRENDS[i]={...ex,...o,tag:o.tag||n.tag,kw:o.kw||n.kw,ts:keep(o.ts,n.ts),ks:keep(o.ks,n.ks)};delete TRENDS[i].entries;}
+    else TRENDS.push({id:"tr_"+Date.now()+"_"+k,...o,img:""});
+  });
+  if(await saveToDB({TRENDS})){closeModal("trImpModal");trSync();renderTrends();alert(`นำเข้าสำเร็จ ${TRIMP.length} รายการ 🎉`);}
 }
 
 /* ---- โหลดข้อมูล + วาดใหม่เมื่อเปลี่ยนภาษา/สิทธิ์ ---- */
